@@ -3,8 +3,8 @@ using TailorProTrack.domain.Core;
 
 namespace TailorProTrack.domain.Entities
 {
-    public class Size : BaseEntity
+    public class Type_prod : BaseEntity
     {
-        public string SIZE { get; set; }
+        public string TYPE_PR { get; set; }
     }
 }

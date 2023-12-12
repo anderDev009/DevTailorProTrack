@@ -1,5 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using TailorProTrack.infraestructure.Context;
+using TailorProTrack.Ioc.Dependencies;
+
 var builder = WebApplication.CreateBuilder(args);
 
+
+//dependencias
+builder.Services.AddDbContext<TailorProTrackContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("TailorProTrackContext")));
+
+//dependencias de productos
+builder.Services.AddProductDependencies();
+//dependencias de los tipos de productos
+builder.Services.AddTypeProductDependencies();
 // Add services to the container.
 
 builder.Services.AddControllers();

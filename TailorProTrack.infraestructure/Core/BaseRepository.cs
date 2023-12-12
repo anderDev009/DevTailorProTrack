@@ -1,15 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using TailorProTrack.infraestructure.Context;
 
 namespace TailorProTrack.infraestructure.Core
 {
-    public class BaseRepository<T> : IBaseRepository<T> where T : class
+    public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         private readonly TailorProTrackContext _context;
         private DbSet<T> _entities;
@@ -18,32 +13,35 @@ namespace TailorProTrack.infraestructure.Core
             this._context = ctx;
             _entities = this._context.Set<T>();
         } 
-        public bool Exists(Expression<Func<T, bool>> filter)
+
+        public virtual  bool Exists(Expression<Func<T, bool>> filter)
         {
             return this._entities.Any();
         }
 
-        public List<T> FindAll(Expression<Func<T, bool>> filter)
+        public virtual List<T> FindAll(Expression<Func<T, bool>> filter)
         {
             return this._entities.Where(filter).ToList();
         }
-
-        public T GetEntity(int id)
+        public virtual List<T> GetEntities()
         {
-            return this.GetEntity(id);
+            return this._entities.ToList();
         }
-
-        public void Remove(T entity)
+        public virtual T GetEntity(int id)
+        {
+            return this._entities.Find(id);
+        }
+        public virtual void Remove(T entity)
         {
             this._entities.Remove(entity);
         }
 
-        public void Save(T entity)
+        public virtual void Save(T entity)
         {
             this._entities.Add(entity);
         }
 
-        public void Update(T entity)
+        public virtual void Update(T entity)
         {
             this._entities.Update(entity);
         }

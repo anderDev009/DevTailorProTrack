@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\TailorProTrack.domain\TailorProTrack.domain.csproj" />
   </ItemGroup>
 
