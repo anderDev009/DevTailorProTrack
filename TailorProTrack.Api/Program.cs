@@ -12,6 +12,10 @@ builder.Services.AddDbContext<TailorProTrackContext>(options => options.UseSqlSe
 builder.Services.AddProductDependencies();
 //dependencias de los tipos de productos
 builder.Services.AddTypeProductDependencies();
+//dependencias de inventario
+builder.Services.AddInventoryDependencies();
+//dependencias de size
+builder.Services.AddSizeDependencies();
 // Add services to the container.
 
 builder.Services.AddControllers();

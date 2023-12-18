@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace TailorProTrack.Application.Dtos.Product
 {
-    public class ProductDtoGet : BaseProduct
+    public class ProductDtoGet 
     {
+        public int Id { get; set; }
+        public string name_prod { get; set; }
+        public string description { get; set; }
+        public decimal sale_price { get; set; }
         public string? type { get; set; }
     } 
 }

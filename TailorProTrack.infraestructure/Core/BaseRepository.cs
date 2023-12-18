@@ -45,5 +45,6 @@ namespace TailorProTrack.infraestructure.Core
         {
             this._entities.Update(entity);
         }
+
     }
 }

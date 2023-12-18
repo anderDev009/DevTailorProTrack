@@ -1,12 +1,17 @@
 ﻿
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
 namespace TailorProTrack.domain.Core
 {
     public abstract class BaseEntity
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID {  get; set; }
         public DateTime CREATED_AT {  get; set; }
-        public DateTime MODIFIED_AT {  get; set; }
-        public int USER_MOD { get; set; }
+        public DateTime? MODIFIED_AT {  get; set; }
+        public int? USER_MOD { get; set; }
         public int USER_CREATED { get; set; }
         public bool REMOVED { get; set; }
     }

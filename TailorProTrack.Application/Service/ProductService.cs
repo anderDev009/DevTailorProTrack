@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Collections.Immutable;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Product;
@@ -36,7 +37,8 @@ namespace TailorProTrack.Application.Service
                     DESCRIPTION_PRODUCT = dtoAdd.description,
                     SALE_PRICE = dtoAdd.sale_price,
                     USER_CREATED = dtoAdd.User,
-                    CREATED_AT = dtoAdd.Date
+                    CREATED_AT = dtoAdd.Date,
+                    FK_TYPE = dtoAdd.fk_type
                 };
                 this._repository.Save(product);
                 result.Message = "Insertado con exito";
@@ -55,20 +57,33 @@ namespace TailorProTrack.Application.Service
             try
             {
                 var products = this._repository.GetEntities()
-                                 .Join(this._repositoryType.GetEntities(),
-                                        product => product.ID,
-                                        typeProd => typeProd.ID,
-                                        (product,typeProd) => 
-                                        new {Product = product, Type_prod = typeProd})
-                                 .Where(data  => !data.Product.REMOVED)
-                                 .Select(data => new ProductDtoGet()
-                                 {
-                                     Id = data.Product.ID,
-                                     name_prod = data.Product.NAME_PRODUCT,
-                                     sale_price = data.Product.SALE_PRICE,
-                                     description = data.Product.DESCRIPTION_PRODUCT,
-                                     type = data.Type_prod.TYPE_PR
-                                 }).ToList();
+                                                .Join(this._repositoryType.GetEntities(),
+                                                      product => product.ID,
+                                                      typeProd => typeProd.ID,
+                                                      (product, typeProd) => new { product, typeProd })
+                                                .Where(data => !data.product.REMOVED)
+                                                .Select(data => new ProductDtoGet
+                                                {
+                                                    Id = data.product.ID,
+                                                    name_prod = data.product.NAME_PRODUCT,
+                                                    description = data.product.DESCRIPTION_PRODUCT,
+                                                    type = data.typeProd.TYPE_PROD,
+                                                    sale_price = data.product.SALE_PRICE
+                                                }) ;
+                                 //.Join(this._repositoryType.GetEntities(),
+                                 //       product => product.ID,
+                                 //       typeProd => typeProd.ID,
+                                 //       (product,typeProd) => 
+                                 //       new {Product = product, Type_prod = typeProd})
+                                 //.Where(data  => !data.Product.REMOVED)
+                                 //.Select(data => new ProductDtoGet()
+                                 //{
+                                 //    Id = data.Product.ID,
+                                 //    name_prod = data.Product.NAME_PRODUCT,
+                                 //    sale_price = data.Product.SALE_PRICE,
+                                 //    description = data.Product.DESCRIPTION_PRODUCT,
+                                 //    type = data.Type_prod.TYPE_PROD
+                                 //});
                 result.Message = "Obtenidos con exito";
                 result.Data = products;
             }

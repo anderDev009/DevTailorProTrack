@@ -4,14 +4,15 @@ using TailorProTrack.Application.Service;
 using TailorProTrack.infraestructure.Interfaces;
 using TailorProTrack.infraestructure.Repositories;
 
+
 namespace TailorProTrack.Ioc.Dependencies
 {
-    public static class TypeProductDependencies
+    public static class SizeDependencies
     {
-        public static void AddTypeProductDependencies(this IServiceCollection services)
+        public static void AddSizeDependencies(this IServiceCollection service)
         {
-            services.AddScoped<ITypeProdRepository, TypeProdRepository>();
-            services.AddTransient<ITypeProdService, TypeProdService>();
+            service.AddScoped<ISizeRepository, SizeRepository>();
+            service.AddTransient<ISizeService, SizeService>(); 
         }
     }
 }

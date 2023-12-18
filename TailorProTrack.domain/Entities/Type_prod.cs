@@ -5,6 +5,6 @@ namespace TailorProTrack.domain.Entities
 {
     public class Type_prod : BaseEntity
     {
-        public string TYPE_PR { get; set; }
+        public string TYPE_PROD { get; set; }
     }
 }
