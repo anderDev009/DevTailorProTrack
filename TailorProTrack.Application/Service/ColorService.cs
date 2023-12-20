@@ -9,12 +9,12 @@ namespace TailorProTrack.Application.Service
 {
     public class ColorService : IColorService
     {
-        private readonly IColorRepository repository;
+        private readonly IColorRepository _repository;
         private readonly ILogger logger;
 
         public ColorService(IColorRepository colorRepository, ILogger<IColorRepository> logger)
         {
-            this.repository = colorRepository;
+            this._repository = colorRepository;
             this.logger = logger;
         }
 
@@ -30,7 +30,10 @@ namespace TailorProTrack.Application.Service
                 colorToAdd.USER_CREATED = dtoAdd.User;
                 colorToAdd.CREATED_AT = dtoAdd.Date;
 
+                int id = this._repository.Save(colorToAdd);
+
                 result.Message = "Insertado por exito.";
+                result.Data = id;
             }catch(Exception ex) 
             { 
                 result.Success = false;
