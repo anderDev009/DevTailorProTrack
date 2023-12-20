@@ -41,8 +41,9 @@ namespace TailorProTrack.Application.Service
                     CREATED_AT = dtoAdd.Date,
                     USER_CREATED = dtoAdd.User
                 };
-                this._repository.Save(inventoryColor);
+                int id  = this._repository.Save(inventoryColor);
 
+                result.Data = id;
                 result.Message = "Registrado con exito";
             }catch(Exception ex) 
             {
@@ -57,19 +58,11 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                InventoryColor invColor = new InventoryColor
-                {
-                    FK_INVENTORY = dtoAdd.fk_inventory,
-                    FK_COLOR_PRIMARY = dtoAdd.fk_color_primary,
-                    FK_COLOR_SECONDARY = dtoAdd.fk_color_secondary,
-                    QUANTITY = dtoAdd.quantity,
-                    CREATED_AT= dtoAdd.Date,
-                    USER_CREATED = dtoAdd.User
-                };
-                int id = this._repository.Save(invColor);
+
+                int id  = this.Add(dtoAdd).Data;
                 //actualizando el inventario
                 Inventory inventory = this._inventoryRepository.GetEntity(dtoAdd.fk_inventory);
-                inventory.QUANTITY = this.GetQuantityTotalById(dtoAdd.fk_inventory).Data;
+                inventory.QUANTITY = this.GetQuantityTotalById(dtoAdd.fk_inventory).Data ;
                 this._inventoryRepository.Update(inventory);
                 //enviando el mensaje
                 result.Message = "Insertado con exito";
@@ -97,13 +90,13 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                int quantity = this._repository.GetEntities().Select(data => new
+                var quantity = this._repository.GetEntities().GroupBy(d=> d.FK_INVENTORY).Select(data => new
                                                            {
-                                                             data.FK_INVENTORY,
-                                                             data.QUANTITY
-                                                            }).Where(data => data.FK_INVENTORY == id)
-                                                            .Sum(data=>data.QUANTITY);
-                result.Data = quantity;
+                                                            data.Key,   
+                                                             total = data.Sum(n => n.QUANTITY)
+                                                            }).Where(d=> d.Key == id);
+                                                           ;
+                result.Data = quantity.Sum(d=>d.total);
                 result.Message = "Cantidad obtenida con exito";
             }catch(Exception ex)
             {

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Dtos.Inventory;
+using TailorProTrack.Application.Dtos.InventoryColor;
 
 namespace TailorProTrack.Api.Controllers
 {
@@ -9,10 +10,13 @@ namespace TailorProTrack.Api.Controllers
     public class InventoryController : Controller
     {
         private readonly IInventoryService _inventoryService;
-
-        public InventoryController(IInventoryService service)
+        //inventory color service
+        private readonly IInventoryColorService _inventoryColorService;
+        public InventoryController(IInventoryService service,
+                                   IInventoryColorService inventoryColorService)
         {
             this._inventoryService = service;
+            _inventoryColorService = inventoryColorService; 
         }
         // GET: InventoryController
         [HttpGet("GetInventory")]
@@ -46,6 +50,15 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
-
+        [HttpPost("AddExistenceToInventory")]
+        public ActionResult Add([FromBody] InventoryColorDtoAdd inventoryDtoAdd)
+        {
+            var result = this._inventoryColorService.AddAndUpdateInventory(inventoryDtoAdd);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }
