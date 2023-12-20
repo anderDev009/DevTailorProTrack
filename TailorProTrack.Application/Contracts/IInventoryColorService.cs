@@ -7,5 +7,7 @@ namespace TailorProTrack.Application.Contracts
                                                            InventoryColorDtoRemove,
                                                            InventoryColorDtoUpdate>
     {
+        ServiceResult AddAndUpdateInventory(InventoryColorDtoAdd dtoAdd);
+        ServiceResult GetQuantityTotalById(int id);
     }
 }

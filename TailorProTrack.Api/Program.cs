@@ -16,6 +16,8 @@ builder.Services.AddTypeProductDependencies();
 builder.Services.AddInventoryDependencies();
 //dependencias de size
 builder.Services.AddSizeDependencies();
+//dependencias de color
+builder.Services.AddColorDependencies();
 // Add services to the container.
 
 builder.Services.AddControllers();
