@@ -14,11 +14,11 @@ namespace TailorProTrack.Application.Service
     {
         private readonly ISizeRepository _repository;
         private readonly IInventoryRepository _inventoryRepository;
-        private readonly IInventorySizeRepository _inventorySizeRepository;
+        private readonly IInventoryColorRepository _inventorySizeRepository;
         private ILogger logger;
         public SizeService(ISizeRepository repository,
             IInventoryRepository inventoryRepository,
-            IInventorySizeRepository inventorySizeRepository,
+            IInventoryColorRepository inventorySizeRepository,
             ILogger<SizeRepository> logger, 
             IConfiguration configuration)
         {
@@ -94,7 +94,7 @@ namespace TailorProTrack.Application.Service
                 (
                 this._inventorySizeRepository.GetEntities().Where(data => data.QUANTITY > 0),
                 size => size.ID,
-                inventorySize => inventorySize.FK_SIZE,
+                inventorySize => inventorySize.FK_INVENTORY,
                 (size, inventorySize) => new { size, inventorySize }
                 )
                 .Join

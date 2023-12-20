@@ -27,10 +27,11 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             Inventory inventoryToUpdate = this.GetEntity(entity.ID);
 
-            inventoryToUpdate.LAST_REPLENISHMENT = entity.LAST_REPLENISHMENT;
+            inventoryToUpdate.QUANTITY = entity.QUANTITY;
+            inventoryToUpdate.FK_SIZE = entity.FK_SIZE;
+            inventoryToUpdate.FK_PRODUCT = entity.FK_PRODUCT;
             inventoryToUpdate.MODIFIED_AT = DateTime.Now;
             inventoryToUpdate.USER_MOD = entity.USER_MOD;
-            inventoryToUpdate.LAST_REPLENISHMENT = entity.LAST_REPLENISHMENT;
 
 
             this._context.Update(inventoryToUpdate);

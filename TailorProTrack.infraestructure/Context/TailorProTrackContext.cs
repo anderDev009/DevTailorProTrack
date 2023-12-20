@@ -14,7 +14,7 @@ namespace TailorProTrack.infraestructure.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<InventorySize>().HasNoKey();
+            modelBuilder.Entity<InventoryColor>().HasNoKey();
             // Otros mapeos de entidades...
         }
 
@@ -22,6 +22,6 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<Type_prod> TYPE_PROD { get; set; }
         public DbSet<Size> SIZE { get; set; }
         public DbSet<Inventory> INVENTORY { get; set; }
-        public DbSet<InventorySize> INVENTORY_SIZE { get; set; }
+        public DbSet<InventoryColor> INVENTORY_SIZE { get; set; }
     }
 }

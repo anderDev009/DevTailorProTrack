@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Dtos.Inventory;
 
 namespace TailorProTrack.Api.Controllers
 {
@@ -34,67 +35,17 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
-        // GET: InventoryController/Create
-        public ActionResult Create()
+        // Inventory
+        [HttpPost("AddInventory")]
+        public ActionResult Add([FromBody] InventoryDtoAdd inventoryDtoAdd)
         {
-            return View();
+            var result = this._inventoryService.Add(inventoryDtoAdd);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
 
-        // POST: InventoryController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: InventoryController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: InventoryController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: InventoryController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: InventoryController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

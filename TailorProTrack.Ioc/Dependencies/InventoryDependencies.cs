@@ -12,7 +12,7 @@ namespace TailorProTrack.Ioc.Dependencies
         {
             service.AddScoped<IInventoryRepository, InventoryRepository>();
 
-            service.AddScoped<IInventorySizeRepository, InventorySizeRepository>();
+            service.AddScoped<IInventoryColorRepository, InventoryColorRepository>();
 
             service.AddTransient<IInventoryService, InventoryService>();
         }

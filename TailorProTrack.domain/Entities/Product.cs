@@ -10,5 +10,6 @@ namespace TailorProTrack.domain.Entities
         public decimal SALE_PRICE { get; set; }
         public int FK_TYPE { get; set; }
 
+        public DateTime LAST_REPLENISHMENT {  get; set; }
     }
 }

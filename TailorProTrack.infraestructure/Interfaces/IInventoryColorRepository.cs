@@ -8,7 +8,7 @@ using TailorProTrack.infraestructure.Core;
 
 namespace TailorProTrack.infraestructure.Interfaces
 {
-    public interface IInventorySizeRepository : IBaseRepository<InventorySize>
+    public interface IInventoryColorRepository : IBaseRepository<InventoryColor>
     {
 
     }

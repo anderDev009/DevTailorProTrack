@@ -8,6 +8,8 @@ namespace TailorProTrack.Application.Dtos.Inventory
 {
     public class InventoryBaseDto : BaseDto
     {
-        public DateTime last_replenishment {  get; set; }
+        public int fk_product {  get; set; }
+        public int fk_size { get; set; }
+        public int quantity {  get; set; }
     }
 }
