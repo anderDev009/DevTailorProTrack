@@ -33,6 +33,7 @@ namespace TailorProTrack.Application.Service
             {
                 InventoryColor inventoryColor = new InventoryColor
                 {
+                    ID = 0,
                     FK_INVENTORY = dtoAdd.fk_inventory,
                     FK_COLOR_PRIMARY = dtoAdd.fk_color_primary,
                     FK_COLOR_SECONDARY = dtoAdd.fk_color_secondary,

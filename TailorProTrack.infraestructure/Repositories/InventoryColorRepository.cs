@@ -15,6 +15,7 @@ namespace TailorProTrack.infraestructure.Repositories
         }
         public override int Save(InventoryColor entity)
         {
+            entity.CREATED_AT = DateTime.Now;
             this._context.Add(entity);
             this._context.SaveChanges();
             return entity.ID;

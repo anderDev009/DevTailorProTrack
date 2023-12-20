@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Inventory;
+using TailorProTrack.Application.Dtos.InventoryColor;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 using TailorProTrack.infraestructure.Repositories;
@@ -27,10 +28,13 @@ namespace TailorProTrack.Application.Service
                                 IInventoryColorRepository inventorySizeRepository,
                                 ISizeRepository sizeRepository,
                                 IProductRepository productRepository,
+                                IInventoryColorService inventoryColorService,
                                 ISizeService sizeService)
         {
             this._sizeRepository = sizeRepository;
             this._inventorySizeRepository = inventorySizeRepository;
+            //inventory color service
+            this._inventoryColorService = inventoryColorService;
             this.Configuration = configuration;
             this._repository = inventoryRepository;
             this.logger = logger;
@@ -46,7 +50,7 @@ namespace TailorProTrack.Application.Service
             try
             {
 
-                
+
                 Inventory inventory = new Inventory
                 {
                     FK_PRODUCT = dtoAdd.fk_product,
@@ -59,8 +63,21 @@ namespace TailorProTrack.Application.Service
                 //agregando los colores al inventario
                 dtoAdd.inventoryColors.ForEach(color =>
                 {
-                    color.fk_inventory = idInventory;
-                    this._inventoryColorService.Add(color);
+                    if(color != null)
+                    {
+                        InventoryColorDtoAdd colorToAdd =  new InventoryColorDtoAdd()
+                        {
+                            fk_inventory = color.fk_inventory,
+                            fk_color_primary = color.fk_color_primary,
+                            fk_color_secondary = color.fk_color_secondary,
+                            quantity = color.quantity,
+                            Date = color.Date,
+                            User = color.User
+                        };
+                        Console.WriteLine(colorToAdd.fk_color_primary);
+                        this._inventoryColorService.Add(colorToAdd);
+                    }
+
                 });
                 result.Message = "Registrado con exito";
             }

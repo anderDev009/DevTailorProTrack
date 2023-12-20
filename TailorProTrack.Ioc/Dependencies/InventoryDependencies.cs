@@ -14,7 +14,10 @@ namespace TailorProTrack.Ioc.Dependencies
 
             service.AddScoped<IInventoryColorRepository, InventoryColorRepository>();
 
-            service.AddTransient<IInventoryService, Application.Service.InventoryService>();
+
+            service.AddTransient<IInventoryColorService, InventoryColorService>();
+
+            service.AddTransient<IInventoryService, InventoryService>();
         }
     }
 }

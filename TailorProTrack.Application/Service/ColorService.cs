@@ -47,7 +47,7 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var colors = this.repository.GetEntities()
+                var colors = this._repository.GetEntities()
                                             .Where(data => !data.REMOVED)
                                             .Select(data => new ColorDtoGet
                                             {
@@ -72,7 +72,7 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var color = this.repository.GetEntity(id);
+                var color = this._repository.GetEntity(id);
 
                 ColorDtoGet dtoColor = new ColorDtoGet 
                 { 
