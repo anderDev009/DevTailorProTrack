@@ -38,11 +38,12 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context.SaveChanges();
         }
 
-        public override void Save(Inventory entity)
+        public override int Save(Inventory entity)
         {
             entity.CREATED_AT = DateTime.Now;
             this._context.Add(entity);
             this._context.SaveChanges();
+            return entity.ID;
         }
     }
 }

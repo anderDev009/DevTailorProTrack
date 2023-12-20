@@ -36,9 +36,10 @@ namespace TailorProTrack.infraestructure.Core
             this._entities.Remove(entity);
         }
 
-        public virtual void Save(T entity)
+        public virtual int Save(T entity)
         {
             this._entities.Add(entity);
+            return 0;
         }
 
         public virtual void Update(T entity)

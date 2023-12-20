@@ -18,11 +18,12 @@ namespace TailorProTrack.infraestructure.Repositories
             _context = ctx;
         }
 
-        public override void Save(Size entity)
+        public override int Save(Size entity)
         {
             entity.CREATED_AT = DateTime.Now;
             this._context.Add(entity);
             this._context.SaveChanges();
+            return entity.ID;
         }
 
         public override void Remove(Size entity)

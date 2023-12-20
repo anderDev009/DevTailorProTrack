@@ -13,6 +13,7 @@ namespace TailorProTrack.Application.Service
     public class InventoryService : IInventoryService
     {
         //repositories
+        private readonly IInventoryColorService _inventoryColorService;
         private readonly IInventoryRepository _repository;
         private readonly ISizeRepository _sizeRepository;
         private readonly IProductRepository _productRepository;
@@ -44,15 +45,23 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
+
+                
                 Inventory inventory = new Inventory
                 {
                     FK_PRODUCT = dtoAdd.fk_product,
-                    QUANTITY = dtoAdd.quantity,
+                    QUANTITY = dtoAdd.inventoryColors.Sum(color => color.quantity),
                     FK_SIZE = dtoAdd.fk_size,
                     USER_CREATED = dtoAdd.User,
                     CREATED_AT = dtoAdd.Date
                 };
-                this._repository.Save(inventory);
+                int idInventory = this._repository.Save(inventory);
+                //agregando los colores al inventario
+                dtoAdd.inventoryColors.ForEach(color =>
+                {
+                    color.fk_inventory = idInventory;
+                    this._inventoryColorService.Add(color);
+                });
                 result.Message = "Registrado con exito";
             }
             catch (Exception ex)

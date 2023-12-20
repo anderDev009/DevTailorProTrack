@@ -1,5 +1,4 @@
 ﻿
-
 namespace TailorProTrack.Application.Dtos
 {
     public abstract class BaseDto

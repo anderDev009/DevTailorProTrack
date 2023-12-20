@@ -8,7 +8,7 @@ namespace TailorProTrack.infraestructure.Core
     {
         void Remove(T entity);
         void Update(T entity);  
-        void Save(T entity);
+        int Save(T entity);
         List<T> GetEntities();
         List<T> FindAll(Expression<Func<T, bool>> filter);
         T GetEntity(int id);

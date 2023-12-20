@@ -14,10 +14,12 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context = ctx;
         }
 
-        public override void Save(Color entity)
+        public override int Save(Color entity)
         {
             this._context.Add(entity);
             this._context.SaveChanges();
+            return entity.ID;
+
         }
         public override void Update(Color entity)
         {
