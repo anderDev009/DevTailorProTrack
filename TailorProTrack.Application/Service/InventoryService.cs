@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
+using TailorProTrack.Application.Dtos.Color;
 using TailorProTrack.Application.Dtos.Inventory;
 using TailorProTrack.Application.Dtos.InventoryColor;
 using TailorProTrack.domain.Entities;
@@ -53,6 +54,7 @@ namespace TailorProTrack.Application.Service
 
                 Inventory inventory = new Inventory
                 {
+                    ID = 0,
                     FK_PRODUCT = dtoAdd.fk_product,
                     QUANTITY = dtoAdd.inventoryColors.Sum(color => color.quantity),
                     FK_SIZE = dtoAdd.fk_size,
@@ -63,21 +65,10 @@ namespace TailorProTrack.Application.Service
                 //agregando los colores al inventario
                 dtoAdd.inventoryColors.ForEach(color =>
                 {
-                    if(color != null)
-                    {
-                        InventoryColorDtoAdd colorToAdd =  new InventoryColorDtoAdd()
-                        {
-                            fk_inventory = color.fk_inventory,
-                            fk_color_primary = color.fk_color_primary,
-                            fk_color_secondary = color.fk_color_secondary,
-                            quantity = color.quantity,
-                            Date = color.Date,
-                            User = color.User
-                        };
-                        Console.WriteLine(colorToAdd.fk_color_primary);
-                        this._inventoryColorService.Add(colorToAdd);
-                    }
-
+                    Console.WriteLine(idInventory);
+                    color.fk_inventory = 17;
+                    this._inventoryColorService.Add(color);
+                    result.Data = color;
                 });
                 result.Message = "Registrado con exito";
             }

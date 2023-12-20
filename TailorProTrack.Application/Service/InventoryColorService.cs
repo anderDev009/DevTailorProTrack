@@ -31,12 +31,12 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
+               
                 InventoryColor inventoryColor = new InventoryColor
                 {
-                    ID = 0,
-                    FK_INVENTORY = dtoAdd.fk_inventory,
+                    FK_INVENTORY = 16,
                     FK_COLOR_PRIMARY = dtoAdd.fk_color_primary,
-                    FK_COLOR_SECONDARY = dtoAdd.fk_color_secondary,
+                    FK_COLOR_SECONDARY = dtoAdd.fk_color_secondary == 0 ? null : dtoAdd.fk_color_secondary,
                     QUANTITY = dtoAdd.quantity,
                     CREATED_AT = dtoAdd.Date,
                     USER_CREATED = dtoAdd.User
