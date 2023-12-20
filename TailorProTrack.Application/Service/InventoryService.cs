@@ -65,8 +65,7 @@ namespace TailorProTrack.Application.Service
                 //agregando los colores al inventario
                 dtoAdd.inventoryColors.ForEach(color =>
                 {
-                    Console.WriteLine(idInventory);
-                    color.fk_inventory = 17;
+                    color.fk_inventory = idInventory;
                     this._inventoryColorService.Add(color);
                     result.Data = color;
                 });
