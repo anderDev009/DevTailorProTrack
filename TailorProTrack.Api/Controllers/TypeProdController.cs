@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Dtos.TypeProd;
 
@@ -6,6 +7,7 @@ namespace TailorProTrack.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("*")]
     public class TypeProdController : Controller
     {
         private readonly ITypeProdService _service;

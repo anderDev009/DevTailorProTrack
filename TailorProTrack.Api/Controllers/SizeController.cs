@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Dtos.Size;
 
@@ -6,6 +7,7 @@ namespace TailorProTrack.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("*")]
     public class SizeController : Controller
     {
         private readonly ISizeService _service;

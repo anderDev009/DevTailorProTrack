@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Dtos.Product;
@@ -7,6 +8,7 @@ namespace TailorProTrack.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("*")]
     public class ProductController : Controller
     {
         private readonly IProductService _Productservice;

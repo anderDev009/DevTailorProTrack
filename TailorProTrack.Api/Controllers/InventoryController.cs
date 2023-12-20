@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Dtos.Inventory;
@@ -6,7 +7,9 @@ using TailorProTrack.Application.Dtos.InventoryColor;
 
 namespace TailorProTrack.Api.Controllers
 {
-  
+    [Route("api/[controller]")]
+    [ApiController]
+    [EnableCors("*")]
     public class InventoryController : Controller
     {
         private readonly IInventoryService _inventoryService;
