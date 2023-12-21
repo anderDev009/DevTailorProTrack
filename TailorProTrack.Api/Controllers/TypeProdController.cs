@@ -7,7 +7,7 @@ namespace TailorProTrack.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("*")]
+    [EnableCors("AllowSpecificOrigin")]
     public class TypeProdController : Controller
     {
         private readonly ITypeProdService _service;

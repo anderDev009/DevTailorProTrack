@@ -7,7 +7,7 @@ namespace TailorProTrack.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("*")]
+    [EnableCors("AllowSpecificOrigin")]
     public class SizeController : Controller
     {
         private readonly ISizeService _service;
