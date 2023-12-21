@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 //dependencias
 builder.Services.AddDbContext<TailorProTrackContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("TailorProTrackContext")));
-
 //dependencias de productos
 builder.Services.AddProductDependencies();
 //dependencias de los tipos de productos
@@ -34,6 +33,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
