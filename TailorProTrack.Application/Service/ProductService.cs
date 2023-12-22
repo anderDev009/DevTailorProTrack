@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Collections.Immutable;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Product;
@@ -58,17 +57,18 @@ namespace TailorProTrack.Application.Service
             {
                 var products = this._repository.GetEntities()
                                                 .Join(this._repositoryType.GetEntities(),
-                                                      product => product.ID,
+                                                      product => product.FK_TYPE,
                                                       typeProd => typeProd.ID,
                                                       (product, typeProd) => new { product, typeProd })
                                                 .Where(data => !data.product.REMOVED)
+                                                .GroupBy(data => data.product)
                                                 .Select(data => new ProductDtoGet
                                                 {
-                                                    Id = data.product.ID,
-                                                    name_prod = data.product.NAME_PRODUCT,
-                                                    description = data.product.DESCRIPTION_PRODUCT,
-                                                    type = data.typeProd.TYPE_PROD,
-                                                    sale_price = data.product.SALE_PRICE
+                                                    Id = data.Key.ID,
+                                                    name_prod = data.Key.NAME_PRODUCT,
+                                                    description = data.Key.DESCRIPTION_PRODUCT,
+                                                    type = data.Select(d => d.typeProd.TYPE_PROD).FirstOrDefault(),
+                                                    sale_price = data.Key.SALE_PRICE
                                                 }) ;
                                  //.Join(this._repositoryType.GetEntities(),
                                  //       product => product.ID,
@@ -101,7 +101,20 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var product = this._repository.GetEntity(id);
+                var product = this._repository.GetEntities()
+                                               .Join(this._repositoryType.GetEntities(),
+                                                      product => product.ID,
+                                                      typeProd => typeProd.ID,
+                                                      (product, typeProd) => new { product, typeProd })
+                                                .Where(data => !data.product.REMOVED && data.product.ID == id)
+                                                .Select(data => new ProductDtoGet
+                                                {
+                                                    Id = data.product.ID,
+                                                    name_prod = data.product.NAME_PRODUCT,
+                                                    description = data.product.DESCRIPTION_PRODUCT,
+                                                    type = data.typeProd.TYPE_PROD,
+                                                    sale_price = data.product.SALE_PRICE
+                                                }); ;
                 result.Data = product;
                 result.Message = "Obtenido con exito";
             }

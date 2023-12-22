@@ -43,5 +43,9 @@ namespace TailorProTrack.infraestructure.Repositories
             return entity.ID;
         }
 
+        public override bool Exists(Expression<Func<Product, bool>> filter)
+        {
+            return base.Exists(filter);
+        }
     }
 }

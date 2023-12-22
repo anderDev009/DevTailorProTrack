@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
@@ -9,6 +10,7 @@ using TailorProTrack.Application.Dtos.InventoryColor;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 using TailorProTrack.infraestructure.Repositories;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TailorProTrack.Application.Service
 {
@@ -22,6 +24,7 @@ namespace TailorProTrack.Application.Service
         private readonly IInventoryColorRepository _inventorySizeRepository;
         private readonly ILogger logger;
         //services
+        private readonly IProductService _productService;
         private readonly ISizeService _sizeService;
         public InventoryService(IInventoryRepository inventoryRepository,
                                 IConfiguration configuration,
@@ -30,7 +33,8 @@ namespace TailorProTrack.Application.Service
                                 ISizeRepository sizeRepository,
                                 IProductRepository productRepository,
                                 IInventoryColorService inventoryColorService,
-                                ISizeService sizeService)
+                                ISizeService sizeService,
+                                IProductService productService)
         {
             this._sizeRepository = sizeRepository;
             this._inventorySizeRepository = inventorySizeRepository;
@@ -41,6 +45,8 @@ namespace TailorProTrack.Application.Service
             this.logger = logger;
             _productRepository = productRepository;
             _sizeService = sizeService;
+            //service product
+            _productService = productService;
         }
 
         private IConfiguration Configuration { get; }
@@ -116,21 +122,23 @@ namespace TailorProTrack.Application.Service
                                                             data.NAME_PRODUCT,
                                                             data.DESCRIPTION_PRODUCT,
                                                             data.SALE_PRICE,
-                                                            data.LAST_REPLENISHMENT
+                                                            data.LAST_REPLENISHMENT,
                                                         }),
                                  combined => combined.inventory.FK_PRODUCT,
                                  product => product.ID,
                                  (combined, product) => new { combined.inventory, combined.size, product }
                                  )
                                  .Where(data => !data.inventory.REMOVED)
-                                 .GroupBy(data => new { data.product.ID, data.product.NAME_PRODUCT, data.product.SALE_PRICE})
+                                 .GroupBy(data => new { data.product.ID, data.product.NAME_PRODUCT, data.product.SALE_PRICE, data.product.LAST_REPLENISHMENT })
                                  .Select(group => new InventoryDtoGet
                                  {
                                      id = group.Key.ID,
                                      product_name = group.Key.NAME_PRODUCT,
                                      price = group.Key.SALE_PRICE,
-                                     quantity = group.Sum(d => d.inventory.QUANTITY)
-                                 }); 
+                                     quantity = group.Sum(d => d.inventory.QUANTITY),
+                                     availableSizes = this._sizeService.GetSizesAvailablesProductById(group.Key.ID).Data,
+                                     last_replenishment = (group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy") == "01/01/0001" ? "" : group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy"))
+                                 }) ; 
                 result.Data = inventory;
                 result.Message = "Inventario obtenido correctamente";
                 //result.Data = inventory;
@@ -149,43 +157,33 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var sizesById = this._sizeService.GetSizesAvailablesProductById(id);
+                var sizesById = this._sizeService.GetSizesAvailablesProductById(id).Data;
+                //validar si sizesById no viene nulo
 
+                
+                var product = this._productService.GetById(id).Data;
+
+                List<dynamic> colors = new List<dynamic>();
+                foreach (var item in sizesById)
+                {
+                    var inventoryColor = this._inventoryColorService.GetByIdInventory(item.idInventory).Data;// sizesById.Data.idInventory;
+                    colors.Add(inventoryColor);
+                    //Console.WriteLine(item);
+                }
                 var inventory = this._repository.GetEntities()
-                 .Join
-                 (
-                  this._inventorySizeRepository.GetEntities().Where(data => data.QUANTITY != 0),
-                  inventory => inventory.ID,
-                  inventorySize => inventorySize.FK_INVENTORY,
-                  (inventory, inventorySize) => new { inventory, inventorySize }
-                 )
-                 .Join
-                 (
-                  this._productRepository.GetEntities(),
-                  combined => combined.inventory.ID,
-                  product => product.ID,
-                  (combined, product) => new { combined.inventory, combined.inventorySize, product }
-                 )
-                 .Join
-                 (
-                 this._sizeRepository.GetEntities(),
-                 combined => combined.inventorySize.FK_INVENTORY,
-                 size => size.ID,
-                 (combined, size) => new { combined.inventory, combined.inventorySize, combined.product, size }
-                 )
-                  .Where(data => !data.inventory.REMOVED)
-                  .GroupBy(data => new { data.inventory.ID, data.product.NAME_PRODUCT, data.product.SALE_PRICE })
-                  .Select(group => new 
-                  {
-                      id = group.Key.ID,
-                      product_name = group.Key.NAME_PRODUCT,
-                      price = group.Key.SALE_PRICE,
-                      //last_replenishment = group.Max(s => s.inventory.LAST_REPLENISHMENT),
-                      quantity = group.Sum(g => g.inventorySize.QUANTITY),
-                      availableSizes = sizesById.Data
-                  });
-
-
+                                                .Where(data => 
+                                                data.FK_PRODUCT == id && !data.REMOVED && data.QUANTITY != 0)
+                                                .GroupBy(data=> new { data.FK_PRODUCT})
+                                                .Select(data => new 
+                                                {
+                                                    product,
+                                                    quantity = data.Sum(d=> d.QUANTITY),
+                                                    inventory = new
+                                                    {
+                                                         sizes = sizesById,
+                                                         colors
+                                                                                                   }
+                                                });
                 result.Data = inventory;
                 result.Message = "Obtenido correctamente";
             }

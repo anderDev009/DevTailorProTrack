@@ -9,5 +9,7 @@ namespace TailorProTrack.Application.Contracts
     {
         ServiceResult AddAndUpdateInventory(InventoryColorDtoAdd dtoAdd);
         ServiceResult GetQuantityTotalById(int id);
+
+        ServiceResult GetByIdInventory(int id);
     }
 }

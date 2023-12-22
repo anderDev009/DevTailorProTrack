@@ -21,6 +21,17 @@ namespace TailorProTrack.infraestructure.Repositories
             return entity.ID;
 
         }
+        public override void Remove(InventoryColor entity)
+        {
+            InventoryColor colorToRemove = this.GetEntity(entity.ID);
+
+            colorToRemove.MODIFIED_AT = DateTime.Now;
+            colorToRemove.REMOVED = true;
+            colorToRemove.USER_MOD = entity.USER_MOD;
+
+            this._context.Update(colorToRemove);
+            this._context.SaveChanges();    
+        }
         public override void Update(InventoryColor entity)
         {
             InventoryColor inventoryColor = this.GetEntity(entity.ID);
@@ -28,7 +39,7 @@ namespace TailorProTrack.infraestructure.Repositories
             inventoryColor.QUANTITY = entity.QUANTITY;
             inventoryColor.FK_COLOR_PRIMARY= entity.FK_COLOR_PRIMARY;
             inventoryColor.FK_COLOR_SECONDARY= entity.FK_COLOR_SECONDARY;
-            inventoryColor.MODIFIED_AT = entity.MODIFIED_AT;
+            inventoryColor.MODIFIED_AT = DateTime.Now;
             inventoryColor.USER_MOD = entity.USER_MOD;
 
 

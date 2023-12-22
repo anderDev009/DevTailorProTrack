@@ -1,5 +1,4 @@
-﻿
-namespace TailorProTrack.Application.Dtos.InventoryColor
+﻿namespace TailorProTrack.Application.Dtos.InventoryColor
 {
     public class InventoryColorDtoAdd : InventoryColorDtoBase
     {

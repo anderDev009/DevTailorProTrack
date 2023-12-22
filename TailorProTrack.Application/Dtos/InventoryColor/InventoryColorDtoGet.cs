@@ -1,11 +1,12 @@
 ﻿
-using TailorProTrack.Application.Dtos.Size;
 
 namespace TailorProTrack.Application.Dtos.InventoryColor
 {
-    public class InventoryColorDtoGet
+    public class InventoryColorDtoGet 
     {
-        public string product_name {  get; set; }
-        public List<SizeDtoGet> sizes { get; set; }
+        public object colorPrimary {  get; set; }
+        public object colorSecondary {  get; set; }
+        
+        public int quantity {  get; set; }
     }
 }

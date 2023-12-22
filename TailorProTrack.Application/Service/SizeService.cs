@@ -90,28 +90,35 @@ namespace TailorProTrack.Application.Service
             try
             {
                 var sizesAvailables = this._repository.GetEntities()
-                .Join
-                (
-                this._inventorySizeRepository.GetEntities().Where(data => data.QUANTITY > 0),
-                size => size.ID,
-                inventorySize => inventorySize.FK_INVENTORY,
-                (size, inventorySize) => new { size, inventorySize }
-                )
-                .Join
-                (
-                this._inventoryRepository.GetEntities().Where(data => data.ID == id),
-                combined => combined.inventorySize.FK_INVENTORY,
-                inventory => inventory.ID,
-                (combined, inventory) => new { combined.size, combined.inventorySize, inventory }
-                )
-                .Where(data => !data.size.REMOVED)
-                .GroupBy(data => new { data.size.ID, data.size.SIZE })
-                .Select(group => new
-                {
-                    id = group.Key.ID,
-                    size = group.Key.SIZE,
-                    quantity = group.Select(data => data.inventorySize.QUANTITY)
-                });
+                                                      .Join
+                                                      (
+                                                        this._inventoryRepository.GetEntities(),
+                                                        size => size.ID,
+                                                        inventory => inventory.FK_SIZE,
+                                                        (size,inventory) => new{ size, inventory }
+                                                      ).Where(data=> data.inventory.FK_PRODUCT == id)
+                                                      .GroupBy(data=> new {data.inventory.ID,data.size.SIZE, data.inventory.QUANTITY})
+                                                      .Select(group => new
+                                                      {
+                                                          idInventory = group.Key.ID,
+                                                          size = group.Key.SIZE,
+                                                          quantity = group.Key.QUANTITY
+                                                      });
+                //                .Join
+                //(
+                //this._inventoryRepository.GetEntities().Where(data => data.ID == id),
+                //combined => .FK_INVENTORY,
+                //inventory => inventory.ID,
+                //(combined, inventory) => new { combined.size, combined.inventorySize, inventory }
+                //)
+                //.Where(data => !data.size.REMOVED)
+                //.GroupBy(data => new { data.size.ID, data.size.SIZE })
+                //.Select(group => new
+                //{
+                //    id = group.Key.ID,
+                //    size = group.Key.SIZE,
+                //    quantity = group.Select(data => data.inventorySize.QUANTITY)
+                //});
                 result.Message = "Obtenido correctamente";
                 result.Data = sizesAvailables;
             }

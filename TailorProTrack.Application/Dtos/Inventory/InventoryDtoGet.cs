@@ -13,8 +13,8 @@ namespace TailorProTrack.Application.Dtos.Inventory
         public string? product_name { get; set; }
         public decimal price { get; set; }
         public int quantity { get; set; } 
-        public DateTime last_replenishment { get; set; }
+        public string last_replenishment { get; set; }
 
-        public string? availableSizes { get; set; }
+        public object? availableSizes { get; set; }
     }
 }

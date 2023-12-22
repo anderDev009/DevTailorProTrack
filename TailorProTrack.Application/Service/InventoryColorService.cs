@@ -14,16 +14,21 @@ namespace TailorProTrack.Application.Service
         private readonly IInventoryColorRepository _repository;
         private  readonly ILogger _logger;
 
+        //repositorio de color
+        private readonly IColorService _colorService;
+
         //repositorios
         //inventario 
         private readonly IInventoryRepository _inventoryRepository;
         public InventoryColorService(IInventoryColorRepository inventoryColorRepository,
                                      ILogger<IInventoryColorRepository> logger,
-                                     IInventoryRepository inventoryRepository)
+                                     IInventoryRepository inventoryRepository,
+                                     IColorService colorService)
         {
             this._repository = inventoryColorRepository;
             this._inventoryRepository = inventoryRepository;
             this._logger = logger;
+            this._colorService = colorService;
         }
 
         public ServiceResult Add(InventoryColorDtoAdd dtoAdd)
@@ -85,6 +90,31 @@ namespace TailorProTrack.Application.Service
             throw new NotImplementedException();
         }
 
+        public ServiceResult GetByIdInventory(int id)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                var colors = this._repository.GetEntities().Where(data => !data.REMOVED &&
+                                                                  data.FK_INVENTORY == id)
+
+                                                                  .Select(data => new InventoryColorDtoGet
+                                                                  {
+                                                                      colorPrimary = this._colorService.GetById(data.FK_COLOR_PRIMARY).Data,
+                                                                      colorSecondary = (data.FK_COLOR_SECONDARY.HasValue) ? this._colorService.GetById(data.FK_COLOR_SECONDARY.Value).Data : 0,
+                                                                      quantity = data.QUANTITY
+                                                                  }) ;
+
+                result.Data = colors;
+                result.Message = "Obtenidos con exito";
+            }catch(Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al obtener por el ID de inventario {ex}";
+            }
+            return result;
+        }
+
         public ServiceResult GetQuantityTotalById(int id)
         {
             ServiceResult result = new ServiceResult();
@@ -108,12 +138,44 @@ namespace TailorProTrack.Application.Service
 
         public ServiceResult Remove(InventoryColorDtoRemove dtoRemove)
         {
-            throw new NotImplementedException();
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                InventoryColor inventoryToRemove = new InventoryColor
+                {
+                    ID = dtoRemove.Id,
+                    USER_MOD = dtoRemove.User,
+                    MODIFIED_AT = dtoRemove.Date
+                };
+                this._repository.Remove(inventoryToRemove);
+            }catch(Exception ex)
+            {
+
+            }
+            return result;
         }
 
         public ServiceResult Update(InventoryColorDtoUpdate dtoUpdate)
         {
-            throw new NotImplementedException();
+            ServiceResult result = new ServiceResult();
+            try 
+            { 
+                InventoryColor inventoryToUpdate = new InventoryColor
+                {
+                    ID = dtoUpdate.Id,
+                    FK_COLOR_PRIMARY = dtoUpdate.fk_color_primary,
+                    FK_COLOR_SECONDARY = dtoUpdate.fk_color_secondary,
+                    USER_MOD = dtoUpdate.User
+                };
+
+                this._repository.Update(inventoryToUpdate);
+                result.Message = "Actualizado con exito";
+            }catch(Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al intentar actualizarlo {ex}";
+            }
+            return result;
         }
     }
 }
