@@ -16,7 +16,7 @@ namespace TailorProTrack.infraestructure.Core
 
         public virtual  bool Exists(Expression<Func<T, bool>> filter)
         {
-            return this._entities.Any();
+            return this._entities.Any(filter);
         }
 
         public virtual List<T> FindAll(Expression<Func<T, bool>> filter)

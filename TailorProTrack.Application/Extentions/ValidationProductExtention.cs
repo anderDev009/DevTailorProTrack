@@ -14,7 +14,7 @@ namespace TailorProTrack.Application.Extentions
         public static ServiceResult IsProductValid(this BaseProduct productDto, IConfiguration configuration, ITypeProdRepository typeProdRep)
         {
             ServiceResult result = new ServiceResult();
-
+            result.Success = false;
 
             //campo nombre de producto
             if (string.IsNullOrEmpty(productDto.name_prod))
@@ -33,8 +33,13 @@ namespace TailorProTrack.Application.Extentions
                 throw new ProductServiceException(configuration["validations:numberLessZero"]);
             }
             //campo fk type
-            //if (typeProdRep.)
-                return result;
+            if (!typeProdRep.Exists(type => type.ID == productDto.fk_type))
+            {
+                throw new ProductServiceException(configuration["validations:typeDoesntExist"]);
+            }
+            
+            result.Success = true;
+            return result;
         }
     }
 }

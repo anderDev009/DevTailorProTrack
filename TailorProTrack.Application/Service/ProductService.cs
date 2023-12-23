@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Product;
+using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 using TailorProTrack.infraestructure.Repositories;
@@ -28,8 +29,15 @@ namespace TailorProTrack.Application.Service
         public ServiceResult Add(ProductDtoAdd dtoAdd)
         {
             ServiceResult result = new ServiceResult();
+
             try
             {
+                result = dtoAdd.IsProductValid(this.Configuration, this._repositoryType);
+
+                if (!result.Success)
+                {
+                    return result;
+                }
                 Product product = new Product()
                 {
                     NAME_PRODUCT = dtoAdd.name_prod,
