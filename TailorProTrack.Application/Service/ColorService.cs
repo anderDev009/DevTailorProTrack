@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Color;
+using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 
@@ -12,17 +14,27 @@ namespace TailorProTrack.Application.Service
         private readonly IColorRepository _repository;
         private readonly ILogger logger;
 
-        public ColorService(IColorRepository colorRepository, ILogger<IColorRepository> logger)
+        public ColorService(IColorRepository colorRepository, ILogger<IColorRepository> logger,
+                            IConfiguration configuration)
         {
             this._repository = colorRepository;
             this.logger = logger;
+            Configuration = configuration;
         }
 
+        private IConfiguration Configuration { get; set; }
         public ServiceResult Add(ColorDtoAdd dtoAdd)
         {
             ServiceResult result = new ServiceResult();
             try
             {
+                result = dtoAdd.IsColorValid(this.Configuration);
+
+                if (!result.Success)
+                {
+                    return result;
+                }
+
                 Color colorToAdd = new Color();
 
                 colorToAdd.COLORNAME = dtoAdd.colorname;

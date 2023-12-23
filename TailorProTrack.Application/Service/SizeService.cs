@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Size;
+using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 using TailorProTrack.infraestructure.Repositories;
@@ -36,9 +37,17 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
+                //validaciones
+                result = dtoAdd.IsSizeValid(this.configuration);
+
+                if (!result.Success)
+                {
+                    return result;
+                }
+                //codigo de registrar un size 
                 Size size = new Size
                 {
-                    CREATED_AT = dtoAdd.Date,
+                    CREATED_AT = dtoAdd.Date,   
                     USER_CREATED = dtoAdd.User,
                     SIZE = dtoAdd.size
                 };

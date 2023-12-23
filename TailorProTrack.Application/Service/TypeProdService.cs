@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.TypeProd;
+using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 
@@ -17,17 +19,27 @@ namespace TailorProTrack.Application.Service
         private readonly ITypeProdRepository _repository;
         private readonly ILogger logger;
 
-        public TypeProdService(ITypeProdRepository repository,ILogger<ITypeProdRepository> logger)
+        public TypeProdService(ITypeProdRepository repository,ILogger<ITypeProdRepository> logger,
+                               IConfiguration configuration)
         {
             this._repository = repository;
             this.logger = logger;
+            Configuration = configuration;
         }
 
+        private IConfiguration Configuration { get; }
         public ServiceResult Add(TypeProdDtoAdd dtoAdd)
         {
             ServiceResult result = new ServiceResult(); 
             try 
             {
+                result = dtoAdd.IsTypeProdValid(this.Configuration);
+
+                if (!result.Success)
+                {
+                    return result;
+                } 
+
                 Type_prod type = new Type_prod
                 {
                     TYPE_PROD = dtoAdd.typeProd,
