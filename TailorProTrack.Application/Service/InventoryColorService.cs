@@ -1,9 +1,11 @@
 ﻿
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.InventoryColor;
+using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 
@@ -14,29 +16,39 @@ namespace TailorProTrack.Application.Service
         private readonly IInventoryColorRepository _repository;
         private  readonly ILogger _logger;
 
-        //repositorio de color
+        //service de color
         private readonly IColorService _colorService;
 
         //repositorios
+        //color
+        private readonly IColorRepository _colorRepository;
         //inventario 
         private readonly IInventoryRepository _inventoryRepository;
         public InventoryColorService(IInventoryColorRepository inventoryColorRepository,
                                      ILogger<IInventoryColorRepository> logger,
                                      IInventoryRepository inventoryRepository,
-                                     IColorService colorService)
+                                     IColorService colorService,
+                                     IColorRepository colorRepository,
+                                     IConfiguration configuration)
         {
             this._repository = inventoryColorRepository;
             this._inventoryRepository = inventoryRepository;
             this._logger = logger;
             this._colorService = colorService;
+            _colorRepository = colorRepository;
+            this.configuration = configuration;
         }
 
+        private  IConfiguration configuration { get; }
         public ServiceResult Add(InventoryColorDtoAdd dtoAdd)
         {
             ServiceResult result = new ServiceResult();
             try
             {
-               
+
+                //validaciones
+                dtoAdd.IsValid(this.configuration, this._inventoryRepository, this._colorRepository);
+                //codigo para agregar
                 InventoryColor inventoryColor = new InventoryColor
                 {
                     FK_INVENTORY = dtoAdd.fk_inventory,

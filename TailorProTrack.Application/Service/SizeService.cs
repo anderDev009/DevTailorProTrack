@@ -27,6 +27,7 @@ namespace TailorProTrack.Application.Service
             this.logger = logger;
             this._inventoryRepository = inventoryRepository;
             this._inventorySizeRepository = inventorySizeRepository;
+            this.configuration = configuration;
         }
         private  IConfiguration configuration { get; }
 
@@ -38,7 +39,7 @@ namespace TailorProTrack.Application.Service
             try
             {
                 //validaciones
-                result = dtoAdd.IsSizeValid(this.configuration);
+                dtoAdd.IsSizeValid(this.configuration);
 
                 if (!result.Success)
                 {
@@ -56,7 +57,7 @@ namespace TailorProTrack.Application.Service
             }catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = $"Error al intentar registrar el size: {ex}";
+                result.Message = $"Error al intentar registrar el size: {ex.Message}";
             }
             return result;
         }

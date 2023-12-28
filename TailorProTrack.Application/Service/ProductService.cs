@@ -158,21 +158,22 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public ServiceResult Update(ProductDtoUpdate dtoUpdate)
+        public ServiceResult Update(ProductDtoUpdate dtoUpdate) 
         {
             ServiceResult result = new ServiceResult();
             try
             {
                 Product product = new Product()
                 {
+                    ID = dtoUpdate.Id,
                     SALE_PRICE = dtoUpdate.sale_price,
                     NAME_PRODUCT = dtoUpdate.name_prod,
                     DESCRIPTION_PRODUCT = dtoUpdate.description,
-                    FK_TYPE = dtoUpdate.fk_type,
+                    FK_TYPE  = dtoUpdate.fk_type,
                     USER_CREATED = dtoUpdate.User,
                     CREATED_AT = dtoUpdate.Date
                 };
-                this._repository.Remove(product);
+                this._repository.Update(product);
                 result.Message = "Actualizado con exito";
             }
             catch (Exception ex)

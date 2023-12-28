@@ -7,6 +7,7 @@ using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Color;
 using TailorProTrack.Application.Dtos.Inventory;
 using TailorProTrack.Application.Dtos.InventoryColor;
+using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 using TailorProTrack.infraestructure.Repositories;
@@ -56,8 +57,9 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-
-
+                //validaciones
+                dtoAdd.IsValid(this.Configuration, this._productRepository, this._sizeRepository);
+                //codigo para agregar
                 Inventory inventory = new Inventory
                 {
                     ID = 0,

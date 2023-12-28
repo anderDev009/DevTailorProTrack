@@ -17,6 +17,8 @@ builder.Services.AddInventoryDependencies();
 builder.Services.AddSizeDependencies();
 //dependencias de color
 builder.Services.AddColorDependencies();
+//dependencias de cliente
+builder.Services.AddClientDependencies();
 // Add services to the container.
 builder.Services.AddCors(options =>
 {

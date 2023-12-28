@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 namespace TailorProTrack.infraestructure.Core
 {
     public interface IBaseRepository<T> where T : class
-    {
+    {       
         void Remove(T entity);
         void Update(T entity);  
         int Save(T entity);

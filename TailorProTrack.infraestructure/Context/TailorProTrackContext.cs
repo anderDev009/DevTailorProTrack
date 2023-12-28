@@ -23,5 +23,6 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<Inventory> INVENTORY { get; set; }
         public DbSet<InventoryColor> INVENTORY_COLOR { get; set; }
         public DbSet<Color> COLOR {  get; set; } 
+        public DbSet<Client> CLIENT { get; set; }
     }
 }
