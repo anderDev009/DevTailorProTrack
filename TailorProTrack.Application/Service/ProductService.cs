@@ -184,5 +184,20 @@ namespace TailorProTrack.Application.Service
 
             return result;
         }
+
+        public Decimal GetPrice(int id)
+        {
+            decimal price;
+            try
+            {
+                 price = this._repository.GetEntities().Where(d => d.ID == id)
+                                                              .Select(data => data.SALE_PRICE)
+                                                             .Single();
+            }catch (Exception ex) 
+            {
+                price = 0;
+            }
+            return price;
+        }
     }
 }

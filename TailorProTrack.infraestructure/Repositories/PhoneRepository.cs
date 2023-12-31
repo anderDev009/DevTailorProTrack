@@ -47,5 +47,26 @@ namespace TailorProTrack.infraestructure.Repositories
 
             this._context.Update(phoneToRemove);
         }
+
+        public void SaveMany(List<Phone> phones)
+        {
+            DateTime now = DateTime.Now;
+            foreach(Phone item in phones)
+            {
+                item.CREATED_AT = now;
+                var newPhone = new Phone 
+                {
+                    FK_CLIENT = item.FK_CLIENT,
+                    NUMBER = item.NUMBER,
+                    TYPE = item.TYPE,
+                    USER_CREATED = item.USER_CREATED,
+                    CREATED_AT = now
+                };
+
+                this._context.Add(newPhone);
+            }
+
+            this._context.SaveChanges();
+        }
     }
 }

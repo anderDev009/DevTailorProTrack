@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
@@ -14,12 +15,22 @@ namespace TailorProTrack.Application.Service
 
         private readonly IClientRepository _repository;
         private readonly ILogger logger;
-        public ClientService(IClientRepository repository,ILogger<IClientRepository> logger)
+        //servicio de Phone
+        private readonly IPhoneService _phoneService;
+
+        //repositorios
+        public ClientService(IClientRepository repository,
+                            ILogger<IClientRepository> logger,
+                            IConfiguration configuration,
+                            IPhoneService phoneService)
         {
             this._repository = repository;
             this.logger = logger;
+            this._phoneService = phoneService;
+            Configuration = configuration;
         }
 
+        private IConfiguration Configuration { get; }
         public ServiceResult Add(ClientDtoAdd dtoAdd)
         {
             ServiceResult result = new ServiceResult();
@@ -34,9 +45,13 @@ namespace TailorProTrack.Application.Service
                     DNI = dtoAdd.Dni,
                     RNC = dtoAdd.Rnc
                 };
+
                 //agregando el cliente
                 int id = this._repository.Save(clientToAdd);
-                result.Data = id;
+                //agregando los telefonos
+                //agregar logica en caso de que falle 
+                result.Data = this._phoneService.AddMany(dtoAdd.phonesClient, id);
+                //result.Data = id;
                 result.Message = "Cliente registrado correctamente.";
             }catch(Exception ex) 
             {
@@ -53,7 +68,18 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var clients = this._repository.GetEntities().Where(data => !data.REMOVED).ToList();
+                var clients = this._repository.GetEntities()
+                                              .Where(data => !data.REMOVED)
+                                              .Select(data => new ClientDtoGet
+                                              {
+                                                  Id = data.ID,
+                                                  F_name = data.FIRST_NAME,
+                                                  L_name = data.LAST_NAME,
+                                                  F_surname = data.FIRST_SURNAME,
+                                                  L_surname = data.LAST_SURNAME,
+                                                  Dni = data.DNI,
+                                                  RNC = data.RNC,
+                                              }).ToList();
                 result.Data = clients;
                 result.Message = "Cliente obtenidos correctamente.";
             }
@@ -72,7 +98,19 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var client = this._repository.GetEntity(id);
+                var client = this._repository.GetEntities()
+                                             .Where(data=> !data.REMOVED && data.ID == id)
+                                             .Select(data => new ClientDtoGetDetails
+                                             {
+                                                 Id = data.ID,
+                                                 F_name = data.FIRST_NAME,
+                                                 L_name = data.LAST_NAME,
+                                                 F_surname = data.FIRST_SURNAME,
+                                                 L_surname = data.LAST_SURNAME,
+                                                 RNC = data.RNC,
+                                                 Dni = data.DNI,
+                                                 phones = this._phoneService.GetPhonesByIdClient(data.ID).Data
+                                             });
                 result.Data = client;
                 result.Message = "Cliente obtenido correctamente.";
             }

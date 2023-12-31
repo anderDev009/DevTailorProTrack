@@ -47,5 +47,14 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             return base.Exists(filter);
         }
+
+        public void UpdateLastReplenishment(int id)
+        {
+            Product product = this.GetEntity(id);
+
+            product.LAST_REPLENISHMENT = DateTime.Now;
+            this._context.Update(product);
+            this._context.SaveChanges();
+        }
     }
 }

@@ -6,5 +6,6 @@ namespace TailorProTrack.Application.Contracts
 {
     public interface IProductService : IBaseService<ProductDtoAdd,ProductDtoRemove,ProductDtoUpdate>
     {
+        Decimal GetPrice(int id);
     }
 }

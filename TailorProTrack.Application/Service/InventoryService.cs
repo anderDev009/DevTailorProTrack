@@ -77,6 +77,8 @@ namespace TailorProTrack.Application.Service
                     this._inventoryColorService.Add(color);
                     result.Data = color;
                 });
+                //actualizando la ultima actualizacion del producto
+                this._productRepository.UpdateLastReplenishment(dtoAdd.fk_product);
                 result.Message = "Registrado con exito";
             }
             catch (Exception ex)

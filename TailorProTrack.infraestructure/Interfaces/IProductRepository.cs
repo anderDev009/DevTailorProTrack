@@ -10,5 +10,6 @@ namespace TailorProTrack.infraestructure.Interfaces
 {
     public interface IProductRepository : IBaseRepository<Product>
     {
+        void UpdateLastReplenishment(int id);
     }
 }

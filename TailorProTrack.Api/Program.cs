@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 //dependencias
+//cadena de conexion
 builder.Services.AddDbContext<TailorProTrackContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("TailorProTrackContext")));
 //dependencias de productos
 builder.Services.AddProductDependencies();
@@ -19,6 +20,10 @@ builder.Services.AddSizeDependencies();
 builder.Services.AddColorDependencies();
 //dependencias de cliente
 builder.Services.AddClientDependencies();
+//dependencias de phone
+builder.Services.AddPhoneDependencies();
+//dependencias de order
+builder.Services.AddOrderDependencies();
 // Add services to the container.
 builder.Services.AddCors(options =>
 {

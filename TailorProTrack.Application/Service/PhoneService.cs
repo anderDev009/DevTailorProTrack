@@ -30,6 +30,7 @@ namespace TailorProTrack.Application.Service
                     NUMBER = dtoAdd.number,
                     USER_CREATED = dtoAdd.User,
                     TYPE = dtoAdd.type,
+                    FK_CLIENT = dtoAdd.fk_client
                 };
 
                 this._repository.Save(phoneToAdd);
@@ -40,6 +41,37 @@ namespace TailorProTrack.Application.Service
                 result.Message = $"Error al intentar registrar el telefono {ex.Message}";
             }
     
+            return result;
+        }
+
+        public ServiceResult AddMany(List<PhoneDtoAdd> dtoAdds, int fkClient)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+
+                //codigo para agregar
+                List<Phone> phonesToAdd = new List<Phone>();
+                foreach(var item in dtoAdds)
+                {
+                    phonesToAdd.Add(
+                    new Phone
+                    {
+                        FK_CLIENT = fkClient,
+                        NUMBER = item.number,
+                        TYPE = item.type,
+                        USER_CREATED = item.User
+                    });
+                }
+                this._repository.SaveMany(phonesToAdd);
+
+                result.Message = "Guardados con exito";
+            }catch(Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al intentar agregarlos todos: {ex.Message}";
+            }
+
             return result;
         }
 
@@ -78,6 +110,31 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult GetPhonesByIdClient(int id)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                var phones = this._repository.GetEntities()
+                                .Where(data => data.FK_CLIENT == id)
+                                .Select(data => new PhoneDtoGetByClient
+                                {
+                                    Id = data.ID,
+                                    type = data.TYPE,
+                                    number = data.NUMBER
+                                })
+                                .ToList();
+                result.Data = phones;
+                result.Message = "Obtenidos con exito.";
+            }catch(Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al obtenerlos por el id del cliente: {ex.Message}";
+            }
+
+            return result;
+        }
+
         public ServiceResult Remove(PhoneDtoRemove dtoRemove)
         {
             ServiceResult result = new ServiceResult();
@@ -109,7 +166,8 @@ namespace TailorProTrack.Application.Service
                     ID = dtoUpdate.Id,
                     USER_MOD = dtoUpdate.User,
                     TYPE = dtoUpdate.type,
-                    NUMBER = dtoUpdate.number
+                    NUMBER = dtoUpdate.number,
+                    FK_CLIENT = dtoUpdate.fk_client
                 };
 
                 this._repository.Update(phoneToUpdate);

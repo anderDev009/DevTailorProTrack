@@ -24,17 +24,21 @@ namespace TailorProTrack.Application.Service
         private readonly IColorRepository _colorRepository;
         //inventario 
         private readonly IInventoryRepository _inventoryRepository;
+        //producto
+        private readonly IProductRepository _productRepository;
         public InventoryColorService(IInventoryColorRepository inventoryColorRepository,
                                      ILogger<IInventoryColorRepository> logger,
                                      IInventoryRepository inventoryRepository,
                                      IColorService colorService,
                                      IColorRepository colorRepository,
+                                     IProductRepository productRepository,
                                      IConfiguration configuration)
         {
             this._repository = inventoryColorRepository;
             this._inventoryRepository = inventoryRepository;
             this._logger = logger;
             this._colorService = colorService;
+            _productRepository = productRepository;
             _colorRepository = colorRepository;
             this.configuration = configuration;
         }
@@ -81,6 +85,8 @@ namespace TailorProTrack.Application.Service
                 Inventory inventory = this._inventoryRepository.GetEntity(dtoAdd.fk_inventory);
                 inventory.QUANTITY = this.GetQuantityTotalById(dtoAdd.fk_inventory).Data ;
                 this._inventoryRepository.Update(inventory);
+                //actualizando el producto
+                this._productRepository.UpdateLastReplenishment(inventory.FK_PRODUCT);
                 //enviando el mensaje
                 result.Message = "Insertado con exito";
                 result.Data = id;
@@ -177,10 +183,24 @@ namespace TailorProTrack.Application.Service
                     ID = dtoUpdate.Id,
                     FK_COLOR_PRIMARY = dtoUpdate.fk_color_primary,
                     FK_COLOR_SECONDARY = dtoUpdate.fk_color_secondary,
-                    USER_MOD = dtoUpdate.User
+                    USER_MOD = dtoUpdate.User,
+                    QUANTITY = dtoUpdate.quantity,
                 };
-
+                //actualizando inventory color
                 this._repository.Update(inventoryToUpdate);
+
+                //actualizando inventario
+                Inventory inventory = this._inventoryRepository.GetEntity(dtoUpdate.fk_inventory);
+                int newQuantity = this.GetQuantityTotalById(dtoUpdate.fk_inventory).Data;
+                inventory.QUANTITY = newQuantity;
+                this._inventoryRepository.Update(inventory);
+
+                //actualizando producto en caso de que la cantidad aumente
+                if (newQuantity > inventory.QUANTITY)
+                {
+                    this._productRepository.UpdateLastReplenishment(inventory.FK_PRODUCT);
+                }
+
                 result.Message = "Actualizado con exito";
             }catch(Exception ex)
             {

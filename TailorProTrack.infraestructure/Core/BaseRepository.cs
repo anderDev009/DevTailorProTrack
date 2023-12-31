@@ -7,7 +7,7 @@ namespace TailorProTrack.infraestructure.Core
     public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         private readonly TailorProTrackContext _context;
-        private DbSet<T> _entities;
+        protected DbSet<T> _entities;
         public BaseRepository(TailorProTrackContext ctx) 
         {
             this._context = ctx;

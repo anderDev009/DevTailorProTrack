@@ -1,21 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TailorProTrack.domain.Entities;
 
 namespace TailorProTrack.infraestructure.Context
 {
+   
     public class TailorProTrackContext : DbContext
     {
         public TailorProTrackContext(DbContextOptions options) : base(options) { }
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<InventoryColor>().HasNoKey();
-        //}
 
         public DbSet<Product> PRODUCT { get; set; }
         public DbSet<Type_prod> TYPE_PROD { get; set; }
@@ -24,5 +16,8 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<InventoryColor> INVENTORY_COLOR { get; set; }
         public DbSet<Color> COLOR {  get; set; } 
         public DbSet<Client> CLIENT { get; set; }
+        public DbSet<Phone> PHONE { get; set; } 
+        public DbSet<Order> ORDERS { get; set; }
+        public DbSet<OrderProduct> ORDER_PRODUCTS { get; set; }
     }
 }
