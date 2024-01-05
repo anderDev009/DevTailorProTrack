@@ -32,10 +32,34 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
-        [HttpGet("GetProduct")]
+
+
+        [HttpGet("GetInventoryById")]
+        public IActionResult GetInventory(int id)
+        {
+            var result = this._inventoryService.GetInventoryById(id);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("GetProductByProductId")]
         public IActionResult Get(int id)
         {
             var result = this._inventoryService.GetById(id);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("GetInventoryColorByIdInventory")]
+        public IActionResult GetInventoryColor(int id)
+        {
+            var result = this._inventoryColorService.GetByIdInventory(id);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -57,6 +81,61 @@ namespace TailorProTrack.Api.Controllers
         public ActionResult Add([FromBody] InventoryColorDtoAdd inventoryDtoAdd)
         {
             var result = this._inventoryColorService.AddAndUpdateInventory(inventoryDtoAdd);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        //[HttpGet("GetInventoryColorDetailsByIdInventory")]
+        //public ActionResult GetDetails(int id)
+        //{
+        //    var result = this._inventoryColorService.GetById(id);
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(result);
+        //    }
+        //    return Ok(result);
+        //}
+
+        [HttpPut("UpdateInventory")]
+        public ActionResult Update([FromBody] InventoryDtoUpdate inventoryDtoUpdate)
+        {
+            var result = this._inventoryService.Update(inventoryDtoUpdate);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpPut("UpdateInventoryColor")]
+        public ActionResult UpdateInventoryColor([FromBody] InventoryColorDtoUpdate inventoryColorDtoUpdate)
+        {
+            var result = this._inventoryColorService.Update(inventoryColorDtoUpdate);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpDelete("RemoveInventory")]
+        public ActionResult RemoveInventory([FromBody] InventoryDtoRemove inventoryDtoRemove)
+        {
+            var result = this._inventoryService.Remove(inventoryDtoRemove);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpDelete("RemoveInventoryColor")]
+        public ActionResult RemoveInventoryColor([FromBody] InventoryColorDtoRemove inventoryColorDtoRemove)
+        {
+            var result = this._inventoryColorService.Remove(inventoryColorDtoRemove);
             if (!result.Success)
             {
                 return BadRequest(result);

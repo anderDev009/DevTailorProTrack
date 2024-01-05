@@ -10,5 +10,8 @@ namespace TailorProTrack.Application.Contracts
 {
     public interface IInventoryService : IBaseService<InventoryDtoAdd, InventoryDtoRemove,InventoryDtoUpdate>
     {
+        decimal GetPriceProductByInventoryId(int inventoryId);
+
+        ServiceResult GetInventoryById(int inventoryId);
     }
 }

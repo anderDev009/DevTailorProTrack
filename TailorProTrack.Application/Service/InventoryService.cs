@@ -1,17 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore.Update;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
-using TailorProTrack.Application.Dtos.Color;
 using TailorProTrack.Application.Dtos.Inventory;
-using TailorProTrack.Application.Dtos.InventoryColor;
 using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
-using TailorProTrack.infraestructure.Repositories;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TailorProTrack.Application.Service
 {
@@ -200,6 +195,54 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult GetInventoryById(int inventoryId)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                var inventory = this._repository.GetEntities().Where(d => !d.REMOVED && d.ID == inventoryId)
+                                                .Join
+                                                (
+                                                    this._productRepository.GetEntities().Select(d => new { d.ID, d.NAME_PRODUCT }),
+                                                    inventory => inventory.FK_PRODUCT,
+                                                    product => product.ID,
+                                                    (inventory, product) => new { inventory, product }
+                                                )
+                                                .Join
+                                                (
+                                                    this._sizeRepository.GetEntities().Select(d => new { d.ID, d.SIZE }),
+                                                    combined => combined.inventory.FK_SIZE,
+                                                    size => size.ID,
+                                                    (combined, size) => new { combined.inventory, combined.product, size }
+                                                )
+                                                .Select(data => new
+                                                {
+                                                    IdInventory = data.inventory.ID,
+                                                    IdProduct = data.product.ID,
+                                                    NameProduct = data.product.NAME_PRODUCT,
+                                                    Size = data.size.SIZE,
+                                                    //no actualizable directamente
+                                                    Quantity = data.inventory.QUANTITY
+                                                });
+
+                result.Data = inventory;
+                result.Message = "Inventario obtenido correctamente.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error obteniendo el inventario: {ex.Message}";
+            }
+            return result;
+        }
+
+        public decimal GetPriceProductByInventoryId(int inventoryId)
+        {
+            int id = this._inventoryColorService.GetIdInventory(inventoryId);
+            Inventory inventory = this._repository.GetEntity(id);
+            return this._productService.GetPrice(inventory.FK_PRODUCT);
+        }
+
         public ServiceResult Remove(InventoryDtoRemove dtoRemove)
         {
             ServiceResult result = new ServiceResult();
@@ -224,7 +267,24 @@ namespace TailorProTrack.Application.Service
 
         public ServiceResult Update(InventoryDtoUpdate dtoUpdate)
         {
-            throw new NotImplementedException();
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                Inventory inventory = new Inventory
+                {
+                    ID = dtoUpdate.Id,
+                    FK_PRODUCT = dtoUpdate.fk_product,
+                    FK_SIZE = dtoUpdate.fk_size,
+                    MODIFIED_AT = dtoUpdate.Date,
+                    USER_MOD = dtoUpdate.User
+                };
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al actualizar: {ex.Message}";
+            }
+            return result;
         }
     }
 }

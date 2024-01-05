@@ -25,10 +25,10 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public override void Update(OrderProduct entity)
         {
-            OrderProduct orderP = this.GetByForeignKeys(entity.FK_ORDER, entity.FK_PRODUCT);
+            OrderProduct orderP = this.GetByForeignKeys(entity.FK_ORDER, entity.FK_INVENTORYCOLOR);
             orderP.QUANTITY = entity.QUANTITY;
             orderP.FK_ORDER = entity.FK_ORDER;
-            orderP.FK_PRODUCT = entity.FK_PRODUCT;
+            orderP.FK_INVENTORYCOLOR = entity.FK_INVENTORYCOLOR;
 
             this._context.Update(orderP);
             this._context.SaveChanges();
@@ -36,14 +36,14 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public override void Remove(OrderProduct entity)
         {
-            OrderProduct orderP = this.GetByForeignKeys(entity.FK_ORDER, entity.FK_PRODUCT);
+            OrderProduct orderP = this.GetEntity(entity.ID);
             this._context.Remove(orderP);
         }
 
         public OrderProduct GetByForeignKeys(int idOrder, int idProduct)
         {
             return this._entities
-                                  .Where(data => data.FK_PRODUCT == idOrder &&
+                                  .Where(data => data.FK_INVENTORYCOLOR == idOrder &&
                                          data.FK_ORDER == idProduct)
                                   .Single();
 

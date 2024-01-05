@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TailorProTrack.domain.Entities;
+using TailorProTrack.infraestructure.Repositories;
 
 namespace TailorProTrack.infraestructure.Context
 {

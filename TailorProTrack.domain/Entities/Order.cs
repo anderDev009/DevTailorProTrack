@@ -10,5 +10,8 @@ namespace TailorProTrack.domain.Entities
         public int FK_CLIENT { get; set; }
         public bool CHECKED { get; set; }
         public decimal AMOUNT { get; set; }
+
+        public string DESCRIPTION_JOB {  get; set; }
+        public string? STATUS_ORDER { get; set; }
     }
 }

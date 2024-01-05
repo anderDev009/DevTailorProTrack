@@ -1,5 +1,4 @@
 ﻿
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -36,6 +35,7 @@ namespace TailorProTrack.infraestructure.Repositories
             order.FK_USER = entity.FK_USER;
             order.MODIFIED_AT = DateTime.Now;
             order.USER_MOD = entity.USER_MOD;
+            order.DESCRIPTION_JOB = entity.DESCRIPTION_JOB;
 
             this._context.Update(order);
             this._context.SaveChanges();
@@ -47,6 +47,30 @@ namespace TailorProTrack.infraestructure.Repositories
 
             order.REMOVED = true;
             this._context.Update(order);
+            this._context.SaveChanges();
+        }
+
+        public void UpdateAmount(Order order)
+        {
+            Order orderToUpdate = this.GetEntity(order.ID);
+
+            //actualizando el monto
+            orderToUpdate.AMOUNT = order.AMOUNT;
+
+            this._context.Update(orderToUpdate);
+            this._context.SaveChanges();
+        }
+
+        public void UpdateStatusOrder(Order order)
+        {
+            Order orderToUpdate = this.GetEntity(order.ID);
+            //validarlo luego
+            if (orderToUpdate == null) throw new Exception("No existe");
+            orderToUpdate.STATUS_ORDER = order.STATUS_ORDER;
+            orderToUpdate.USER_MOD = order.USER_MOD;
+            orderToUpdate.MODIFIED_AT = DateTime.Now;
+
+            this._context.Update(orderToUpdate);
             this._context.SaveChanges();
         }
     }

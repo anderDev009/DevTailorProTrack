@@ -11,10 +11,11 @@ namespace TailorProTrack.Ioc.Dependencies
     {
         public static void AddOrderDependencies(this IServiceCollection service)
         {
+            //repositorios
             service.AddScoped<IOrderRepository,OrderRepository>();
             service.AddScoped<IOrderProductRepository,OrderProductRepository>();
 
-
+            //servicios
             service.AddTransient<IOrderService,OrderService>();
             service.AddTransient<IOrderProductService,OrderProductService>();
         }

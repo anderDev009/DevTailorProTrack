@@ -10,5 +10,6 @@ namespace TailorProTrack.Application.Contracts
                                                         ,OrderProductDtoUpdate>
     {
         ServiceResult AddMany(List<OrderProductDtoAdd> products, int idOrder);
+        ServiceResult GetQuantityByOrderId(int idOrder);
     }
 }

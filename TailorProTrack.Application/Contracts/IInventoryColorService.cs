@@ -11,5 +11,7 @@ namespace TailorProTrack.Application.Contracts
         ServiceResult GetQuantityTotalById(int id);
 
         ServiceResult GetByIdInventory(int id);
+
+        int GetIdInventory(int inventoryColorId);
     }
 }

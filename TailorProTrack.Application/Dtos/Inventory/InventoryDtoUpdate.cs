@@ -8,7 +8,6 @@ namespace TailorProTrack.Application.Dtos.Inventory
 {
     public class InventoryDtoUpdate : InventoryBaseDto
     {
-        public int quantity { get; set; }
 
     }
 }

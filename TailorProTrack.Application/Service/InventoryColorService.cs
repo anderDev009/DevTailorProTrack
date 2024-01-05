@@ -18,7 +18,6 @@ namespace TailorProTrack.Application.Service
 
         //service de color
         private readonly IColorService _colorService;
-
         //repositorios
         //color
         private readonly IColorRepository _colorRepository;
@@ -100,12 +99,37 @@ namespace TailorProTrack.Application.Service
 
         public ServiceResult GetAll()
         {
-            throw new NotImplementedException();
+            ServiceResult result = new ServiceResult();
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al obtener el detalle de inventario {ex.Message}";
+                throw;
+            }
+            return result;
         }
 
         public ServiceResult GetById(int id)
         {
-            throw new NotImplementedException();
+            ServiceResult result = new ServiceResult();
+            try
+            {
+              
+
+                //result.Data = inventoryDetail;
+                result.Message = "Obtenidos correctamente.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al obtener el detalle de inventario {ex.Message}";
+                throw;
+            }
+            return result;
         }
 
         public ServiceResult GetByIdInventory(int id)
@@ -115,12 +139,13 @@ namespace TailorProTrack.Application.Service
             {
                 var colors = this._repository.GetEntities().Where(data => !data.REMOVED &&
                                                                   data.FK_INVENTORY == id)
-
-                                                                  .Select(data => new InventoryColorDtoGet
+                                                                   .Select(data => new InventoryColorDtoGet
                                                                   {
-                                                                      colorPrimary = this._colorService.GetById(data.FK_COLOR_PRIMARY).Data,
-                                                                      colorSecondary = (data.FK_COLOR_SECONDARY.HasValue) ? this._colorService.GetById(data.FK_COLOR_SECONDARY.Value).Data : 0,
-                                                                      quantity = data.QUANTITY
+                                                                       InventoryColorId = data.ID,
+                                                                       FkInventory = data.FK_INVENTORY,
+                                                                       colorPrimary = this._colorService.GetById(data.FK_COLOR_PRIMARY).Data,
+                                                                       colorSecondary = (data.FK_COLOR_SECONDARY.HasValue) ? this._colorService.GetById(data.FK_COLOR_SECONDARY.Value).Data : 0,
+                                                                       quantity = data.QUANTITY
                                                                   }) ;
 
                 result.Data = colors;
@@ -131,6 +156,12 @@ namespace TailorProTrack.Application.Service
                 result.Message = $"Error al obtener por el ID de inventario {ex}";
             }
             return result;
+        }
+
+        public int GetIdInventory(int inventoryColorId)
+        {
+            InventoryColor inventoryColor = this._repository.GetEntity(inventoryColorId);
+            return inventoryColor.FK_INVENTORY;
         }
 
         public ServiceResult GetQuantityTotalById(int id)
@@ -168,7 +199,8 @@ namespace TailorProTrack.Application.Service
                 this._repository.Remove(inventoryToRemove);
             }catch(Exception ex)
             {
-
+                result.Success = false;
+                result.Message = $"Error al intentar removerlo {ex.Message}.";
             }
             return result;
         }
