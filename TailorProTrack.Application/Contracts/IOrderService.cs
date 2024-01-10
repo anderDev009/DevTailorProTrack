@@ -10,5 +10,6 @@ namespace TailorProTrack.Application.Contracts
         ServiceResult GetOrderJobs();
         ServiceResult UpdateStatusOrder(OrderDtoUpdateStatus dtoUpdate);
         ServiceResult GetOrder(int Id);
+        ServiceResult GetAmountTotalById(int Id);
     }
 }

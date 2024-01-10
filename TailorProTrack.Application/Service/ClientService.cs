@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Client;
+using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 
@@ -36,6 +37,8 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
+
+                dtoAdd.IsValid(this.Configuration);
                 Client clientToAdd = new Client
                 {
                     FIRST_NAME = dtoAdd.F_name,
@@ -156,6 +159,7 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
+                dtoUpdate.IsValid(this.Configuration);
                 Client clientToAdd = new Client
                 {
                     FIRST_NAME = dtoUpdate.F_name,

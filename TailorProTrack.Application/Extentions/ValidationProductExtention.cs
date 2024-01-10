@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.Runtime.CompilerServices;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Product;
 using TailorProTrack.Application.Exceptions;
-using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 
 namespace TailorProTrack.Application.Extentions

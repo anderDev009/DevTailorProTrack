@@ -138,6 +138,7 @@ namespace TailorProTrack.Application.Service
                     MODIFIED_AT = dtoUpdate.Date,
                     COLORNAME = dtoUpdate.colorname,
                 };
+                this._repository.Update(color);
                 result.Message = "Actualizado con exito";
             }catch(Exception ex)
             {

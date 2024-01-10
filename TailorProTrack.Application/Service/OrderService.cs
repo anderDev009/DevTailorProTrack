@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Order;
+using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 
@@ -17,6 +18,8 @@ namespace TailorProTrack.Application.Service
         private readonly IOrderRepository _repository;
         private readonly ILogger logger;
         //repositorios
+        //user repository
+        private readonly IUserRepository _userRepository;
         //color repository
         private readonly IColorRepository _colorRepository;
         //inventory color repository 
@@ -53,7 +56,8 @@ namespace TailorProTrack.Application.Service
                             ,IInventoryRepository inventoryRepository
                             ,ISizeRepository sizeRepository,
                             IInventoryColorRepository inventoryColorRepository,
-                            IColorRepository colorRepository
+                            IColorRepository colorRepository,
+                            IUserRepository userRepository
                             )
         {
             this._repository = repository;
@@ -70,6 +74,7 @@ namespace TailorProTrack.Application.Service
             this._sizeRepository = sizeRepository; 
             this._inventoryColorRepository = inventoryColorRepository;
             this._colorRepository = colorRepository;
+            _userRepository = userRepository;
         }
 
         public IConfiguration Configuration { get; }
@@ -79,6 +84,8 @@ namespace TailorProTrack.Application.Service
             ServiceResult result =  new ServiceResult();
             try 
             {
+                //validaciones
+                dtoAdd.IsValid(this.Configuration,this._clientRepository,this._userRepository);
                 //logica para agregarele la cantidad
                 decimal amount = 0;
                 foreach(var item in dtoAdd.products)
@@ -151,6 +158,24 @@ namespace TailorProTrack.Application.Service
             }
             return result;
 
+        }
+
+        public ServiceResult GetAmountTotalById(int Id)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                var order = this._repository.GetEntities().Where(d => d.ID == Id).Select(d => new { d.ID, d.AMOUNT });
+
+                result.Data = order;
+                result.Message = "Obtenido con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al intentar obtener el precio total {ex.Message}";
+            }
+            return result;
         }
 
         public ServiceResult GetById(int id)

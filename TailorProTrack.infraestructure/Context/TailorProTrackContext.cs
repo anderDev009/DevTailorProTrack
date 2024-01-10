@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TailorProTrack.domain.Entities;
-using TailorProTrack.infraestructure.Repositories;
 
 namespace TailorProTrack.infraestructure.Context
 {
@@ -20,5 +19,8 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<Phone> PHONE { get; set; } 
         public DbSet<Order> ORDERS { get; set; }
         public DbSet<OrderProduct> ORDER_PRODUCTS { get; set; }
+        public DbSet<Payment> PAYMENT {  get; set; }
+        public DbSet<PaymentType> PAYMENT_TYPE { get; set; }
+        public DbSet<Sales> SALES { get; set; }
     }
 }

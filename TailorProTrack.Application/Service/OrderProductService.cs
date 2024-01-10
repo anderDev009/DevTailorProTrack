@@ -1,8 +1,11 @@
 ﻿
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Runtime.InteropServices;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.OrderProduct;
+using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 
@@ -12,13 +15,24 @@ namespace TailorProTrack.Application.Service
     {
         private readonly IOrderProductRepository _repository;
         private readonly ILogger logger;
+
+        //repositorio de inv color
+        private readonly IInventoryColorRepository _inventoryColorRepository;
+        //repositorio de order
+        private readonly IOrderRepository _orderRepository;
         
-        public OrderProductService(IOrderProductRepository repository, ILogger<IProductRepository> logger)
+        public OrderProductService(IOrderProductRepository repository, ILogger<IProductRepository> logger,
+                                   IInventoryColorRepository invColorRepository, IOrderRepository orderRepository,
+                                   IConfiguration configuration)
         {
             this._repository = repository;
-            this.logger = logger;   
+            this.logger = logger;
+            _inventoryColorRepository = invColorRepository;
+            _orderRepository = orderRepository;
+            Configuration = configuration;
         }
 
+        private readonly IConfiguration Configuration;
         public ServiceResult Add(OrderProductDtoAdd dtoAdd)
         {
             throw new NotImplementedException();
@@ -30,6 +44,10 @@ namespace TailorProTrack.Application.Service
             try
             {
                 List<OrderProduct> productsToAdd = new List<OrderProduct>();    
+                for(int i = 0; i < products.Count; i++)
+                {
+                    products[i].IsValid(this.Configuration,this._inventoryColorRepository,this._orderRepository);
+                }
                 foreach(var item in products)
                 {
                     productsToAdd.Add(new OrderProduct
@@ -96,6 +114,8 @@ namespace TailorProTrack.Application.Service
 
             try
             {
+                dtoUpdate.IsValid(this.Configuration, this._inventoryColorRepository, this._orderRepository);
+
                 OrderProduct orderProduct = new OrderProduct
                 {
                     ID = dtoUpdate.Id,
