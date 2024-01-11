@@ -48,6 +48,7 @@ namespace TailorProTrack.infraestructure.Repositories
             clientToRemove.MODIFIED_AT = DateTime.Now;
 
             this._context.Update(clientToRemove);
+            this._context.SaveChanges();
         }
     }
 }

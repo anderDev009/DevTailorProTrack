@@ -107,9 +107,10 @@ namespace TailorProTrack.Application.Service
             try
             {
                 var sizesAvailables = this._repository.GetEntities()
+                                                      .Where(d => !d.REMOVED)
                                                       .Join
                                                       (
-                                                        this._inventoryRepository.GetEntities(),
+                                                        this._inventoryRepository.GetEntities().Where(d=>!d.REMOVED),
                                                         size => size.ID,
                                                         inventory => inventory.FK_SIZE,
                                                         (size,inventory) => new{ size, inventory }

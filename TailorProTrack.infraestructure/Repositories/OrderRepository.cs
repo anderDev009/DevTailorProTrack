@@ -46,6 +46,8 @@ namespace TailorProTrack.infraestructure.Repositories
             Order order = this.GetEntity(entity.ID);
 
             order.REMOVED = true;
+            order.USER_MOD = entity.USER_MOD;
+            order.MODIFIED_AT = DateTime.Now;
             this._context.Update(order);
             this._context.SaveChanges();
         }

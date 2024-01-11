@@ -15,7 +15,13 @@ namespace TailorProTrack.infraestructure.Repositories
         }
         public override void Remove(Inventory entity)
         {
-            this._context.Update(entity);
+            Inventory inventory = this.GetEntity(entity.ID);
+
+            inventory.USER_MOD = entity.USER_MOD;
+            inventory.MODIFIED_AT = DateTime.Now;
+            inventory.REMOVED = true;
+
+            this._context.Update(inventory);
             this._context.SaveChanges();
         }
         public override void Update(Inventory entity)

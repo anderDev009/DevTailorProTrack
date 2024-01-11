@@ -92,6 +92,7 @@ namespace TailorProTrack.Application.Service
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
                 var inventory = this._repository.GetEntities()
+                                 .Where(d => !d.REMOVED)
                                  .Select(data => new
                                  {
                                      data.ID,
@@ -103,6 +104,7 @@ namespace TailorProTrack.Application.Service
                                  .Join
                                   (
                                   this._sizeRepository.GetEntities()
+                                                      .Where(d => !d.REMOVED) 
                                                       .Select(data => new
                                                       {
                                                           data.ID,
@@ -253,13 +255,12 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                Inventory inventory = new Inventory()
+                Inventory inv = new Inventory
                 {
+                    ID = dtoRemove.Id,
                     USER_MOD = dtoRemove.User,
-                    REMOVED = true,
-                    MODIFIED_AT = dtoRemove.Date
                 };
-                this._repository.Remove(inventory);
+                this._repository.Remove(inv);
                 result.Message = "Removido con exito";
             }
             catch(Exception ex)
