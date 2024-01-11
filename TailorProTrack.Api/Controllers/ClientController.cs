@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Client;
-
 namespace TailorProTrack.Api.Controllers
 {
     [ApiController]
@@ -18,14 +21,18 @@ namespace TailorProTrack.Api.Controllers
         }
 
         [HttpGet("GetClients")]
-        public IActionResult Index()
+        public IActionResult Index([FromQuery] PaginationParams @params)
         {
-            var result = service.GetAll();
+            var result = service.GetAll(@params);
+            
+            ServiceResult response = result;
+
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(response);
             }
-            return Ok(result);
+            Response.AddHeaderPaginationJson(result.Header);
+            return Ok(response);
         }
 
         [HttpGet("GetClient")]

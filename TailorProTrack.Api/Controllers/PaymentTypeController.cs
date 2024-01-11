@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.PaymentType;
 
 namespace TailorProTrack.Api.Controllers
@@ -20,14 +22,17 @@ namespace TailorProTrack.Api.Controllers
 
 
         [HttpGet("GetPaymentTypes")]
-        public ActionResult GetAll()
+        public ActionResult GetAll([FromQuery] PaginationParams @params)
         {
-            var result = this._service.GetAll();
+            var result = this._service.GetAll(@params);
+            ServiceResult response = result;
+
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(response);
             }
-            return Ok(result);
+            Response.AddHeaderPaginationJson(result.Header);
+            return Ok(response);
         }
 
         // GET: PaymentTypeController/Details/5

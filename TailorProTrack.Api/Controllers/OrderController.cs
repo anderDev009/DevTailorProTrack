@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Order;
@@ -20,24 +21,31 @@ namespace TailorProTrack.Api.Controllers
         }
 
         [HttpGet("GetOrders")]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] PaginationParams @params)
         {
-            ServiceResult result = this.orderService.GetAll();
+            ServiceResultWithHeader result = this.orderService.GetAll(@params);
+
+            ServiceResult response = result;
+
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(response);
             }
-            return Ok(result);
+            Response.AddHeaderPaginationJson(result.Header);
+            return Ok(response);
         }
         [HttpGet("GetOrderJobs")]
-        public IActionResult GetOrderJobs()
+        public IActionResult GetOrderJobs([FromQuery] PaginationParams @params)
         {
-            ServiceResult result = this.orderService.GetOrderJobs();
+            ServiceResultWithHeader result = this.orderService.GetOrderJobs(@params);
+            ServiceResult response = result;
+
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(response);
             }
-            return Ok(result);
+            Response.AddHeaderPaginationJson(result.Header);
+            return Ok(response);
         }
         [HttpGet("GetOrder")]
         public IActionResult GetOrder(int id)

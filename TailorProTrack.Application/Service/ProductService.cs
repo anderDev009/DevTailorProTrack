@@ -58,11 +58,14 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public ServiceResult GetAll()
+        public ServiceResultWithHeader GetAll(PaginationParams @params)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
+                int registerCount = this._repository.GetEntities().Where(data => !data.REMOVED).Count();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+
                 var products = this._repository.GetEntities()
                                                 .Join(this._repositoryType.GetEntities(),
                                                       product => product.FK_TYPE,
@@ -77,7 +80,10 @@ namespace TailorProTrack.Application.Service
                                                     description = data.Key.DESCRIPTION_PRODUCT,
                                                     type = data.Select(d => d.typeProd.TYPE_PROD).FirstOrDefault(),
                                                     sale_price = data.Key.SALE_PRICE
-                                                }) ;
+                                                })
+                                                .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                                .Take(@params.ItemsPerPage)
+                                                .ToList();
                                  //.Join(this._repositoryType.GetEntities(),
                                  //       product => product.ID,
                                  //       typeProd => typeProd.ID,
@@ -93,6 +99,7 @@ namespace TailorProTrack.Application.Service
                                  //    type = data.Type_prod.TYPE_PROD
                                  //});
                 result.Message = "Obtenidos con exito";
+                result.Header = header;
                 result.Data = products;
             }
             catch (Exception ex)

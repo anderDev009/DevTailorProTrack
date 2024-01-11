@@ -120,11 +120,14 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public ServiceResult GetAll()
+        public ServiceResultWithHeader GetAll(PaginationParams @params)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
+                int registerCount = this._repository.GetEntities().Count();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+
                 var orders = this._repository.GetEntities().Where(d => !d.REMOVED)
                                              .Join
                                              (
@@ -139,6 +142,7 @@ namespace TailorProTrack.Application.Service
                                                 client => client.ID,
                                                 (orderFK, client) => new { orderFK, client }
                                              )
+                                             .OrderBy(data => data.orderFK.ID)
                                              .Select(data => new OrderDtoGet
                                              {
                                                  Id = data.orderFK.ID,
@@ -148,8 +152,12 @@ namespace TailorProTrack.Application.Service
                                                  DescriptionJob = data.orderFK.DESCRIPTION_JOB,
                                                  StatusOrder = data.orderFK.STATUS_ORDER,
                                                  Quantity = this._orderProductService.GetQuantityByOrderId(data.orderFK.ID).Data,   
-                                             });
+                                             })
+                                             .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                             .Take(@params.ItemsPerPage)
+                                             .ToList();
                 result.Data = orders;
+                result.Header = header;
                 result.Message = "Obtenidos con exito";
             }catch(Exception ex) 
             {
@@ -315,11 +323,14 @@ namespace TailorProTrack.Application.Service
 
 
 
-        public ServiceResult GetOrderJobs()
+        public ServiceResultWithHeader GetOrderJobs(PaginationParams @params)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
+                int registerCount = this._repository.GetEntities().Where(d => d.CHECKED).Count();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+
                 var orders = this._repository.GetEntities().Where(d => !d.REMOVED && d.CHECKED)
                                          .Join
                                          (
@@ -334,6 +345,7 @@ namespace TailorProTrack.Application.Service
                                             client => client.ID,
                                             (orderFK, client) => new { orderFK, client }
                                          )
+                                         .OrderBy(data => data.orderFK.ID)
                                          .Select(data => new OrderDtoGet
                                          {
                                              Id = data.orderFK.ID,
@@ -343,7 +355,14 @@ namespace TailorProTrack.Application.Service
                                              DescriptionJob = data.orderFK.DESCRIPTION_JOB,
                                              StatusOrder = data.orderFK.STATUS_ORDER,
                                              Quantity = this._orderProductService.GetQuantityByOrderId(data.orderFK.ID).Data,
-                                         });
+                                         })
+                                         .Skip((@params.Page - 1 ) * @params.ItemsPerPage)
+                                         .Take(@params.ItemsPerPage)
+                                         .ToList();
+                                            
+                result.Data = orders;
+                result.Header = header;
+                result.Message = "Obtenidos con exito.";
             }
             catch (Exception ex)
             {

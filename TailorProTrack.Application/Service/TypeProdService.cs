@@ -56,20 +56,28 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public ServiceResult GetAll()
+        public ServiceResultWithHeader  GetAll(PaginationParams @params)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
+                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+
+
                 var types = this._repository.GetEntities()
                                              .Where(type => !type.REMOVED)
                                              .Select(data => new TypeProdDtoGet
                                              {
                                                  Id = data.ID,
                                                  Type =  data.TYPE_PROD
-                                             }).ToList();
+                                             })
+                                             .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                             .Take(@params.ItemsPerPage)
+                                             .ToList();
                 
                 result.Message = "Tipos obtenidos con exito";
+                result.Header = header;
                 result.Data = types;
             }
             catch (Exception ex)

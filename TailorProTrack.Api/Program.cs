@@ -28,7 +28,8 @@ builder.Services.AddOrderDependencies();
 builder.Services.AddPaymentDependencies();
 //dependencias de ventas
 builder.Services.AddSaleDependencies();
-
+//dependencias de usuairo
+builder.Services.AddUserDependencies();
 // Add services to the container.
 builder.Services.AddCors(options =>
 {

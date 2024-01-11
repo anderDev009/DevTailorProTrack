@@ -66,13 +66,19 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public ServiceResult GetAll()
+        public ServiceResultWithHeader GetAll(PaginationParams @params)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResultWithHeader result = new ServiceResultWithHeader();
+
             try
             {
+
+                int registerCount = this._repository.GetEntities().Count();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+
                 var clients = this._repository.GetEntities()
                                               .Where(data => !data.REMOVED)
+                                              .OrderBy(data => data.ID)
                                               .Select(data => new ClientDtoGet
                                               {
                                                   Id = data.ID,
@@ -82,8 +88,12 @@ namespace TailorProTrack.Application.Service
                                                   L_surname = data.LAST_SURNAME,
                                                   Dni = data.DNI,
                                                   RNC = data.RNC,
-                                              }).ToList();
+                                              })
+                                              .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                              .Take(@params.ItemsPerPage)
+                                              .ToList();
                 result.Data = clients;
+                result.Header = header;
                 result.Message = "Cliente obtenidos correctamente.";
             }
             catch (Exception ex)

@@ -62,13 +62,20 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public ServiceResult GetAll()
+        public ServiceResultWithHeader GetAll(PaginationParams @params)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
              {
-                var sizes = this._repository.GetEntities();
+                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+
+                var sizes = this._repository.GetEntities().Where(d => !d.REMOVED)
+                                            .OrderBy(d=> d.ID)
+                                            .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                            .Take(@params.ItemsPerPage);
                 result.Data = sizes;
+                result.Header = header;
                 result.Message = "Sizes obtenidos correctamente";
             }catch(Exception ex)
             {

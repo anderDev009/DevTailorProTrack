@@ -53,20 +53,28 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public ServiceResult GetAll()
+        public ServiceResultWithHeader GetAll(PaginationParams @params)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-                var sales = this._repository.GetEntities().Where(d => !d.REMOVED).Select(d => new SaleDtoGet
+                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+
+                var sales = this._repository.GetEntities().Where(d => !d.REMOVED)
+                    .OrderBy(d => d.ID)
+                    .Select(d => new SaleDtoGet
                 {
                     Id = d.ID,
                     CodIsc = d.COD_ISC,
                     FkOrder = d.FK_ORDER,
                     Amount = d.TOTAL_AMOUNT
-                });
+                })
+                .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                .Take(@params.ItemsPerPage);
 
                 result.Data = sales;
+                result.Header = header;
                 result.Message = "Obtenidos con exito";
             }
             catch (Exception ex)

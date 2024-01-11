@@ -54,21 +54,29 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public ServiceResult GetAll()
+        public ServiceResultWithHeader GetAll(PaginationParams @params)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
+                int registerCount = this._repository.GetEntities().Count();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+
                 var colors = this._repository.GetEntities()
                                             .Where(data => !data.REMOVED)
+                                            .OrderBy(data => data.ID)
                                             .Select(data => new ColorDtoGet
                                             {
-                                                Id =  data.ID,
+                                                Id = data.ID,
                                                 colorname = data.COLORNAME,
                                                 code = data.CODE_COLOR
-                                            });
+                                            })
+                                            .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                            .Take(@params.ItemsPerPage)
+                                            .ToList() ;
 
                 result.Data = colors;
+                result.Header = header;
                 result.Message = "Obtenidos con exito.";
             }
             catch (Exception ex)

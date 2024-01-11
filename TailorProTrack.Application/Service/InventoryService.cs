@@ -62,7 +62,6 @@ namespace TailorProTrack.Application.Service
                     QUANTITY = dtoAdd.inventoryColors.Sum(color => color.quantity),
                     FK_SIZE = dtoAdd.fk_size,
                     USER_CREATED = dtoAdd.User,
-                    CREATED_AT = dtoAdd.Date
                 };
                 int idInventory = this._repository.Save(inventory);
                 //agregando los colores al inventario
@@ -70,7 +69,6 @@ namespace TailorProTrack.Application.Service
                 {
                     color.fk_inventory = idInventory;
                     this._inventoryColorService.Add(color);
-                    result.Data = color;
                 });
                 //actualizando la ultima actualizacion del producto
                 this._productRepository.UpdateLastReplenishment(dtoAdd.fk_product);
@@ -85,11 +83,14 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public ServiceResult GetAll()
+        public ServiceResultWithHeader GetAll(PaginationParams @params)
         {
-            ServiceResult result = new ServiceResult();
+            ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
+                int registerCount = this._repository.GetEntities().Count();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+
                 var inventory = this._repository.GetEntities()
                                  .Select(data => new
                                  {
@@ -137,8 +138,12 @@ namespace TailorProTrack.Application.Service
                                      quantity = group.Sum(d => d.inventory.QUANTITY),
                                      availableSizes = this._sizeService.GetSizesAvailablesProductById(group.Key.ID).Data,
                                      last_replenishment = (group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy") == "01/01/0001" ? "" : group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy"))
-                                 }) ; 
+                                 })
+                                 .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                 .Take(@params.ItemsPerPage)
+                                 .ToList(); 
                 result.Data = inventory;
+                result.Header = header;
                 result.Message = "Inventario obtenido correctamente";
                 //result.Data = inventory;
             }

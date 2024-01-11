@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Inventory;
 using TailorProTrack.Application.Dtos.InventoryColor;
 
@@ -23,14 +25,18 @@ namespace TailorProTrack.Api.Controllers
         }
         // GET: InventoryController
         [HttpGet("GetInventory")]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] PaginationParams @params)
         {
-            var result = this._inventoryService.GetAll();
+            var result = this._inventoryService.GetAll(@params);
+
+            ServiceResult response = result;
+
             if (!result.Success)
             {
-                return BadRequest(result);
+                return BadRequest(response);
             }
-            return Ok(result);
+            Response.AddHeaderPaginationJson(result.Header);
+            return Ok(response);
         }
 
 

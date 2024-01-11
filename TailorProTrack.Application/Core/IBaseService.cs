@@ -1,8 +1,9 @@
-﻿namespace TailorProTrack.Application.Core
+﻿
+namespace TailorProTrack.Application.Core
 {
     public interface IBaseService<DtoAdd,DtoRemove,DtoUpdate>
     {
-        ServiceResult GetAll();
+        ServiceResultWithHeader GetAll(PaginationParams @params);
         ServiceResult GetById(int id);
         ServiceResult Add(DtoAdd dtoAdd);
         ServiceResult Remove(DtoRemove dtoRemove); 
