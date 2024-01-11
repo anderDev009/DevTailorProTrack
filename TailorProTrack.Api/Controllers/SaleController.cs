@@ -23,7 +23,7 @@ namespace TailorProTrack.Api.Controllers
         public IActionResult GetAll([FromQuery] PaginationParams @params)
         {
             var result = this._SaleService.GetAll(@params);
-            ServiceResult response = result;
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
 
             if (!result.Success)
             {

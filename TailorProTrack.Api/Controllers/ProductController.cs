@@ -24,7 +24,7 @@ namespace TailorProTrack.Api.Controllers
         public IActionResult Get([FromQuery] PaginationParams @params)
         {
             var result = this._Productservice.GetAll(@params);
-            ServiceResult response = result;
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
 
             if (!result.Success)
             {

@@ -25,7 +25,8 @@ namespace TailorProTrack.Api.Controllers
         {
             ServiceResultWithHeader result = this.orderService.GetAll(@params);
 
-            ServiceResult response = result;
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
+
 
             if (!result.Success)
             {
@@ -38,7 +39,7 @@ namespace TailorProTrack.Api.Controllers
         public IActionResult GetOrderJobs([FromQuery] PaginationParams @params)
         {
             ServiceResultWithHeader result = this.orderService.GetOrderJobs(@params);
-            ServiceResult response = result;
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
 
             if (!result.Success)
             {

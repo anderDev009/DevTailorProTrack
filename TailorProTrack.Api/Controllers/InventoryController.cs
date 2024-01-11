@@ -27,9 +27,10 @@ namespace TailorProTrack.Api.Controllers
         [HttpGet("GetInventory")]
         public IActionResult Get([FromQuery] PaginationParams @params)
         {
-            var result = this._inventoryService.GetAll(@params);
+            ServiceResultWithHeader result = this._inventoryService.GetAll(@params);
 
-            ServiceResult response = result;
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success};
+
 
             if (!result.Success)
             {
