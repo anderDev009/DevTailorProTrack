@@ -1,7 +1,9 @@
 ﻿
 using Microsoft.Extensions.DependencyInjection;
 using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Interfaces.Filters;
 using TailorProTrack.Application.Service;
+using TailorProTrack.Application.Service.Filter;
 using TailorProTrack.infraestructure.Interfaces;
 using TailorProTrack.infraestructure.Repositories;
 
@@ -13,7 +15,10 @@ namespace TailorProTrack.Ioc.Dependencies
         {
             service.AddScoped<IProductRepository, ProductRepository>();
 
+
+            //servicios
             service.AddTransient<IProductService, ProductService>();
+            service.AddTransient<IProductFilterService, ProductFilterService>();
         }
     }
 }

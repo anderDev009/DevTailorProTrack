@@ -22,13 +22,13 @@ namespace TailorProTrack.Application.Extentions
             }
 
             //comprobando que la fk si exista
-            if(inventoryRepository.Exists(inventory => inventory.ID == dtoBase.Id))
+            if(!inventoryRepository.Exists(inventory => inventory.ID == dtoBase.fk_inventory ))
             {
                 throw new InventoryColorServiceException(configuration["inventoryDoesntExist"]);
             }
 
             //comprobando la validez del color primario
-            if(colorRepository.Exists(color => color.ID == dtoBase.fk_color_primary))
+            if(!colorRepository.Exists(color => color.ID == dtoBase.fk_color_primary))
             {
                 throw new InventoryColorServiceException(configuration["colorDoesntExist"]);
             }
@@ -36,7 +36,7 @@ namespace TailorProTrack.Application.Extentions
             //validez color secundario
             if(dtoBase.fk_color_secondary != 0)
             {
-                if(colorRepository.Exists(color => color.ID == dtoBase.fk_color_secondary))
+                if(!colorRepository.Exists(color => color.ID == dtoBase.fk_color_secondary))
                 {
                     throw new InventoryColorServiceException(configuration["colorDoesntExist"]);
                 }

@@ -2,7 +2,9 @@
 {
     public class SizeDtoGet
     {
-        public int id {  get; set; }
-        public string size { get; set; }
+        public int Id {  get; set; }
+        public string Size { get; set; }
+
+        public string Category {  get; set; }
     }
 }

@@ -8,6 +8,7 @@ using TailorProTrack.Application.Dtos.InventoryColor;
 using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TailorProTrack.Application.Service
 {
@@ -78,8 +79,20 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
+                //validaciones
+                dtoAdd.IsValid(this.configuration, this._inventoryRepository, this._colorRepository);
+                //codigo para agregar
+                InventoryColor inventoryColor = new InventoryColor
+                {
+                    FK_INVENTORY = dtoAdd.fk_inventory,
+                    FK_COLOR_PRIMARY = dtoAdd.fk_color_primary,
+                    FK_COLOR_SECONDARY = dtoAdd.fk_color_secondary == 0 ? null : dtoAdd.fk_color_secondary,
+                    QUANTITY = dtoAdd.quantity,
+                    CREATED_AT = dtoAdd.Date,
+                    USER_CREATED = dtoAdd.User
+                };
+                int id = this._repository.Save(inventoryColor);
 
-                int id  = this.Add(dtoAdd).Data;
                 //actualizando el inventario
                 Inventory inventory = this._inventoryRepository.GetEntity(dtoAdd.fk_inventory);
                 inventory.QUANTITY = this.GetQuantityTotalById(dtoAdd.fk_inventory).Data ;
@@ -92,7 +105,7 @@ namespace TailorProTrack.Application.Service
             }catch(Exception ex )
             {
                 result.Success = false;
-                result.Message = $"Error al agregar {ex}";
+                result.Message = $"Error al agregar {ex.Message}";
             }
             return result;
         }
@@ -140,15 +153,18 @@ namespace TailorProTrack.Application.Service
                 var colors = this._repository.GetEntities().Where(data => !data.REMOVED &&
                                                                   data.FK_INVENTORY == id)
                                                                    .Select(data => new InventoryColorDtoGet
-                                                                  {
+                                                                   {
                                                                        InventoryColorId = data.ID,
-                                                                       FkInventory = data.FK_INVENTORY,
                                                                        colorPrimary = this._colorService.GetById(data.FK_COLOR_PRIMARY).Data,
                                                                        colorSecondary = (data.FK_COLOR_SECONDARY.HasValue) ? this._colorService.GetById(data.FK_COLOR_SECONDARY.Value).Data : 0,
                                                                        quantity = data.QUANTITY
-                                                                  }) ;
-
-                result.Data = colors;
+                                                                   });
+                var group = new 
+                {
+                    FkInventory = id,
+                    Inventory = colors
+                };
+                result.Data = group;
                 result.Message = "Obtenidos con exito";
             }catch(Exception ex)
             {

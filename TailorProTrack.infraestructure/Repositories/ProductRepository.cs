@@ -1,5 +1,8 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -10,7 +13,8 @@ namespace TailorProTrack.infraestructure.Repositories
     public class ProductRepository : BaseRepository<Product>, IProductRepository
     {
         private readonly TailorProTrackContext _context;
-        public ProductRepository(TailorProTrackContext ctx) : base(ctx) 
+        
+        public ProductRepository(TailorProTrackContext ctx ) : base(ctx) 
         {
             this._context = ctx;
         }
@@ -55,6 +59,28 @@ namespace TailorProTrack.infraestructure.Repositories
             product.LAST_REPLENISHMENT = DateTime.Now;
             this._context.Update(product);
             this._context.SaveChanges();
+        }
+
+        //filters
+        public List<Product> GetByMinorPrice(decimal price)
+        {
+            return this._entities.Where(data => data.SALE_PRICE < price).ToList();
+        }
+
+        public List<Product> GetByHigherPrice(decimal price)
+        {
+            return this._entities.Where(data => data.SALE_PRICE > price).ToList();
+
+        }
+
+        public List<Product> SearchByType(int fkType)
+        {
+            return this._entities.Where(data => data.FK_TYPE == fkType).ToList();
+        }
+
+        public List<Product> SearchByName(string name)
+        {
+           return this._entities.Where(data => EF.Functions.Like(data.NAME_PRODUCT,name)).ToList();    
         }
     }
 }

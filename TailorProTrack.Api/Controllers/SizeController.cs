@@ -44,6 +44,30 @@ namespace TailorProTrack.Api.Controllers
             return Ok(result);
         }
 
+
+        //sizes disponibles por id de producto
+        [HttpGet("GetSizesAvailablesByIdProd")]
+        public IActionResult GetAvailables(int id)
+        {
+            var result = this._service.GetSizesAvailablesProductById(id);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("GetSizesByCateogoryId")]
+        public IActionResult GetByCategory(int CategoryId)
+        {
+            var result = this._service.GetSizesByCategoryId(CategoryId);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
         [HttpPost("SaveSize")]
         public IActionResult Post([FromBody] SizeDtoAdd sizeDtoAdd)
         {
@@ -66,16 +90,8 @@ namespace TailorProTrack.Api.Controllers
             return Ok(result);
         }
 
-        //sizes disponibles por id de producto
-        [HttpGet("GetSizesAvailablesByIdProd")]
-        public IActionResult GetAvailables(int id)
-        {
-            var result = this._service.GetSizesAvailablesProductById(id);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
+
+
+        
     }
 }

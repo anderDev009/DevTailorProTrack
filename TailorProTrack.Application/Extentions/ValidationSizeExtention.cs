@@ -1,18 +1,18 @@
 ﻿
 using Microsoft.Extensions.Configuration;
+using System.Runtime.CompilerServices;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Size;
 using TailorProTrack.Application.Exceptions;
+using TailorProTrack.infraestructure.Interfaces;
 
 namespace TailorProTrack.Application.Extentions
 {
     public static class ValidationSizeExtention
     {
 
-        public static ServiceResult IsSizeValid(this SizeBaseDto sizeDto, IConfiguration configuration)
+        public static void IsSizeValid(this SizeBaseDto sizeDto, IConfiguration configuration,ICategorySizeRepository _categoryRepository)
         {
-            ServiceResult result = new ServiceResult();
-            result.Success = false;
 
             //en caso de que la cadena este vacia
             if (String.IsNullOrEmpty(sizeDto.size))
@@ -20,8 +20,22 @@ namespace TailorProTrack.Application.Extentions
                 throw new SizeServiceException(configuration["validations:chainEmpty"]);
             }
 
-            result.Success = true;
-            return result;
+            //
+            if(!_categoryRepository.Exists(d => d.ID == sizeDto.FkCategory))
+            {
+                throw new SizeServiceException(configuration["validations:typeDoesntExist"]);
+            }
         }
+
+        //public static void IsFkCategoryValid(this SizeBaseDto sizeDto, IConfiguration configuration, 
+        //                                    ICategorySizeRepository categoryRepository)
+        //{
+
+        //    if (!categoryRepository.Exists(data => data.ID == sizeDto.FkCategory){ }
+
+        //    throw new SizeServiceException(configuration["validations:typeDoesntExist"]);
+            
+            
+        //}
     }
 }

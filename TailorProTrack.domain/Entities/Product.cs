@@ -9,7 +9,7 @@ namespace TailorProTrack.domain.Entities
         public string DESCRIPTION_PRODUCT {  get; set; }
         public decimal SALE_PRICE { get; set; }
         public int FK_TYPE { get; set; }
-
+        
         public DateTime LAST_REPLENISHMENT {  get; set; }
     }
 }

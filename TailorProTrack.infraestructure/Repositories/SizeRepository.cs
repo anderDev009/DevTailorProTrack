@@ -39,6 +39,7 @@ namespace TailorProTrack.infraestructure.Repositories
             sizeToUpdate.MODIFIED_AT = DateTime.Now;
             sizeToUpdate.USER_MOD = entity.USER_MOD;
             sizeToUpdate.SIZE = entity.SIZE;
+            sizeToUpdate.FKCATEGORYSIZE = entity.FKCATEGORYSIZE;
 
             this._context.Update(sizeToUpdate);
             this._context.SaveChanges();

@@ -22,5 +22,6 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<Payment> PAYMENT {  get; set; }
         public DbSet<PaymentType> PAYMENT_TYPE { get; set; }
         public DbSet<Sales> SALES { get; set; }
+        public DbSet<CategorySize> CATEGORYSIZE {  get; set; }
     }
 }

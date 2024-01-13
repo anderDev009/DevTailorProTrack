@@ -7,5 +7,6 @@ namespace TailorProTrack.Application.Contracts
     {
         ServiceResult GetSizesAvailablesProductById(int id);
 
+        ServiceResult GetSizesByCategoryId(int categoryId);
     }
 }

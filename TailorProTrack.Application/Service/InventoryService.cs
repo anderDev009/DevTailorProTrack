@@ -109,6 +109,7 @@ namespace TailorProTrack.Application.Service
                                                       {
                                                           data.ID,
                                                           data.SIZE
+                                                          
                                                       }
                                                        ),
                                  inventory => inventory.FK_SIZE,

@@ -16,10 +16,12 @@ namespace TailorProTrack.Application.Service
         private readonly ISizeRepository _repository;
         private readonly IInventoryRepository _inventoryRepository;
         private readonly IInventoryColorRepository _inventorySizeRepository;
+        private readonly ICategorySizeRepository _cateogoryRepository;
         private ILogger logger;
         public SizeService(ISizeRepository repository,
             IInventoryRepository inventoryRepository,
             IInventoryColorRepository inventorySizeRepository,
+            ICategorySizeRepository categoryRepository,
             ILogger<SizeRepository> logger, 
             IConfiguration configuration)
         {
@@ -28,6 +30,7 @@ namespace TailorProTrack.Application.Service
             this._inventoryRepository = inventoryRepository;
             this._inventorySizeRepository = inventorySizeRepository;
             this.configuration = configuration;
+            _cateogoryRepository = categoryRepository;
         }
         private  IConfiguration configuration { get; }
 
@@ -39,7 +42,7 @@ namespace TailorProTrack.Application.Service
             try
             {
                 //validaciones
-                dtoAdd.IsSizeValid(this.configuration);
+                dtoAdd.IsSizeValid(this.configuration,this._cateogoryRepository);
 
                 if (!result.Success)
                 {
@@ -50,7 +53,8 @@ namespace TailorProTrack.Application.Service
                 {
                     CREATED_AT = dtoAdd.Date,   
                     USER_CREATED = dtoAdd.User,
-                    SIZE = dtoAdd.size
+                    SIZE = dtoAdd.size,
+                    FKCATEGORYSIZE = dtoAdd.FkCategory
                 };
                 this._repository.Save(size);
                 result.Message = "Size registrado con exito";
@@ -71,7 +75,20 @@ namespace TailorProTrack.Application.Service
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
                 var sizes = this._repository.GetEntities().Where(d => !d.REMOVED)
-                                            .OrderBy(d=> d.ID)
+                                            .Join
+                                            (
+                                                this._cateogoryRepository.GetEntities(),
+                                                size => size.FKCATEGORYSIZE,
+                                                category => category.ID,
+                                                (size,category) => new {size,category}
+                                            )
+                                            .OrderBy(d=> d.size.ID)
+                                            .Select(data => new SizeDtoGet
+                                            {
+                                                Id = data.size.ID,
+                                                Size = data.size.SIZE,
+                                                Category = data.category.CATEGORY
+                                            })
                                             .Skip((@params.Page - 1) * @params.ItemsPerPage)
                                             .Take(@params.ItemsPerPage);
                 result.Data = sizes;
@@ -149,6 +166,43 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult GetSizesByCategoryId(int categoryId)
+        {
+            ServiceResult result = new ServiceResult();
+
+            try
+            {
+                
+                var sizes = this._repository.GetEntities()
+                                            .Where(d => !d.REMOVED && d.FKCATEGORYSIZE == categoryId)
+                                            .Join
+                                            (
+                                                this._cateogoryRepository.GetEntities().Select(d=> new { d.ID,d.CATEGORY}),
+                                                size => size.FKCATEGORYSIZE,
+                                                category => category.ID,
+                                                (size, category) => new { size, category }
+                                            )
+                                            .OrderBy(data => data.size.ID)
+                                            .Select(data => new SizeDtoGetByCategory
+                                            {
+                                                Id = data.size.ID,
+                                                Size = data.size.SIZE,
+                                                CategoryId = data.category.ID,
+                                                Category = data.category.CATEGORY
+                                            });
+
+                if (!sizes.Any()) throw new Exception("No se encontraron registros.");
+                result.Data = sizes;
+                result.Message = "Obtenidos con exito.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al obtener los sizes: {ex.Message}.";
+            }
+            return result;
+        }
+
         public ServiceResult Remove(SizeDtoRemove dtoRemove)
         {
             ServiceResult result = new ServiceResult();
@@ -177,12 +231,15 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
+                dtoUpdate.IsSizeValid(this.configuration, this._cateogoryRepository);
+
                 Size sizeToUpdate = new Size
                 {
                     ID = dtoUpdate.Id,
                     MODIFIED_AT = dtoUpdate.Date,
                     USER_MOD = dtoUpdate.User,
-                    SIZE = dtoUpdate.size
+                    SIZE = dtoUpdate.size,
+                    FKCATEGORYSIZE =  dtoUpdate.FkCategory
 
                 };
                 this._repository.Update(sizeToUpdate);
