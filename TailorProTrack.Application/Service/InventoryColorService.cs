@@ -205,6 +205,8 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
+                dtoRemove.IsValidToRemove(this.configuration, this._repository);
+
                 InventoryColor inventoryToRemove = new InventoryColor
                 {
                     ID = dtoRemove.Id,
