@@ -29,6 +29,7 @@ namespace TailorProTrack.infraestructure.Repositories
             color.USER_MOD = entity.USER_MOD;
             color.COLORNAME = entity.COLORNAME;
             color.CODE_COLOR = entity.CODE_COLOR;
+            color.REMOVED = true;
 
             this._context.Update(color);
             this._context.SaveChanges();
