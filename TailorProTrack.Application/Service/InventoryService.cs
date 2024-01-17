@@ -88,10 +88,10 @@ namespace TailorProTrack.Application.Service
             ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-                int registerCount = this._repository.GetEntities().Count();
+                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var inventory = this._repository.GetEntities()
+                var inventory = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage)
                                  .Where(d => !d.REMOVED)
                                  .Select(data => new
                                  {
@@ -142,8 +142,6 @@ namespace TailorProTrack.Application.Service
                                      availableSizes = this._sizeService.GetSizesAvailablesProductById(group.Key.ID).Data,
                                      last_replenishment = (group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy") == "01/01/0001" ? "" : group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy"))
                                  })
-                                 .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                                 .Take(@params.ItemsPerPage)
                                  .ToList(); 
                 result.Data = inventory;
                 result.Header = header;

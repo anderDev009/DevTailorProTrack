@@ -85,10 +85,8 @@ namespace TailorProTrack.Application.Service
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
 
-                var phones = this._repository.GetEntities().Where(data => !data.REMOVED)
+                var phones = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage).Where(data => !data.REMOVED)
                     .OrderBy(data => data.ID)
-                    .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                    .Take(@params.ItemsPerPage)
                     .ToList();
 
                 result.Data = phones;

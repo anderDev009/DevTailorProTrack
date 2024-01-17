@@ -43,19 +43,17 @@ namespace TailorProTrack.Application.Service
             ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
+                int registerCount = this._repository.CountEntities();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
 
-                var categories = this._repository.GetEntities().Where(d => !d.REMOVED)
+                var categories = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage).Where(d => !d.REMOVED)
                                                  .OrderBy(d => d.ID)
                                                  .Select(data => new CategoryProdDtoGet
                                                  {
                                                     Id = data.ID,
                                                     Category = data.CATEGORY
                                                  })
-                                                 .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                                                 .Take(@params.ItemsPerPage)
                                                  .ToList();
 
                 result.Data = categories;

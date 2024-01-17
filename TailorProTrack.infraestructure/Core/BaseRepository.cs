@@ -12,7 +12,12 @@ namespace TailorProTrack.infraestructure.Core
         {
             this._context = ctx;
             _entities = this._context.Set<T>();
-        } 
+        }
+
+        public int CountEntities()
+        {
+            return this._entities.Count();
+        }
 
         public virtual  bool Exists(Expression<Func<T, bool>> filter)
         {
@@ -27,6 +32,12 @@ namespace TailorProTrack.infraestructure.Core
         {
             return this._entities.ToList();
         }
+
+        public List<T> GetEntitiesPaginated(int page, int itemsPage)
+        {
+            return this._entities.Skip((page - 1) * itemsPage).Take(itemsPage).ToList();
+        }
+
         public virtual T GetEntity(int id)
         {
             return this._entities.Find(id);

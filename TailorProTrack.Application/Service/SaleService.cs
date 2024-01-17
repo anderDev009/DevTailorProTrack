@@ -58,20 +58,18 @@ namespace TailorProTrack.Application.Service
             ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
+                int registerCount = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage).Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
                 var sales = this._repository.GetEntities().Where(d => !d.REMOVED)
                     .OrderBy(d => d.ID)
                     .Select(d => new SaleDtoGet
-                {
-                    Id = d.ID,
-                    CodIsc = d.COD_ISC,
-                    FkOrder = d.FK_ORDER,
-                    Amount = d.TOTAL_AMOUNT
-                })
-                .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                .Take(@params.ItemsPerPage);
+                    {
+                        Id = d.ID,
+                        CodIsc = d.COD_ISC,
+                        FkOrder = d.FK_ORDER,
+                        Amount = d.TOTAL_AMOUNT
+                    }).ToList();
 
                 result.Data = sales;
                 result.Header = header;

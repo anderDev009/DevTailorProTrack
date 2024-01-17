@@ -68,10 +68,10 @@ namespace TailorProTrack.Application.Service
 
             try
             {
-                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
+                int registerCount = this._repository.GetEntitiesPaginated(@params.Page,@params.ItemsPerPage).Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var payments = this._repository.GetEntities().Where(d => !d.REMOVED).Select(d => new {d.ID,d.FK_ORDER,d.FK_TYPE_PAYMENT,d.AMOUNT})
+                var payments = this._repository.GetEntities().Where(d => !d.REMOVED).Select(d => new { d.ID, d.FK_ORDER, d.FK_TYPE_PAYMENT, d.AMOUNT })
                                                                            .Join
                                                                            (
                                                                             this._typeRepository.GetEntities().Select(d => new { d.ID, d.TYPE_PAYMENT }),
@@ -85,9 +85,7 @@ namespace TailorProTrack.Application.Service
                                                                                IdOrder = d.Key,
                                                                                Amount = d.Sum(d => d.payment.AMOUNT),
                                                                                PaymentNumbers = d.Select(d => d.type.ID).Count()
-                                                                           })
-                                                                           .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                                                                           .Take(@params.ItemsPerPage);
+                                                                           }).ToList();
                 result.Data = payments;
                 result.Header = header;
                 result.Message = "Obtenidos con exito.";

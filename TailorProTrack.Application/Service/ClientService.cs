@@ -73,10 +73,10 @@ namespace TailorProTrack.Application.Service
             try
             {
 
-                int registerCount = this._repository.GetEntities().Count();
+                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var clients = this._repository.GetEntities()
+                var clients = this._repository.GetEntitiesPaginated(@params.Page,@params.ItemsPerPage)
                                               .Where(data => !data.REMOVED)
                                               .OrderBy(data => data.ID)
                                               .Select(data => new ClientDtoGet
@@ -89,8 +89,6 @@ namespace TailorProTrack.Application.Service
                                                   Dni = data.DNI,
                                                   RNC = data.RNC,
                                               })
-                                              .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                                              .Take(@params.ItemsPerPage)
                                               .ToList();
                 result.Data = clients;
                 result.Header = header;

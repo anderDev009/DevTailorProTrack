@@ -51,7 +51,7 @@ namespace TailorProTrack.Application.Service
             ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
+                int registerCount = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage).Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
                 var types = this._repository.GetEntities().Where(d => !d.REMOVED)
                     .OrderBy(data => data.ID)
@@ -60,8 +60,6 @@ namespace TailorProTrack.Application.Service
                     Id =  d.ID,
                     Type = d.TYPE_PAYMENT
                 })
-                    .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                    .Take(@params.ItemsPerPage)
                     .ToList();
 
                 result.Data = types;

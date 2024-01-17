@@ -61,7 +61,7 @@ namespace TailorProTrack.Application.Service
             ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
+                int registerCount = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage).Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
 
@@ -72,8 +72,6 @@ namespace TailorProTrack.Application.Service
                                                  Id = data.ID,
                                                  Type =  data.TYPE_PROD
                                              })
-                                             .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                                             .Take(@params.ItemsPerPage)
                                              .ToList();
                 
                 result.Message = "Tipos obtenidos con exito";

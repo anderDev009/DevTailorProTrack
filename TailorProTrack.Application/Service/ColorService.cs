@@ -28,12 +28,8 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                result = dtoAdd.IsColorValid(this.Configuration);
+                dtoAdd.IsColorValid(this.Configuration);
 
-                if (!result.Success)
-                {
-                    return result;
-                }
 
                 Color colorToAdd = new Color();
 
@@ -59,10 +55,10 @@ namespace TailorProTrack.Application.Service
             ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-                int registerCount = this._repository.GetEntities().Count();
+                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var colors = this._repository.GetEntities()
+                var colors = this._repository.GetEntitiesPaginated(@params.Page,@params.ItemsPerPage)
                                             .Where(data => !data.REMOVED)
                                             .OrderBy(data => data.ID)
                                             .Select(data => new ColorDtoGet
@@ -71,8 +67,6 @@ namespace TailorProTrack.Application.Service
                                                 colorname = data.COLORNAME,
                                                 code = data.CODE_COLOR
                                             })
-                                            .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                                            .Take(@params.ItemsPerPage)
                                             .ToList() ;
 
                 result.Data = colors;

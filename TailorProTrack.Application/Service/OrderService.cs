@@ -125,10 +125,10 @@ namespace TailorProTrack.Application.Service
             ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-                int registerCount = this._repository.GetEntities().Count();
+                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var orders = this._repository.GetEntities().Where(d => !d.REMOVED)
+                var orders = this._repository.GetEntitiesPaginated(@params.Page,@params.ItemsPerPage).Where(d => !d.REMOVED)
                                              .Join
                                              (
                                                 this._clientRepository.GetEntities().Select(data => new

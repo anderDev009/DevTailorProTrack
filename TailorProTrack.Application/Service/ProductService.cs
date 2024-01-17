@@ -66,7 +66,7 @@ namespace TailorProTrack.Application.Service
                 int registerCount = this._repository.GetEntities().Where(data => !data.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var products = this._repository.GetEntities()
+                var products = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage)
                                                 .Join(this._repositoryType.GetEntities(),
                                                       product => product.FK_TYPE,
                                                       typeProd => typeProd.ID,
@@ -81,8 +81,6 @@ namespace TailorProTrack.Application.Service
                                                     type = data.Select(d => d.typeProd.TYPE_PROD).FirstOrDefault(),
                                                     sale_price = data.Key.SALE_PRICE
                                                 })
-                                                .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                                                .Take(@params.ItemsPerPage)
                                                 .ToList();
                                  //.Join(this._repositoryType.GetEntities(),
                                  //       product => product.ID,
