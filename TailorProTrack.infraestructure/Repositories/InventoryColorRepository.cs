@@ -39,11 +39,12 @@ namespace TailorProTrack.infraestructure.Repositories
             inventoryColor.QUANTITY = entity.QUANTITY;
             inventoryColor.FK_COLOR_PRIMARY= entity.FK_COLOR_PRIMARY;
             inventoryColor.FK_COLOR_SECONDARY= entity.FK_COLOR_SECONDARY;
+            inventoryColor.FK_INVENTORY = entity.FK_INVENTORY;
             inventoryColor.MODIFIED_AT = DateTime.Now;
             inventoryColor.USER_MOD = entity.USER_MOD;
 
 
-            this._context.Update(entity);
+            this._context.Update(inventoryColor);
             this._context.SaveChanges();
         }
     }

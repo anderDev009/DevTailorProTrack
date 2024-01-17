@@ -185,12 +185,11 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var quantity = this._repository.GetEntities().GroupBy(d=> d.FK_INVENTORY).Select(data => new
+                var quantity = this._repository.GetEntities().Where(data => !data.REMOVED).GroupBy(d=> d.FK_INVENTORY).Select(data => new
                                                            {
                                                             data.Key,   
                                                              total = data.Sum(n => n.QUANTITY)
                                                             }).Where(d=> d.Key == id);
-                                                           ;
                 result.Data = quantity.Sum(d=>d.total);
                 result.Message = "Cantidad obtenida con exito";
             }catch(Exception ex)
@@ -213,6 +212,14 @@ namespace TailorProTrack.Application.Service
                     MODIFIED_AT = dtoRemove.Date
                 };
                 this._repository.Remove(inventoryToRemove);
+
+                //actualizando inventario
+                InventoryColor invColor = this._repository.GetEntity(dtoRemove.Id);
+                Inventory inventory = this._inventoryRepository.GetEntity(invColor.FK_INVENTORY);
+                int newQuantity = this.GetQuantityTotalById(invColor.FK_INVENTORY).Data;
+                inventory.QUANTITY = newQuantity;
+                this._inventoryRepository.Update(inventory);
+                result.Message = "Removido con exito";
             }catch(Exception ex)
             {
                 result.Success = false;
@@ -233,6 +240,7 @@ namespace TailorProTrack.Application.Service
                     FK_COLOR_SECONDARY = dtoUpdate.fk_color_secondary,
                     USER_MOD = dtoUpdate.User,
                     QUANTITY = dtoUpdate.quantity,
+                    FK_INVENTORY = dtoUpdate.fk_inventory
                 };
                 //actualizando inventory color
                 this._repository.Update(inventoryToUpdate);

@@ -283,6 +283,7 @@ namespace TailorProTrack.Application.Service
                     MODIFIED_AT = dtoUpdate.Date,
                     USER_MOD = dtoUpdate.User
                 };
+                this._repository.Update(inventory);
             }
             catch (Exception ex)
             {
