@@ -14,7 +14,7 @@ namespace TailorProTrack.Application.Extentions
         {
             if(!rep.Exists(data => data.ID == dtoBase.Id))
             {
-                throw new InventoryColorServiceException(configuration["validations:doesntExist"])
+                throw new InventoryColorServiceException(configuration["validations:doesntExist"]);
             }
         }
         public static ServiceResult IsValid(this InventoryColorDtoBase dtoBase, 
