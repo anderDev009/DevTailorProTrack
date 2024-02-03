@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -18,7 +13,21 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             _context = ctx;
         }
-
+        public override List<Size> GetEntities()
+        {
+            return this._entities.Where(s => !s.REMOVED)
+                 .Join(_context.CATEGORYSIZE,
+                       size => size.FKCATEGORYSIZE,
+                       categorySize => categorySize.ID,
+                       (size, categorySize) => new { size, categorySize })
+                 .Select(data => new Size
+                 {
+                     ID = data.size.ID,
+                     FKCATEGORYSIZE = data.size.FKCATEGORYSIZE,
+                     SIZE = data.size.SIZE
+                 })
+                 .ToList();
+        }
         public override int Save(Size entity)
         {
             entity.CREATED_AT = DateTime.Now;
@@ -58,7 +67,7 @@ namespace TailorProTrack.infraestructure.Repositories
                     ID = data.size.ID,
                     FKCATEGORYSIZE = data.size.FKCATEGORYSIZE,
                     SIZE = data.size.SIZE,
-                    CategorySize = data.categorySize,
+                    categorySize = data.categorySize,
                 }).ToList();
         }
 
@@ -73,7 +82,7 @@ namespace TailorProTrack.infraestructure.Repositories
                     ID = data.size.ID,
                     FKCATEGORYSIZE = data.size.FKCATEGORYSIZE,
                     SIZE = data.size.SIZE,
-                    CategorySize = data.categorySize,
+                    categorySize = data.categorySize,
                 }).ToList();
         }
     }

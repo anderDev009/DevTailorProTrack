@@ -25,7 +25,7 @@ namespace TailorProTrack.Application.Service.Filter
                 {
                     Id = data.ID,
                     Size = data.SIZE,
-                    Category = data.CategorySize.CATEGORY
+                    Category = data.categorySize.CATEGORY
                 });
 
                 result.Data = sizes;
@@ -49,7 +49,7 @@ namespace TailorProTrack.Application.Service.Filter
                 {
                     Id = data.ID,
                     Size = data.SIZE,
-                    Category = data.CategorySize.CATEGORY
+                    Category = data.categorySize.CATEGORY
                 }); ;
 
                 result.Data = sizes;

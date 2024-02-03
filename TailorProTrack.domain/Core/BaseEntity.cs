@@ -6,8 +6,6 @@ namespace TailorProTrack.domain.Core
 {
     public abstract class BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID {  get; set; }
         public DateTime CREATED_AT {  get; set; }
         public DateTime? MODIFIED_AT {  get; set; }

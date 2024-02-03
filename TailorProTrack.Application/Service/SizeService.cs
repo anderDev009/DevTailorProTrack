@@ -135,7 +135,8 @@ namespace TailorProTrack.Application.Service
                                                       {
                                                           idInventory = group.Key.ID,
                                                           size = group.Key.SIZE,
-                                                          quantity = group.Key.QUANTITY
+                                                          quantity = group.Key.QUANTITY,
+                                                          idCategory = group.Select(d => d.size.FKCATEGORYSIZE).First()
                                                       });
                 //                .Join
                 //(

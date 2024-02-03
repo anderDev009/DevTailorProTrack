@@ -109,7 +109,8 @@ namespace TailorProTrack.Application.Service
                                                       .Select(data => new
                                                       {
                                                           data.ID,
-                                                          data.SIZE
+                                                          data.SIZE,
+                                                          data.FKCATEGORYSIZE
                                                           
                                                       }
                                                        ),
@@ -148,7 +149,7 @@ namespace TailorProTrack.Application.Service
                 result.Header = header;
                 result.Message = "Inventario obtenido correctamente";
                 //result.Data = inventory;
-            }
+            }//'CategorySizeID'."}
             catch (Exception ex)
             {
                 result.Success = false;

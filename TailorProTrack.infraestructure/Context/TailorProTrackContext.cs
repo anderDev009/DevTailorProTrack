@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 using TailorProTrack.domain.Entities;
 
 namespace TailorProTrack.infraestructure.Context
@@ -28,5 +29,14 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<Expenses> EXPENSES { get; set; }
         public DbSet<PreOrder> PRE_ORDER {  get; set; }
         public DbSet<PreOrderProducts> PRE_ORDER_PRODUCTS {  get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            #region
+            modelBuilder.Entity<Size>().HasOne<CategorySize>(s => s.categorySize).WithMany().HasForeignKey(s => s.FKCATEGORYSIZE);
+            #endregion
+
+        }
     }
 }
