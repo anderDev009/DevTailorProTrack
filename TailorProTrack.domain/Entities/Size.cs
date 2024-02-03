@@ -7,5 +7,7 @@ namespace TailorProTrack.domain.Entities
     {
         public string SIZE { get; set; }
         public int FKCATEGORYSIZE { get; set; }
+
+        public CategorySize? CategorySize { get; set; }
     }
 }

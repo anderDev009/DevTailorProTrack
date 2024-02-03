@@ -36,6 +36,7 @@ namespace TailorProTrack.infraestructure.Repositories
             order.MODIFIED_AT = DateTime.Now;
             order.USER_MOD = entity.USER_MOD;
             order.DESCRIPTION_JOB = entity.DESCRIPTION_JOB;
+            order.FK_PREORDER = entity.FK_PREORDER;
 
             this._context.Update(order);
             this._context.SaveChanges();

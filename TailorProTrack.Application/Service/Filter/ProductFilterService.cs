@@ -1,8 +1,8 @@
 ﻿
 using System.Diagnostics;
+using TailorProTrack.Application.Contracts.Client;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Product;
-using TailorProTrack.Application.Interfaces.Filters;
 using TailorProTrack.infraestructure.Interfaces;
 
 namespace TailorProTrack.Application.Service.Filter

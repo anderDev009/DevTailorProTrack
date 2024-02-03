@@ -1,4 +1,5 @@
-﻿using TailorProTrack.domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
 using TailorProTrack.infraestructure.Interfaces;
@@ -12,6 +13,17 @@ namespace TailorProTrack.infraestructure.Repositories
         public ColorRepository(TailorProTrackContext ctx) : base(ctx)
         {
             this._context = ctx;
+        }
+
+        public List<Color> FilterByColorCode(string color)
+        {
+            return this._entities.Where(clr => EF.Functions.Like(clr.CODE_COLOR, $"{color}%")).ToList();
+        }
+
+        public List<Color> FilterByName(string name)
+        {
+            return this._entities.Where(color => EF.Functions.Like(color.COLORNAME, $"{name}%")).ToList();
+
         }
 
         public override int Save(Color entity)

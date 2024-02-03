@@ -2,8 +2,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Order;
@@ -100,6 +98,7 @@ namespace TailorProTrack.Application.Service
                     CHECKED = dtoAdd.Checked,
                     FK_CLIENT = dtoAdd.FkClient,
                     FK_USER = dtoAdd.FkUser,
+                    FK_PREORDER = dtoAdd.FkPreOrder,
                     AMOUNT = amount,
                     DESCRIPTION_JOB = dtoAdd.DescriptionJob,
                 };

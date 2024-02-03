@@ -3,6 +3,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Contracts.Color;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.InventoryColor;
 using TailorProTrack.Application.Extentions;

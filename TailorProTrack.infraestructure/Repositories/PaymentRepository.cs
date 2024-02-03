@@ -32,6 +32,7 @@ namespace TailorProTrack.infraestructure.Repositories
             payment.FK_TYPE_PAYMENT = entity.FK_TYPE_PAYMENT;
             payment.MODIFIED_AT = DateTime.Now;
             payment.USER_MOD = entity.USER_MOD;
+            payment.FK_BANK_ACCOUNT = entity.FK_BANK_ACCOUNT;
 
             this._context.Update(payment);
             this._context.SaveChanges();

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Contracts.Size;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Inventory;
 using TailorProTrack.Application.Extentions;

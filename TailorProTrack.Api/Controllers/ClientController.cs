@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TailorProTrack.Api.Utils;
-using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Contracts.Client;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Client;
 namespace TailorProTrack.Api.Controllers
@@ -35,6 +35,16 @@ namespace TailorProTrack.Api.Controllers
             return Ok(response);
         }
 
+        [HttpGet("GetAllClients")]
+        public IActionResult GetAll()
+        {
+            var result = service.GetAll();
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
         [HttpGet("GetClient")]
         public IActionResult Get(int id)
         {

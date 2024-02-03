@@ -11,6 +11,9 @@ namespace TailorProTrack.Ioc.Dependencies
     {
         public static void AddPaymentDependencies(this IServiceCollection services)
         {
+            services.AddBankDependencies();
+            services.AddExpensesDependencies();
+            //dependencias
             //repositorios
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IPaymentTypeRepository, PaymentTypeRepository>();

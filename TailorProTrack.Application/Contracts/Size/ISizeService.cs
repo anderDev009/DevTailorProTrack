@@ -1,9 +1,9 @@
 ﻿using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Size;
 
-namespace TailorProTrack.Application.Contracts
+namespace TailorProTrack.Application.Contracts.Size
 {
-    public interface ISizeService : IBaseService<SizeDtoAdd,SizeDtoRemove,SizeDtoUpdate>
+    public interface ISizeService : IBaseService<SizeDtoAdd, SizeDtoRemove, SizeDtoUpdate>
     {
         ServiceResult GetSizesAvailablesProductById(int id);
 

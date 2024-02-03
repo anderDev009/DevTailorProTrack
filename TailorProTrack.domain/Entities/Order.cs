@@ -8,6 +8,7 @@ namespace TailorProTrack.domain.Entities
     {
         public int FK_USER {  get; set; }
         public int FK_CLIENT { get; set; }
+        public int FK_PREORDER { get; set; }
         public bool CHECKED { get; set; }
         public decimal AMOUNT { get; set; }
 

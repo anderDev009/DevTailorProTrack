@@ -1,7 +1,8 @@
 ﻿
 using Microsoft.Extensions.DependencyInjection;
-using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Contracts.Client;
 using TailorProTrack.Application.Service;
+using TailorProTrack.Application.Service.Filter;
 using TailorProTrack.infraestructure.Interfaces;
 using TailorProTrack.infraestructure.Repositories;
 
@@ -13,6 +14,7 @@ namespace TailorProTrack.Ioc.Dependencies
         {
             services.AddScoped<IClientRepository,ClientRepository>();
             services.AddTransient<IClientService,ClientService>();
+            services.AddTransient<IClientFilterService,ClientFilterService>();
         }
     }
 }

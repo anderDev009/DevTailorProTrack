@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using TailorProTrack.domain.Core;
 using TailorProTrack.infraestructure.Context;
 
 namespace TailorProTrack.infraestructure.Core
 {
-    public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
+    public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
         private readonly TailorProTrackContext _context;
         protected DbSet<T> _entities;
@@ -16,7 +17,7 @@ namespace TailorProTrack.infraestructure.Core
 
         public int CountEntities()
         {
-            return this._entities.Count();
+            return this._entities.Where(data => !data.REMOVED).Count();
         }
 
         public virtual  bool Exists(Expression<Func<T, bool>> filter)
@@ -42,15 +43,29 @@ namespace TailorProTrack.infraestructure.Core
         {
             return this._entities.Find(id);
         }
+
+        public List<T> GetEntityToJoin(int id)
+        {
+            return this._entities.Where(data => data.ID ==id).ToList();
+        }
+
         public virtual void Remove(T entity)
         {
-            this._entities.Remove(entity);
+           
+            T entityToRemove = this.GetEntity(entity.ID);
+
+            entityToRemove.MODIFIED_AT = DateTime.Now;
+            entityToRemove.USER_MOD = entity.USER_MOD;
+            entityToRemove.REMOVED = true;
+            this._entities.Update(entityToRemove);
         }
 
         public virtual int Save(T entity)
         {
+            entity.CREATED_AT = DateTime.Now;
             this._entities.Add(entity);
-            return 0;
+            _context.SaveChanges();
+            return entity.ID;
         }
 
         public virtual void Update(T entity)

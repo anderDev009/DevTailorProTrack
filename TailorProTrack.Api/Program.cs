@@ -32,6 +32,8 @@ builder.Services.AddSaleDependencies();
 builder.Services.AddUserDependencies();
 //dependencias de categorias
 builder.Services.AddCategoryDependencies();
+//dependencias de pedido / preorder
+builder.Services.AddPreOrderDependencies();
 // Add services to the container.
 builder.Services.AddCors(options =>
 {

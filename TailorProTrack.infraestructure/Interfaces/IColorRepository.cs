@@ -5,5 +5,7 @@ namespace TailorProTrack.infraestructure.Interfaces
 {
     public interface IColorRepository : IBaseRepository<Color>
     {
+        List<Color> FilterByName(string name);
+        List<Color> FilterByColorCode(string color);
     }
 }

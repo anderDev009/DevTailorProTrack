@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Api.Utils;
-using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Contracts.Size;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Size;
 

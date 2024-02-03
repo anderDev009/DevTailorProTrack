@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace TailorProTrack.infraestructure.Repositories
     public class SizeRepository : BaseRepository<Size>, ISizeRepository
     {
         private readonly TailorProTrackContext _context;
-        public SizeRepository(TailorProTrackContext ctx) : base(ctx) 
+        public SizeRepository(TailorProTrackContext ctx) : base(ctx)
         {
             _context = ctx;
         }
@@ -34,7 +35,7 @@ namespace TailorProTrack.infraestructure.Repositories
         public override void Update(Size entity)
         {
             Size sizeToUpdate = this.GetEntity(entity.ID);
-           
+
 
             sizeToUpdate.MODIFIED_AT = DateTime.Now;
             sizeToUpdate.USER_MOD = entity.USER_MOD;
@@ -45,5 +46,35 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context.SaveChanges();
         }
 
+        public List<Size> FilterByName(string name)
+        {
+            return this._entities.Where(s => EF.Functions.Like(s.SIZE, $"{name}%"))
+                .Join(_context.CATEGORYSIZE,
+                      size => size.FKCATEGORYSIZE,
+                      categorySize => categorySize.ID,
+                      (size, categorySize) => new { size, categorySize })
+                .Select(data => new Size
+                {
+                    ID = data.size.ID,
+                    FKCATEGORYSIZE = data.size.FKCATEGORYSIZE,
+                    SIZE = data.size.SIZE,
+                    CategorySize = data.categorySize,
+                }).ToList();
+        }
+
+        public List<Size> FilterByIdCategory(int categoryId)
+        {
+            return this._entities.Where(s => s.FKCATEGORYSIZE == categoryId).Join(_context.CATEGORYSIZE,
+                      size => size.FKCATEGORYSIZE,
+                      categorySize => categorySize.ID,
+                      (size, categorySize) => new { size, categorySize })
+                .Select(data => new Size
+                {
+                    ID = data.size.ID,
+                    FKCATEGORYSIZE = data.size.FKCATEGORYSIZE,
+                    SIZE = data.size.SIZE,
+                    CategorySize = data.categorySize,
+                }).ToList();
+        }
     }
 }

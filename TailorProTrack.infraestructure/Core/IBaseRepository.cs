@@ -14,7 +14,7 @@ namespace TailorProTrack.infraestructure.Core
         List<T> GetEntitiesPaginated(int page, int itemsPage);
         List<T> FindAll(Expression<Func<T, bool>> filter);
         T GetEntity(int id);
-
+        List<T> GetEntityToJoin(int id);
         bool Exists(Expression<Func<T, bool>> filter);
 
 

@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.Extensions.DependencyInjection;
 using TailorProTrack.Application.Contracts;
-using TailorProTrack.Application.Interfaces.Filters;
+using TailorProTrack.Application.Contracts.Client;
 using TailorProTrack.Application.Service;
 using TailorProTrack.Application.Service.Filter;
 using TailorProTrack.infraestructure.Interfaces;

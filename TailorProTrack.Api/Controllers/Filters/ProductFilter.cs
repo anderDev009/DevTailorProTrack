@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using TailorProTrack.Application.Interfaces.Filters;
+using TailorProTrack.Application.Contracts.Client;
 
 namespace TailorProTrack.Api.Controllers.Filters
 {

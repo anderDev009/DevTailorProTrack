@@ -1,4 +1,6 @@
-﻿using TailorProTrack.domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Net;
+using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
 using TailorProTrack.infraestructure.Interfaces;
@@ -39,6 +41,7 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context.SaveChanges();
         }
 
+        
         public override void Remove(Client entity)
         {
             Client clientToRemove = this.GetEntity(entity.ID);
@@ -49,6 +52,28 @@ namespace TailorProTrack.infraestructure.Repositories
 
             this._context.Update(clientToRemove);
             this._context.SaveChanges();
+        }
+
+        public List<Client> GetAll()
+        {
+            return this._entities.ToList();
+        }
+
+        public List<Client> FilterByDni(string dni)
+        {
+            return this._entities.Where(cl => EF.Functions.Like(cl.DNI,$"{dni}%")).ToList();
+        }
+
+        public List<Client> FilterByRnc(string rnc)
+        {
+            return this._entities.Where(cl => EF.Functions.Like(cl.RNC, $"{rnc}%")).ToList();
+        }
+
+        public List<Client> FilterByFullName(string fullName)
+        {
+            return this._entities.Where(cl => EF.Functions.Like((cl.FIRST_NAME
+                + " " + cl.LAST_NAME+ " " + cl.FIRST_SURNAME+ " " + cl.LAST_SURNAME), $"{fullName}%")).ToList();
+           
         }
     }
 }
