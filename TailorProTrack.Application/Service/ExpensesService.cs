@@ -58,7 +58,7 @@ namespace TailorProTrack.Application.Service
                                                         .ToList();
 
                 result.Header = metadata;
-                result.Data = registerCount;
+                result.Data = expenses;
                 result.Message = "Obtenidos con exito.";
             }
             catch (Exception ex)
@@ -74,7 +74,14 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var expense = this._expensesRepository.GetEntityToJoin(id);
+                var expense = this._expensesRepository.GetEntityToJoin(id).Select(data => new ExpensesDtoGet
+                {
+                    Id = data.ID,
+                    Amount = data.AMOUNT,
+                    Name = data.NAME,
+                    Description = data.DESCR,
+                    Voucher = data.VOUCHER
+                });
 
                 result.Data = expense;
                 result.Message = "Obtenid con exito.";

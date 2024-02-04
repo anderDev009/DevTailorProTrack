@@ -19,6 +19,16 @@ namespace TailorProTrack.Api.Controllers
             _expensesService = expensesService;
         }
 
+        [HttpPost("SaveExpense")]
+        public IActionResult Save([FromBody] ExpensesDtoAdd dtoAdd)
+        {
+            var result = _expensesService.Add(dtoAdd);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
         [HttpGet("GetExpenses")]
         public IActionResult Get([FromQuery] PaginationParams @params)
         {
