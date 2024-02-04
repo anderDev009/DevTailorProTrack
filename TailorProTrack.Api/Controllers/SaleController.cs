@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
+using TailorProTrack.Application.Dtos.Expenses;
 using TailorProTrack.Application.Dtos.Sale;
 
 namespace TailorProTrack.Api.Controllers
@@ -17,6 +18,17 @@ namespace TailorProTrack.Api.Controllers
         public SaleController(ISaleService SaleService)
         {
             _SaleService = SaleService;
+        }
+        [HttpPost]
+        public IActionResult Save([FromBody] SaleDtoAdd dtoAdd)
+        {
+            var result = _SaleService.Add(dtoAdd);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+
         }
 
         [HttpGet("GetSales")]
