@@ -173,7 +173,7 @@ namespace TailorProTrack.Application.Service
                 List<dynamic> colors = new List<dynamic>();
                 foreach (var item in sizesById)
                 {
-                    var inventoryColor = this._inventoryColorService.GetByIdInventory(item.idInventory).Data;// sizesById.Data.idInventory;
+                        var inventoryColor = this._inventoryColorService.GetByIdInventory(item.idInventory).Data;// sizesById.Data.idInventory;
                     colors.Add(inventoryColor);
                     //Console.WriteLine(item);
                 }

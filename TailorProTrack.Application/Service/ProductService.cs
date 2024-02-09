@@ -114,12 +114,11 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var product = this._repository.GetEntities()
+                var product = this._repository.GetEntityToJoin(id)
                                                .Join(this._repositoryType.GetEntities(),
-                                                      product => product.ID,
+                                                      product => product.FK_TYPE,
                                                       typeProd => typeProd.ID,
                                                       (product, typeProd) => new { product, typeProd })
-                                                .Where(data => !data.product.REMOVED && data.product.ID == id)
                                                 .Select(data => new ProductDtoGet
                                                 {
                                                     Id = data.product.ID,
@@ -127,7 +126,7 @@ namespace TailorProTrack.Application.Service
                                                     description = data.product.DESCRIPTION_PRODUCT,
                                                     type = data.typeProd.TYPE_PROD,
                                                     sale_price = data.product.SALE_PRICE
-                                                }); ;
+                                                });
                 result.Data = product;
                 result.Message = "Obtenido con exito";
             }

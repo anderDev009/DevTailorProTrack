@@ -44,9 +44,9 @@ namespace TailorProTrack.infraestructure.Core
             return this._entities.Find(id);
         }
 
-        public List<T> GetEntityToJoin(int id)
+        public virtual List<T> GetEntityToJoin(int id)
         {
-            return this._entities.Where(data => data.ID ==id).ToList();
+            return this._entities.Where(data => data.ID == id).ToList();
         }
 
         public virtual void Remove(T entity)

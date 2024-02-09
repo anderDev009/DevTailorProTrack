@@ -19,7 +19,10 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context = ctx;
         }
 
-
+        public override List<Product> GetEntityToJoin(int id)
+        {
+            return this._entities.Where(data => data.ID == id).ToList();
+        }
         public override void Remove(Product entity)
         {
             entity.REMOVED = false;
