@@ -54,6 +54,16 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
+        [HttpPost("SaveBank")]
+        public IActionResult Add([FromBody] BankDtoAdd dtoAdd)
+        {
+            var result = this._bankService.Add(dtoAdd);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
 
         [HttpDelete("RemoveBank")]
         public IActionResult GetById([FromBody] BankDtoRemove dtoRemove)
