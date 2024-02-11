@@ -68,6 +68,11 @@ namespace TailorProTrack.infraestructure.Core
             return entity.ID;
         }
 
+        public IQueryable<T> SearchEntities()
+        {
+            return this._entities.AsQueryable();
+        }
+
         public virtual void Update(T entity)
         {
             this._entities.Update(entity);

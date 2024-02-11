@@ -57,5 +57,14 @@ namespace TailorProTrack.infraestructure.Repositories
             }
             this._context.SaveChanges();
         }
+
+        public void ValidateMany(List<OrderProduct> products)
+        {
+            
+            foreach(var item in products)
+            {
+                
+            }
+        }
     }
 }

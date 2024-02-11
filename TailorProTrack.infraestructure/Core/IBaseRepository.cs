@@ -17,6 +17,6 @@ namespace TailorProTrack.infraestructure.Core
         List<T> GetEntityToJoin(int id);
         bool Exists(Expression<Func<T, bool>> filter);
 
-
+        IQueryable<T> SearchEntities();
     }
 }

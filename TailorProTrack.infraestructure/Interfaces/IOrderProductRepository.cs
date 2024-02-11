@@ -10,5 +10,7 @@ namespace TailorProTrack.infraestructure.Interfaces
         OrderProduct GetByForeignKeys(int idOrder, int idProduct);
 
         void SaveMany(List<OrderProduct> products);
+
+        void ValidateMany(List<OrderProduct> products);
     }
 }

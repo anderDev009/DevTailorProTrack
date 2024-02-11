@@ -32,8 +32,12 @@ namespace TailorProTrack.Application.Service
         private readonly IProductRepository _productRepository;
         //orderProduct
         private readonly IOrderProductRepository _orderProductRepository;
+        //preOrderProducts
+        private readonly IPreOrderProductsRepository _preOrderProductsRepository;
         //cliente
         private readonly IClientRepository _clientRepository;
+        //preOrder 
+        private readonly IPreOrderRepository _preOrderRepository;   
         //servicios
         //servicio de inventario
         private readonly IInventoryService _inventoryService;
@@ -41,6 +45,7 @@ namespace TailorProTrack.Application.Service
         private readonly IProductService _productService;
         //servicio de detalle ordenes
         private readonly IOrderProductService _orderProductService;
+        
         public OrderService(IOrderRepository repository
                             ,ILogger<IOrderRepository> logger
                             ,IConfiguration configuration,
@@ -55,7 +60,9 @@ namespace TailorProTrack.Application.Service
                             ,ISizeRepository sizeRepository,
                             IInventoryColorRepository inventoryColorRepository,
                             IColorRepository colorRepository,
-                            IUserRepository userRepository
+                            IUserRepository userRepository,
+                            IPreOrderRepository preOrderRepository,
+                            IPreOrderProductsRepository preOrderProductsRepository
                             )
         {
             this._repository = repository;
@@ -73,6 +80,8 @@ namespace TailorProTrack.Application.Service
             this._inventoryColorRepository = inventoryColorRepository;
             this._colorRepository = colorRepository;
             _userRepository = userRepository;
+            _preOrderRepository = preOrderRepository;
+            _preOrderProductsRepository = preOrderProductsRepository;
         }
 
         public IConfiguration Configuration { get; }
@@ -83,7 +92,8 @@ namespace TailorProTrack.Application.Service
             try 
             {
                 //validaciones
-                dtoAdd.IsValid(this.Configuration,this._clientRepository,this._userRepository);
+                dtoAdd.IsValidToAdd(this.Configuration,this._clientRepository,this._userRepository,_preOrderRepository
+                    ,_preOrderProductsRepository, _inventoryRepository,_inventoryColorRepository);
                 //logica para agregarele la cantidad
                 decimal amount = 0;
                 foreach(var item in dtoAdd.products)
