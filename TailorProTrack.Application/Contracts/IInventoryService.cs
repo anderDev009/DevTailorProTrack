@@ -13,5 +13,7 @@ namespace TailorProTrack.Application.Contracts
         decimal GetPriceProductByInventoryId(int inventoryId);
 
         ServiceResult GetInventoryById(int inventoryId);
+
+        ServiceResult GetByIdToUpdate(int inventoryId);
     }
 }

@@ -32,7 +32,7 @@ namespace TailorProTrack.infraestructure.Repositories
             Sales sale = this.GetEntity(entity.ID);
 
             sale.COD_ISC = entity.COD_ISC;
-            sale.FK_ORDER = entity.FK_ORDER;
+            sale.FK_PREORDER = entity.FK_PREORDER;
             sale.USER_MOD = entity.USER_MOD;
             sale.MODIFIED_AT = DateTime.Now;
 

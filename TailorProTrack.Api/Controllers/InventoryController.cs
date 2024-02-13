@@ -39,7 +39,16 @@ namespace TailorProTrack.Api.Controllers
             Response.AddHeaderPaginationJson(result.Header);
             return Ok(response);    
         }
-
+        [HttpGet("GetInventoryToUpdateById")]
+        public IActionResult GetInventoryToUpdate([FromQuery] int id)
+        {
+            var result = this._inventoryService.GetByIdToUpdate(id);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
 
         [HttpGet("GetInventoryById")]
         public IActionResult GetInventory(int id)

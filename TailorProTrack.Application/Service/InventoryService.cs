@@ -203,6 +203,76 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult GetByIdToUpdate(int inventoryId)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                var inventory = this._repository.GetEntities()
+                                 .Where(d => !d.REMOVED && d.ID == inventoryId)
+                                 .Select(data => new
+                                 {
+                                     data.ID,
+                                     data.FK_SIZE,
+                                     data.FK_PRODUCT,
+                                     data.QUANTITY,
+                                     data.REMOVED
+                                 })
+                                 .Join
+                                  (
+                                  this._sizeRepository.GetEntities()
+                                                      .Where(d => !d.REMOVED)
+                                                      .Select(data => new
+                                                      {
+                                                          data.ID,
+                                                          data.SIZE,
+                                                          data.FKCATEGORYSIZE
+
+                                                      }
+                                                       ),
+                                 inventory => inventory.FK_SIZE,
+                                 size => size.ID,
+                                 (inventory, size) => new { inventory, size }
+                                  )
+                                 .Join
+                                 (
+                                 this._productRepository.GetEntities()
+                                                        .Select(data => new
+                                                        {
+                                                            data.ID,
+                                                            data.NAME_PRODUCT,
+                                                            data.DESCRIPTION_PRODUCT,
+                                                            data.SALE_PRICE,
+                                                            data.LAST_REPLENISHMENT,
+                                                        }),
+                                 combined => combined.inventory.FK_PRODUCT,
+                                 product => product.ID,
+                                 (combined, product) => new { combined.inventory, combined.size, product }
+                                 )
+                                 .Where(data => !data.inventory.REMOVED)
+                                 .GroupBy(data => new { data.product.ID, data.product.NAME_PRODUCT, data.product.SALE_PRICE, data.product.LAST_REPLENISHMENT })
+                                 .Select(group => new InventoryDtoGet
+                                 {
+                                     id = group.Key.ID,
+                                     product_name = group.Key.NAME_PRODUCT,
+                                     price = group.Key.SALE_PRICE,
+                                     quantity = group.Sum(d => d.inventory.QUANTITY),
+                                     availableSizes = this._sizeService.GetSizesAvailablesProductById(group.Key.ID).Data,
+                                     last_replenishment = (group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy") == "01/01/0001" ? "" : group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy"))
+                                 })
+                                 .ToList().First();
+                result.Data = inventory;
+                result.Message = "Obtenido con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al obtener el inventario: {ex.Message}";
+                throw;
+            }
+            return result;
+        }
+
         public ServiceResult GetInventoryById(int inventoryId)
         {
             ServiceResult result = new ServiceResult();

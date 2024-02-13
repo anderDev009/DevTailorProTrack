@@ -15,10 +15,10 @@ namespace TailorProTrack.Application.Service
         private readonly ILogger logger;
         //repositorio de ordenes
         private readonly IOrderRepository _orderRepository;
-        public SaleService(ISalesRepository saleRepository, 
+        public SaleService(ISalesRepository saleRepository,
                            ILogger<ISalesRepository> logger,
-                           IOrderRepository orderRepository) 
-        { 
+                           IOrderRepository orderRepository)
+        {
             _repository = saleRepository;
             this.logger = logger;
             _orderRepository = orderRepository;
@@ -29,17 +29,17 @@ namespace TailorProTrack.Application.Service
             try
             {
                 //obteniendo el total 
-                decimal amount = this._orderRepository.GetEntities().Where(d => d.ID == dtoAdd.FkOrder).Select(d=>d.AMOUNT).First();
+                decimal amount = this._orderRepository.GetEntities().Where(d => d.ID == dtoAdd.FkOrder).Select(d => d.AMOUNT).First();
                 //----------------
                 Sales sale = new Sales
                 {
                     COD_ISC = dtoAdd.CodIsc,
-                    FK_ORDER = dtoAdd.FkOrder,
+                    FK_PREORDER = dtoAdd.FkOrder,
                     USER_CREATED = dtoAdd.User,
                     TOTAL_AMOUNT = amount
                 };
 
-                
+
                 int id = this._repository.Save(sale);
                 result.Data = id;
                 result.Message = "Agregado con exito";
@@ -67,7 +67,7 @@ namespace TailorProTrack.Application.Service
                     {
                         Id = d.ID,
                         CodIsc = d.COD_ISC,
-                        FkOrder = d.FK_ORDER,
+                        FkOrder = d.FK_PREORDER,
                         Amount = d.TOTAL_AMOUNT
                     }).ToList();
 
@@ -89,8 +89,8 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var sale = this._repository.GetEntities().Where(d => d.ID == id).Select(d => new {d.ID,d.FK_ORDER,d.TOTAL_AMOUNT,d.COD_ISC}).First();
-                var order = this._orderRepository.GetEntity(sale.FK_ORDER);
+                var sale = this._repository.GetEntities().Where(d => d.ID == id).Select(d => new { d.ID, d.FK_PREORDER, d.TOTAL_AMOUNT, d.COD_ISC }).First();
+                var order = this._orderRepository.GetEntity(sale.FK_PREORDER);
                 var saleOrder = new
                 {
                     Sale = sale,
@@ -142,7 +142,7 @@ namespace TailorProTrack.Application.Service
                 Sales sale = new Sales
                 {
                     COD_ISC = dtoUpdate.CodIsc,
-                    FK_ORDER = dtoUpdate.FkOrder,
+                    FK_PREORDER = dtoUpdate.FkOrder,
                     TOTAL_AMOUNT = amount,
                     USER_MOD = dtoUpdate.User
                 };

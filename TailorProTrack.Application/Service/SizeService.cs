@@ -53,7 +53,7 @@ namespace TailorProTrack.Application.Service
                 {
                     CREATED_AT = dtoAdd.Date,   
                     USER_CREATED = dtoAdd.User,
-                    SIZE = dtoAdd.size,
+                    SIZE =  dtoAdd.size.ToLower(),
                     FKCATEGORYSIZE = dtoAdd.FkCategory
                 };
                 this._repository.Save(size);
@@ -230,7 +230,7 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                dtoUpdate.IsSizeValid(this.configuration, this._cateogoryRepository);
+                dtoUpdate.IsSizeValidToAdd(this.configuration, this._cateogoryRepository,_repository);
 
                 Size sizeToUpdate = new Size
                 {
@@ -239,13 +239,12 @@ namespace TailorProTrack.Application.Service
                     USER_MOD = dtoUpdate.User,
                     SIZE = dtoUpdate.size,
                     FKCATEGORYSIZE =  dtoUpdate.FkCategory
-
                 };
                 this._repository.Update(sizeToUpdate);
                 result.Message = "Size actualizado correctamente";
             }catch(Exception ex)
             {
-                result.Message = "Error al actualizar el size";
+                result.Message = $"Error al actualizar el size: {ex.Message}";
                 result.Success = false;
             }
             return result;

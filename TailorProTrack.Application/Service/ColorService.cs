@@ -28,12 +28,12 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                dtoAdd.IsColorValid(this.Configuration);
+                dtoAdd.IsColorValidToAdd(this.Configuration,_repository);
 
 
                 Color colorToAdd = new Color();
 
-                colorToAdd.COLORNAME = dtoAdd.colorname;
+                colorToAdd.COLORNAME = dtoAdd.colorname.ToLower();
                 colorToAdd.CODE_COLOR = dtoAdd.code;
                 colorToAdd.USER_CREATED = dtoAdd.User;
                 colorToAdd.CREATED_AT = dtoAdd.Date;
