@@ -1,6 +1,7 @@
 ﻿
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Order;
+using TailorProTrack.Application.Dtos.PreOrder;
 
 namespace TailorProTrack.Application.Contracts
 {
@@ -11,5 +12,6 @@ namespace TailorProTrack.Application.Contracts
         ServiceResult UpdateStatusOrder(OrderDtoUpdateStatus dtoUpdate);
         ServiceResult GetOrder(int Id);
         ServiceResult GetAmountTotalById(int Id);
+        ServiceResult GetInvColorAvailableToAddOrder(List<PreOrderDtoFkSizeFkProduct> keys);
     }
 }

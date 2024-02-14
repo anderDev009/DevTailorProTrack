@@ -18,11 +18,13 @@ namespace TailorProTrack.Application.Service
         private readonly IColorRepository _colorRepository;
         public PreOrderProductsService(IPreOrderProductsRepository preOrderProductsRepository,
                                        IProductRepository productRepository,
-                                       ISizeRepository sizeRepository)
+                                       ISizeRepository sizeRepository,
+                                       IColorRepository colorRepository)
         {
             _preOrderProductRepository = preOrderProductsRepository;
             _productRepository = productRepository;
             _sizeRepository = sizeRepository;
+            _colorRepository = colorRepository;
 
         }
         public ServiceResult Add(PreOrderProductsDtoAdd dtoAdd)
@@ -79,11 +81,15 @@ namespace TailorProTrack.Application.Service
                                                                       .Select(group => new
                                                                       {
                                                                           Id = group.preOrderProducts.ID,
+                                                                          ProductId = group.product.ID,
                                                                           ProductName = group.product.NAME_PRODUCT,
                                                                           Price = group.product.SALE_PRICE,
+                                                                          SizeId = group.size.ID,
                                                                           Size = group.size.SIZE,
                                                                           Quantity = group.preOrderProducts.QUANTITY,
+                                                                          ColorPrimaryId = group.colorPrimary.ID,
                                                                           ColorPrimary = group.colorPrimary.COLORNAME,
+                                                                          ColorSecondaryId = group.colorSecondary.ID,
                                                                           ColorSecondary = group.colorSecondary.COLORNAME
                                                                       });
                 result.Data = preOrderProducts;

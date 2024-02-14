@@ -116,12 +116,22 @@ namespace TailorProTrack.Application.Service
             ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-
+                var invColor = _repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage)
+                    .Select(data => new InventoryColorDtoGetWithId
+                    {
+                        Id = data.ID,
+                        colorPrimary = _colorService.GetById(data.FK_COLOR_PRIMARY),
+                        colorSecondary = (data.FK_COLOR_SECONDARY != null) ? _colorService.GetById((int)data.FK_COLOR_SECONDARY).Data : 0,
+                        //InventoryColorId = data.FK_INVENTORY,
+                        quantity = data.QUANTITY,   
+                    });
+                result.Data = invColor;
+                result.Message = "obtenido con exito.";
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = $"Error al obtener el detalle de inventario {ex.Message}";
+                result.Message = $"Error al obtener inventory color: {ex.Message}";
                 throw;
             }
             return result;
@@ -132,15 +142,22 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-              
+                var invColor = _repository.SearchEntities().Where(data => data.ID == id).Select(data => new InventoryColorDtoGetWithId
+                {
+                    Id = data.ID,
+                    colorPrimary = _colorRepository.GetEntity(data.FK_COLOR_PRIMARY),
+                    colorSecondary= (data.FK_COLOR_SECONDARY != null) ? _colorRepository.GetEntity((int)data.FK_COLOR_SECONDARY) : 0,
+                    quantity = data.QUANTITY,
+                    
+                });
 
-                //result.Data = inventoryDetail;
-                result.Message = "Obtenidos correctamente.";
+                result.Data = invColor;
+                result.Message = "Obtenido correctamente.";
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = $"Error al obtener el detalle de inventario {ex.Message}";
+                result.Message = $"Error al obtener el inventory color: {ex.Message}";
                 throw;
             }
             return result;
@@ -229,6 +246,27 @@ namespace TailorProTrack.Application.Service
                 result.Message = $"Error al intentar removerlo {ex.Message}.";
             }
             return result;
+        }
+
+        public InventoryColorDtoGetWithId SearchAvailabilityToAddOrder(int sizeId, int orderId)
+        {
+            InventoryColor invColor = new InventoryColor();
+            try
+            {
+                invColor = _repository.SearchAvailabilityToAddOrder(sizeId, orderId);
+
+            }
+            catch (Exception)
+            {
+            }
+          
+            return new InventoryColorDtoGetWithId
+            {
+                Id = invColor.ID,
+                colorPrimary = _colorService.GetById(invColor.FK_COLOR_PRIMARY).Data,
+                colorSecondary = invColor.FK_COLOR_SECONDARY != null ? _colorService.GetById((int)invColor.FK_COLOR_SECONDARY).Data : 0,
+                quantity = invColor.QUANTITY, 
+            };
         }
 
         public ServiceResult Update(InventoryColorDtoUpdate dtoUpdate)

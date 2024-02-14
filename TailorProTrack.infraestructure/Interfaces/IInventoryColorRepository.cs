@@ -10,6 +10,6 @@ namespace TailorProTrack.infraestructure.Interfaces
 {
     public interface IInventoryColorRepository : IBaseRepository<InventoryColor>
     {
-
+        InventoryColor SearchAvailabilityToAddOrder(int SizeId, int OrderId);
     }
 }

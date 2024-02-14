@@ -4,6 +4,7 @@ using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Order;
+using TailorProTrack.Application.Dtos.PreOrder;
 
 namespace TailorProTrack.Api.Controllers
 {
@@ -58,7 +59,16 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
-      
+        [HttpPost("GetInvColorAvailableToAddOrder")]
+        public IActionResult GetAvailable(List<PreOrderDtoFkSizeFkProduct> dto)
+        {
+            ServiceResult result = this.orderService.GetInvColorAvailableToAddOrder(dto);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
         [HttpGet("GetOrderDetail")]
         public IActionResult GetOrderDetail(int id)
         {

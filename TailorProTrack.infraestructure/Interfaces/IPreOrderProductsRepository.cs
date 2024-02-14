@@ -9,5 +9,7 @@ namespace TailorProTrack.infraestructure.Interfaces
     {
         void SaveMany(List<PreOrderProducts> preOrderProducts); 
         List<PreOrderProducts> GetByPreOrderId(int PreOrderId);
+
+        decimal GetAmountByIdPreOrder(int preOrderId);
     }
 }

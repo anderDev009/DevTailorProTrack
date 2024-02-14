@@ -47,5 +47,14 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context.Update(inventoryColor);
             this._context.SaveChanges();
         }
+
+        public InventoryColor SearchAvailabilityToAddOrder(int SizeId, int OrderId)
+        {
+            return _entities.Join(_context.INVENTORY,
+                invColor => invColor.FK_INVENTORY,
+                inventory => inventory.ID, (invColor,inventory) => new {invColor,inventory})
+                .Where(data => data.inventory.FK_SIZE == SizeId && data.inventory.FK_PRODUCT ==  OrderId)
+                .Select(data => data.invColor).First();
+        }
     }
 }

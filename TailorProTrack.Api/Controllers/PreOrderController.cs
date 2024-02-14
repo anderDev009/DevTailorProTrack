@@ -29,6 +29,18 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(response);
         }
+
+        [HttpGet("GetPreOrder")]
+        public IActionResult GetById(int id)
+        {
+            var result = _preOrderService.GetById(id);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
         [HttpPost("AddPreOrder")]
         public IActionResult Save([FromBody] PreOrderDtoAdd dtoAdd)
         {

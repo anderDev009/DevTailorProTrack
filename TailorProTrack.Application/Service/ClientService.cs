@@ -138,7 +138,7 @@ namespace TailorProTrack.Application.Service
             try
             {
                 var client = this._repository.GetEntities()
-                                             .Where(data=> !data.REMOVED && data.ID == id)
+                                             .Where(data=> !data.REMOVED && data.ID ==  id)
                                              .Select(data => new ClientDtoGetDetails
                                              {
                                                  Id = data.ID,

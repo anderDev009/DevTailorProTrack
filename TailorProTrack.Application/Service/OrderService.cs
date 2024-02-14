@@ -1,10 +1,13 @@
 ﻿
 
+using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
+using TailorProTrack.Application.Dtos.InventoryColor;
 using TailorProTrack.Application.Dtos.Order;
+using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
@@ -37,8 +40,9 @@ namespace TailorProTrack.Application.Service
         //cliente
         private readonly IClientRepository _clientRepository;
         //preOrder 
-        private readonly IPreOrderRepository _preOrderRepository;   
+        private readonly IPreOrderRepository _preOrderRepository;
         //servicios
+        private readonly IInventoryColorService _inventoryColorService;
         //servicio de inventario
         private readonly IInventoryService _inventoryService;
         //servicio de producto
@@ -62,7 +66,8 @@ namespace TailorProTrack.Application.Service
                             IColorRepository colorRepository,
                             IUserRepository userRepository,
                             IPreOrderRepository preOrderRepository,
-                            IPreOrderProductsRepository preOrderProductsRepository
+                            IPreOrderProductsRepository preOrderProductsRepository,
+                            IInventoryColorService inventoryColorService
                             )
         {
             this._repository = repository;
@@ -82,6 +87,7 @@ namespace TailorProTrack.Application.Service
             _userRepository = userRepository;
             _preOrderRepository = preOrderRepository;
             _preOrderProductsRepository = preOrderProductsRepository;
+            _inventoryColorService = inventoryColorService;
         }
 
         public IConfiguration Configuration { get; }
@@ -285,6 +291,32 @@ namespace TailorProTrack.Application.Service
             {
                 result.Success = false;
                 result.Message = $"Error al obtener la orden: {ex.Message}";
+            }
+            return result;
+        }
+
+        public ServiceResult GetInvColorAvailableToAddOrder(List<PreOrderDtoFkSizeFkProduct> keys)
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                List<InventoryColorDtoGetWithId> invColors = new List<InventoryColorDtoGetWithId>();
+                foreach(var key in keys)
+                {
+                    var invColor = _inventoryColorService.SearchAvailabilityToAddOrder(key.FkSize, key.FkProduct);
+                    if(invColor.Id != 0)
+                    {
+                        invColors.Add(invColor);
+                    }
+                }
+                result.Data  = invColors;
+                result.Message = "Obtenidos con exito.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error: {ex.Message}";
+                throw;
             }
             return result;
         }

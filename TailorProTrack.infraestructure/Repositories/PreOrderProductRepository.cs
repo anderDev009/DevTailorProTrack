@@ -15,6 +15,17 @@ namespace TailorProTrack.infraestructure.Repositories
             _ctx = ctx;
         }
 
+        public decimal GetAmountByIdPreOrder(int preOrderId)
+        {
+            return _entities
+                     .Join(_ctx.PRODUCT,
+                     preOrderProducts => preOrderProducts.FK_PRODUCT,
+                     product => product.ID,
+                     (preorderProducts, product) => new { preorderProducts, product })
+                     .Where(data => data.preorderProducts.FK_PREORDER == preOrderId)
+                     .Sum(data => (data.product.SALE_PRICE * data.preorderProducts.QUANTITY));
+        }
+
         public List<PreOrderProducts> GetByPreOrderId(int PreOrderId)
         {
             return this._entities.Where(data => data.FK_PREORDER == PreOrderId).ToList();

@@ -1,4 +1,5 @@
 ﻿using TailorProTrack.Application.Contracts;
+using TailorProTrack.Application.Contracts.Client;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
@@ -20,9 +21,12 @@ namespace TailorProTrack.Application.Service
 
         //servicios 
         private readonly IPreOrderProductService _preOrderProductService;
+        //
+        private readonly IClientService _clientService;
         public PreOrderService(IPreOrderRepository preOrderRepository, ISizeRepository sizeRepository,
                         IProductRepository productRepository, IClientRepository clientRepository,
-                        IPreOrderProductService preOrderProductService, IPreOrderProductsRepository preOrderProductsRepository)
+                        IPreOrderProductService preOrderProductService, IPreOrderProductsRepository preOrderProductsRepository,
+                        IClientService clientService)
         {
             _preOrderRepository = preOrderRepository;
             _sizeRepository = sizeRepository;
@@ -30,6 +34,7 @@ namespace TailorProTrack.Application.Service
             _clientRepository = clientRepository;
             _preOrderProductService = preOrderProductService;
             _preOrderProductsRepository = preOrderProductsRepository;
+            _clientService = clientService;
         }
 
         public ServiceResult Add(PreOrderDtoAdd dtoAdd)
@@ -72,10 +77,10 @@ namespace TailorProTrack.Application.Service
                 var countRegister = this._preOrderRepository.CountEntities();
                 PaginationMetaData header = new PaginationMetaData(countRegister, @params.Page, @params.ItemsPerPage);
 
-                var preOrders = this._preOrderRepository.GetEntities()
+                var preOrders = this._preOrderRepository.SearchEntities()
                                                         .Join
                                                         (
-                                                        this._preOrderProductsRepository.GetEntities(),
+                                                        this._preOrderProductsRepository.SearchEntities(),
                                                         preOrder => preOrder.ID,
                                                         preOrderProducts => preOrderProducts.FK_PREORDER,
                                                         (preOrder, products) => new { preOrder, products }
@@ -85,8 +90,8 @@ namespace TailorProTrack.Application.Service
                                                         (group => new
                                                         {
                                                             Id = group.Key,
-                                                            Client = this._clientRepository.GetEntity(group.Select(d => d.preOrder.FK_CLIENT)
-                                                                                           .First()),
+                                                            Client = this._clientService.GetById(group.Select(d => d.preOrder.FK_CLIENT)
+                                                                                           .First()).Data,
                                                             Items = group.Select(data => data.products).First()//el first veo si lo cambio
                                                         }
                                                         ).ToList();
@@ -115,8 +120,8 @@ namespace TailorProTrack.Application.Service
                                         {
                                             Id = data.ID,
                                             //Quantity = data.QUANTITY,
-                                            Client = this._clientRepository.GetEntity(data.FK_CLIENT),
-                                            Items = this._preOrderProductService.GetByPreOrder(data.ID)
+                                            Client = this._clientService.GetById(data.FK_CLIENT).Data,
+                                            Items = this._preOrderProductService.GetByPreOrder(data.ID).Data
                                         });
                 result.Data = preOrder;
                 result.Message = "Obtenido con exito";

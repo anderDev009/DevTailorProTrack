@@ -36,7 +36,7 @@ namespace TailorProTrack.infraestructure.Core
 
         public List<T> GetEntitiesPaginated(int page, int itemsPage)
         {
-            return this._entities.Skip((page - 1) * itemsPage).Take(itemsPage).ToList();
+            return this._entities.Where(data => !data.REMOVED).Skip((page - 1) * itemsPage).Take(itemsPage).ToList();
         }
 
         public virtual T GetEntity(int id)

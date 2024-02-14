@@ -54,7 +54,7 @@ namespace TailorProTrack.Application.Service
             try
             {
                 //validaciones
-                dtoAdd.IsValid(this.Configuration, this._productRepository, this._sizeRepository);
+                dtoAdd.IsValidToAdd(Configuration, _productRepository, _sizeRepository, _repository);
                 //codigo para agregar
                 Inventory inventory = new Inventory
                 {
@@ -105,13 +105,13 @@ namespace TailorProTrack.Application.Service
                                  .Join
                                   (
                                   this._sizeRepository.GetEntities()
-                                                      .Where(d => !d.REMOVED) 
+                                                      .Where(d => !d.REMOVED)
                                                       .Select(data => new
                                                       {
                                                           data.ID,
                                                           data.SIZE,
                                                           data.FKCATEGORYSIZE
-                                                          
+
                                                       }
                                                        ),
                                  inventory => inventory.FK_SIZE,
@@ -144,7 +144,7 @@ namespace TailorProTrack.Application.Service
                                      availableSizes = this._sizeService.GetSizesAvailablesProductById(group.Key.ID).Data,
                                      last_replenishment = (group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy") == "01/01/0001" ? "" : group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy"))
                                  })
-                                 .ToList(); 
+                                 .ToList();
                 result.Data = inventory;
                 result.Header = header;
                 result.Message = "Inventario obtenido correctamente";
@@ -167,39 +167,39 @@ namespace TailorProTrack.Application.Service
                 var sizesById = this._sizeService.GetSizesAvailablesProductById(id).Data;
                 //validar si sizesById no viene nulo
 
-                
+
                 var product = this._productService.GetById(id).Data;
 
                 List<dynamic> colors = new List<dynamic>();
                 foreach (var item in sizesById)
                 {
-                        var inventoryColor = this._inventoryColorService.GetByIdInventory(item.idInventory).Data;// sizesById.Data.idInventory;
+                    var inventoryColor = this._inventoryColorService.GetByIdInventory(item.idInventory).Data;// sizesById.Data.idInventory;
                     colors.Add(inventoryColor);
                     //Console.WriteLine(item);
                 }
                 var inventory = this._repository.GetEntities()
-                                                .Where(data => 
+                                                .Where(data =>
                                                 data.FK_PRODUCT == id && !data.REMOVED && data.QUANTITY != 0)
-                                                .GroupBy(data=> new { data.FK_PRODUCT})
-                                                .Select(data => new 
+                                                .GroupBy(data => new { data.FK_PRODUCT })
+                                                .Select(data => new
                                                 {
                                                     product,
-                                                    quantity = data.Sum(d=> d.QUANTITY),
+                                                    quantity = data.Sum(d => d.QUANTITY),
                                                     inventory = new
                                                     {
-                                                         sizes = sizesById,
-                                                         colors
-                                                                                                   }
+                                                        sizes = sizesById,
+                                                        colors
+                                                    }
                                                 });
                 result.Data = inventory;
                 result.Message = "Obtenido correctamente";
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result.Success = false;
                 result.Message = $"Error al intentar obtener el producto ${ex}";
             }
-          
+
             return result;
         }
 
@@ -334,7 +334,7 @@ namespace TailorProTrack.Application.Service
                 this._repository.Remove(inv);
                 result.Message = "Removido con exito";
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result.Success = false;
                 result.Message = $"Error al intentar eliminar ${ex}";

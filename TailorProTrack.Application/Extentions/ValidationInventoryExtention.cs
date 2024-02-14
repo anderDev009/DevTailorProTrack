@@ -28,5 +28,16 @@ namespace TailorProTrack.Application.Extentions
             //validando cantidad
             return result;
         }
+
+        public static void IsValidToAdd(this InventoryDtoAdd dtoAdd,
+            IConfiguration configuration, IProductRepository productRepository,
+            ISizeRepository sizeRepository, IInventoryRepository inventoryRepository)
+        {
+            IsValid(dtoAdd,configuration, productRepository, sizeRepository);
+            if(inventoryRepository.Exists(inventory => inventory.FK_SIZE == dtoAdd.fk_size && inventory.FK_PRODUCT == dtoAdd.fk_product))
+            {
+                throw new InventoryServiceException("Este producto ya esta registrado con este size.");
+            }
+        }
     }
 }

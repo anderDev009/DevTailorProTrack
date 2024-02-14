@@ -1,9 +1,10 @@
 ﻿
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Linq.Expressions;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Sale;
+using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 
@@ -13,23 +14,37 @@ namespace TailorProTrack.Application.Service
     {
         private readonly ISalesRepository _repository;
         private readonly ILogger logger;
-        //repositorio de ordenes
-        private readonly IOrderRepository _orderRepository;
+        //repositorio de preorder
+        private readonly IPreOrderRepository _preOrderRepository;
+        //repositorio de productos
+        //repositorio de preorder products
+        private readonly IPreOrderProductsRepository _preorderProductsRepository;
+        //servicio de preorder
+        private readonly IPreOrderService _preorderService;
         public SaleService(ISalesRepository saleRepository,
                            ILogger<ISalesRepository> logger,
-                           IOrderRepository orderRepository)
+                           IPreOrderProductsRepository preorderProductsRepository,
+                           IPreOrderService preorderService,
+                           IConfiguration configuration,
+                           IPreOrderRepository preOrderRepository)
         {
             _repository = saleRepository;
             this.logger = logger;
-            _orderRepository = orderRepository;
+            this.configuration = configuration;
+            _preorderProductsRepository = preorderProductsRepository;
+            _preorderService = preorderService;
+            _preOrderRepository = preOrderRepository;
         }
+        public IConfiguration configuration { get; }
         public ServiceResult Add(SaleDtoAdd dtoAdd)
         {
             ServiceResult result = new ServiceResult();
             try
             {
+                dtoAdd.IsValid(configuration,_preOrderRepository);
+
                 //obteniendo el total 
-                decimal amount = this._orderRepository.GetEntities().Where(d => d.ID == dtoAdd.FkOrder).Select(d => d.AMOUNT).First();
+                decimal amount = _preorderProductsRepository.GetAmountByIdPreOrder(dtoAdd.FkOrder);
                 //----------------
                 Sales sale = new Sales
                 {
@@ -90,7 +105,7 @@ namespace TailorProTrack.Application.Service
             try
             {
                 var sale = this._repository.GetEntities().Where(d => d.ID == id).Select(d => new { d.ID, d.FK_PREORDER, d.TOTAL_AMOUNT, d.COD_ISC }).First();
-                var order = this._orderRepository.GetEntity(sale.FK_PREORDER);
+                var order = _preorderService.GetById(sale.FK_PREORDER);
                 var saleOrder = new
                 {
                     Sale = sale,
@@ -137,8 +152,8 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-
-                decimal amount = this._orderRepository.GetEntities().Where(d => d.ID == dtoUpdate.FkOrder).Select(d => d.AMOUNT).First();
+                dtoUpdate.IsValid(configuration,_preOrderRepository);
+                decimal amount = _preorderProductsRepository.GetAmountByIdPreOrder(dtoUpdate.FkOrder);
                 Sales sale = new Sales
                 {
                     COD_ISC = dtoUpdate.CodIsc,
