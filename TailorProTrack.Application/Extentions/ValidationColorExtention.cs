@@ -22,12 +22,12 @@ namespace TailorProTrack.Application.Extentions
         {
             IsColorValid(colorDto, configuration);
 
-            if (colorRepository.SearchEntities().Where(color => color.COLORNAME == colorDto.colorname).FirstOrDefault() == null)
+            if (colorRepository.SearchEntities().Where(color => color.COLORNAME == colorDto.colorname).FirstOrDefault() != null)
             {
                 throw new ColorServiceException(configuration["validations:colornameAlreadyExists"]);
             }
 
-            if (colorRepository.SearchEntities().Where(color => color.CODE_COLOR == colorDto.code).FirstOrDefault() == null)
+            if (colorRepository.SearchEntities().Where(color => color.CODE_COLOR == colorDto.code).FirstOrDefault() != null)
             {
                 throw new ColorServiceException(configuration["validations:codecolorAlreadyRegistered"]);
             }
