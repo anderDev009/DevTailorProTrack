@@ -6,6 +6,6 @@ namespace TailorProTrack.Application.Contracts.Report
 {
     public interface IReportOrderInventoryService
     {
-        ServiceResult GetDiffItemsByOrderId(int orderId);
+        ServiceResult GetDiffItemsByPreOrderId(int preOrderId);
     }
 }

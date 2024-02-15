@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.JSInterop.Infrastructure;
 using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;

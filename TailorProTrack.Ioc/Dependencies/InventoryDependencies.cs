@@ -18,6 +18,7 @@ namespace TailorProTrack.Ioc.Dependencies
             service.AddTransient<IInventoryColorService, InventoryColorService>();
 
             service.AddTransient<IInventoryService, InventoryService>();
+
         }
     }
 }
