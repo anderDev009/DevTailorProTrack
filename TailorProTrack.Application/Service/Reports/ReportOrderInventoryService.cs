@@ -77,7 +77,6 @@ namespace TailorProTrack.Application.Service.Reports
                         },
                         completed =data.quantityDiff >= 0 ,
                         itemsToComplete = data.quantityDiff,
-                        sizesPreOrder = data.
                     });
                 //var report = _preOrderProductRepository.SearchEntities()
                 //    .Join(
