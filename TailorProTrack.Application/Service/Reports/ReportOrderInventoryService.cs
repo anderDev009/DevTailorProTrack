@@ -58,7 +58,8 @@ namespace TailorProTrack.Application.Service.Reports
                     {
                         idProd = data.Key,
                         productName = data.Select(d => d.product.NAME_PRODUCT).First(),
-                        sizes = data.Select(d => d.preorderProducts.FK_SIZE),
+                        sizes = data.Select(d => d.preorderProducts.FK_SIZE)
+                        .Join(_sizeRepository.SearchEntities(), fk => fk, size => size.ID,(fk,size) => new {fk, size }).Select(d => d.size).Distinct().ToList(),
                         availableSizes = data.Select(d => d.inventory.FK_SIZE).Distinct().ToList(),
                         sizesNeeded = data.Select(d => d.preorderProducts.FK_SIZE).Distinct().ToList(),
                         colorPrimaryNeeded = data.Select(d => d.preorderProducts.COLOR_PRIMARY).Distinct().ToList(),
@@ -77,6 +78,7 @@ namespace TailorProTrack.Application.Service.Reports
                         },
                         completed =data.quantityDiff >= 0 ,
                         itemsToComplete = data.quantityDiff,
+                        data.sizes
                     });
                 //var report = _preOrderProductRepository.SearchEntities()
                 //    .Join(
