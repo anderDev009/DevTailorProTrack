@@ -105,7 +105,15 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var size = this._repository.GetEntity(id);
+                var size = this._repository.SearchEntities().Where(data => data.ID == id)
+                    .Join(_cateogoryRepository.SearchEntities(), size => size.FKCATEGORYSIZE, category => category.ID,
+                    (size, category) => new { size, category })
+                    .Select(data => new SizeDtoGet
+                    {
+                        Id = data.size.ID,
+                        Size = data.size.SIZE,
+                        Category = data.category.CATEGORY
+                    }).SingleOrDefault();
                 result.Data = size;
                 result.Message = "Size obtenido correctamente";
             }catch(Exception ex)

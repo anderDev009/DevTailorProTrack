@@ -15,6 +15,6 @@ namespace TailorProTrack.Application.Contracts
 
         int GetIdInventory(int inventoryColorId);
 
-        InventoryColorDtoGetWithId SearchAvailabilityToAddOrder(int sizeId,  int orderId);
+        InventoryColorDtoGetWithId SearchAvailabilityToAddOrder(int sizeId,  int orderId, int colorPrimary, int? colorSecondary);
     }
 }

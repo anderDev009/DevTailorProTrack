@@ -126,7 +126,7 @@ namespace TailorProTrack.Application.Service
                                                     description = data.product.DESCRIPTION_PRODUCT,
                                                     type = data.typeProd.TYPE_PROD,
                                                     sale_price = data.product.SALE_PRICE
-                                                });
+                                                }).First();
                 result.Data = product;
                 result.Message = "Obtenido con exito";
             }

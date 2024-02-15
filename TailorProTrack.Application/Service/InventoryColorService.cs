@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Contracts.Color;
+using TailorProTrack.Application.Contracts.Size;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.InventoryColor;
 using TailorProTrack.Application.Extentions;
@@ -27,12 +28,18 @@ namespace TailorProTrack.Application.Service
         private readonly IInventoryRepository _inventoryRepository;
         //producto
         private readonly IProductRepository _productRepository;
+        //product service
+        private readonly IProductService _productService;
+        //service size
+        private readonly ISizeService _sizeService;
         public InventoryColorService(IInventoryColorRepository inventoryColorRepository,
                                      ILogger<IInventoryColorRepository> logger,
                                      IInventoryRepository inventoryRepository,
                                      IColorService colorService,
                                      IColorRepository colorRepository,
                                      IProductRepository productRepository,
+                                     IProductService productService,
+                                     ISizeService sizeService,
                                      IConfiguration configuration)
         {
             this._repository = inventoryColorRepository;
@@ -42,6 +49,8 @@ namespace TailorProTrack.Application.Service
             _productRepository = productRepository;
             _colorRepository = colorRepository;
             this.configuration = configuration;
+            _productService = productService;
+            _sizeService = sizeService;
         }
 
         private  IConfiguration configuration { get; }
@@ -119,7 +128,7 @@ namespace TailorProTrack.Application.Service
                 var invColor = _repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage)
                     .Select(data => new InventoryColorDtoGetWithId
                     {
-                        Id = data.ID,
+                        InventoryColorId = data.ID,
                         colorPrimary = _colorService.GetById(data.FK_COLOR_PRIMARY),
                         colorSecondary = (data.FK_COLOR_SECONDARY != null) ? _colorService.GetById((int)data.FK_COLOR_SECONDARY).Data : 0,
                         //InventoryColorId = data.FK_INVENTORY,
@@ -144,7 +153,7 @@ namespace TailorProTrack.Application.Service
             {
                 var invColor = _repository.SearchEntities().Where(data => data.ID == id).Select(data => new InventoryColorDtoGetWithId
                 {
-                    Id = data.ID,
+                    InventoryColorId = data.ID,
                     colorPrimary = _colorRepository.GetEntity(data.FK_COLOR_PRIMARY),
                     colorSecondary= (data.FK_COLOR_SECONDARY != null) ? _colorRepository.GetEntity((int)data.FK_COLOR_SECONDARY) : 0,
                     quantity = data.QUANTITY,
@@ -248,24 +257,30 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public InventoryColorDtoGetWithId SearchAvailabilityToAddOrder(int sizeId, int orderId)
+        public InventoryColorDtoGetWithId SearchAvailabilityToAddOrder(int sizeId, int orderId, int colorPrimary, int? colorSecondary)
         {
             InventoryColor invColor = new InventoryColor();
             try
             {
-                invColor = _repository.SearchAvailabilityToAddOrder(sizeId, orderId);
+                invColor = _repository.SearchAvailabilityToAddOrder(sizeId,orderId,colorPrimary,colorSecondary);
 
             }
             catch (Exception)
             {
             }
-          
+            if(invColor.ID == 0)
+            {
+                return new InventoryColorDtoGetWithId();
+            }
             return new InventoryColorDtoGetWithId
             {
-                Id = invColor.ID,
+                InventoryColorId = invColor.ID,
+                Product = _productService.GetById(orderId).Data,
+                Size = _sizeService.GetById(sizeId).Data,
                 colorPrimary = _colorService.GetById(invColor.FK_COLOR_PRIMARY).Data,
                 colorSecondary = invColor.FK_COLOR_SECONDARY != null ? _colorService.GetById((int)invColor.FK_COLOR_SECONDARY).Data : 0,
                 quantity = invColor.QUANTITY, 
+                
             };
         }
 

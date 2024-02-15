@@ -1,8 +1,13 @@
 ﻿
+using TailorProTrack.Application.Dtos.Product;
+
 namespace TailorProTrack.Application.Dtos.InventoryColor
 {
     public class InventoryColorDtoGetWithId : InventoryColorDtoGet
     {
-        public int Id { get; set; }
+
+
+        public object? Product { get; set; }
+        public object? Size { get; set; }
     }
 }

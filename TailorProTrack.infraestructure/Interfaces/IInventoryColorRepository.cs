@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TailorProTrack.domain.Entities;
+﻿using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Core;
 
 namespace TailorProTrack.infraestructure.Interfaces
 {
     public interface IInventoryColorRepository : IBaseRepository<InventoryColor>
     {
-        InventoryColor SearchAvailabilityToAddOrder(int SizeId, int OrderId);
+        InventoryColor SearchAvailabilityToAddOrder(int SizeId, int OrderId, int colorPrimary, int? colorSecondary);
     }
 }
