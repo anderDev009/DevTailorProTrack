@@ -85,14 +85,15 @@ namespace TailorProTrack.Application.Service
                                                         preOrderProducts => preOrderProducts.FK_PREORDER,
                                                         (preOrder, products) => new { preOrder, products }
                                                         )
-                                                        .GroupBy(data => data.preOrder.ID)
+                                                        .Join(_clientRepository.SearchEntities(),
+                                                        group => group.preOrder.FK_CLIENT,client=> client.ID,
+                                                        (group,client) => new {group.products,group.preOrder,client})
                                                         .Select
                                                         (group => new
                                                         {
-                                                            Id = group.Key,
-                                                            Client = this._clientService.GetById(group.Select(d => d.preOrder.FK_CLIENT)
-                                                                                           .First()).Data,
-                                                            Items = group.Select(data => data.products).First()//el first veo si lo cambio
+                                                            Id = group.preOrder.ID,
+                                                            Client = group.client,
+                                                            Items = group.products//el first veo si lo cambio
                                                         }
                                                         ).ToList();
 

@@ -99,7 +99,7 @@ namespace TailorProTrack.Application.Service
             {
                 //validaciones
                 dtoAdd.IsValidToAdd(this.Configuration,this._clientRepository,this._userRepository,_preOrderRepository
-                    ,_preOrderProductsRepository, _inventoryRepository,_inventoryColorRepository);
+                    ,_preOrderProductsRepository, _inventoryRepository,_inventoryColorRepository,_orderProductRepository);
                 //logica para agregarele la cantidad
                 decimal amount = 0;
                 foreach(var item in dtoAdd.products)
@@ -117,6 +117,7 @@ namespace TailorProTrack.Application.Service
                     FK_PREORDER = dtoAdd.FkPreOrder,
                     AMOUNT = amount,
                     DESCRIPTION_JOB = dtoAdd.DescriptionJob,
+                    STATUS_ORDER = "pendiente",
                 };
                 int idOrder = this._repository.Save(orderToAdd);
                 //agregando el detalle de la orden

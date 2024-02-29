@@ -12,17 +12,17 @@ namespace TailorProTrack.Application.Extentions
                                    IInventoryColorRepository invColorRepository, IOrderRepository orderRepository)
         {
             //
-            if(dtoBase.Quantity >= 0)
+            if (dtoBase.Quantity <= 0)
             {
                 throw new OrderProductServiceException(configuration["validations:numberLessZero"]);
             }
 
-            if(orderRepository.Exists(ordr => ordr.ID == dtoBase.FkOrder))
+            if(!orderRepository.Exists(ordr => ordr.ID == dtoBase.FkOrder))
             {
                 throw new OrderProductServiceException(configuration["validations:orderDoesntExist"]);
             }
 
-            if(invColorRepository.Exists(invColor => invColor.ID == dtoBase.FkInventoryColor))
+            if(!invColorRepository.Exists(invColor => invColor.ID == dtoBase.FkInventoryColor))
             {
                 throw new OrderProductServiceException(configuration["validations:typeDoesntExist"]);
 

@@ -46,6 +46,7 @@ namespace TailorProTrack.Application.Service
                 List<OrderProduct> productsToAdd = new List<OrderProduct>();    
                 for(int i = 0; i < products.Count; i++)
                 {
+                    products[i].FkOrder = idOrder;
                     products[i].IsValid(this.Configuration,this._inventoryColorRepository,this._orderRepository);
                 }
                 foreach(var item in products)
@@ -54,7 +55,9 @@ namespace TailorProTrack.Application.Service
                     {
                         FK_ORDER = idOrder,
                         FK_INVENTORYCOLOR = item.FkInventoryColor,
-                        QUANTITY =  item.Quantity
+                        QUANTITY =  item.Quantity,
+                        //modificar lo del usuario
+                        USER_CREATED = 1
                     });
                 }
                 this._repository.SaveMany(productsToAdd);

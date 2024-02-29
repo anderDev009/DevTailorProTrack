@@ -53,6 +53,7 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             foreach(var item in products)
             {
+                item.CREATED_AT = DateTime.Now; 
                 this._context.Add(item);
             }
             this._context.SaveChanges();
