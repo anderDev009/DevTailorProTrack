@@ -65,7 +65,9 @@ namespace TailorProTrack.infraestructure.Context
               .WithMany(c => c.ColorSecondaryInBuys)
               .HasForeignKey(b => b.COLOR_SECONDARY);
             #endregion
-            
+            #region product
+            modelBuilder.Entity<Product>().HasOne(p => p.Type).WithMany(t => t.Products).HasForeignKey(p => p.FK_TYPE);
+            #endregion
             #endregion
 
         }

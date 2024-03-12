@@ -31,7 +31,7 @@ namespace TailorProTrack.infraestructure.Core
         }
         public virtual List<T> GetEntities()
         {
-            return this._entities.ToList();
+            return _context.Set<T>().ToList();
         }
 
         public List<T> GetEntitiesPaginated(int page, int itemsPage)

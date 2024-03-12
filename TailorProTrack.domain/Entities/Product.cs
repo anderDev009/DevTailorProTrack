@@ -12,7 +12,7 @@ namespace TailorProTrack.domain.Entities
         
         public DateTime LAST_REPLENISHMENT {  get; set; }
 
-        public Type_prod? Type {  get; set; }
+        public Type_prod? Type { get; set; }
         public List<BuyInventoryDetail>? productsInBuys { get; set; }
     }
 }
