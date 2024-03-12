@@ -14,6 +14,9 @@ namespace TailorProTrack.Ioc.Dependencies
             services.AddScoped<IExpensesRepository,ExpensesRepository>();
 
             services.AddTransient<IExpensesService,ExpensesService>();
+
+            services.AddTransient<IBuyInventoryRepository, BuyInventoryRepository>();
+            services.AddTransient<IBuyInventoryDetailRepository, BuyInventoryDetailRepository>();
         }
     }
 }

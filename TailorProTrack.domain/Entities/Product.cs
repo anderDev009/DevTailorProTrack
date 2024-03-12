@@ -11,5 +11,8 @@ namespace TailorProTrack.domain.Entities
         public int FK_TYPE { get; set; }
         
         public DateTime LAST_REPLENISHMENT {  get; set; }
+
+        public Type_prod? Type {  get; set; }
+        public List<BuyInventoryDetail>? productsInBuys { get; set; }
     }
 }

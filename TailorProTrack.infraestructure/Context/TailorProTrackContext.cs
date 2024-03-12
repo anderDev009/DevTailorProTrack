@@ -30,11 +30,42 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<PreOrder> PRE_ORDER {  get; set; }
         public DbSet<PreOrderProducts> PRE_ORDER_PRODUCTS {  get; set; }
 
+        public DbSet<BuyInventory> BUY_INVENTORY { get; set; }
+        public DbSet<BuyInventoryDetail> BUY_INVENTORY_DETAIL { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            #region
+            #region Foreign Keys
             modelBuilder.Entity<Size>().HasOne<CategorySize>(s => s.categorySize).WithMany().HasForeignKey(s => s.FKCATEGORYSIZE);
+
+            #region Compras de inventario
+            modelBuilder.Entity<BuyInventory>()
+                .HasMany(b => b.Details)
+                .WithOne(d => d.BuyInventory)
+                .HasForeignKey(d => d.FK_BUY_INVENTORY);
+
+            modelBuilder.Entity<BuyInventoryDetail>()
+                .HasOne(b => b.Product)
+                .WithMany(p => p.productsInBuys)
+                .HasForeignKey(b => b.FK_PRODUCT);
+
+            modelBuilder.Entity<BuyInventoryDetail>()
+                .HasOne(b => b.Size)
+                .WithMany(Size => Size.sizeInBuys)
+                .HasForeignKey(b => b.FK_SIZE);
+
+            modelBuilder.Entity<BuyInventoryDetail>()
+                .HasOne(b => b.ColorPrimary)
+                .WithMany(c => c.ColorPrimaryInBuys)
+                .HasForeignKey(b => b.COLOR_PRIMARY);
+
+            modelBuilder.Entity<BuyInventoryDetail>()
+              .HasOne(b => b.ColorSecondary)
+              .WithMany(c => c.ColorSecondaryInBuys)
+              .HasForeignKey(b => b.COLOR_SECONDARY);
+            #endregion
+            
             #endregion
 
         }

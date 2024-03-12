@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.Ioc.Dependencies;
-
+using TailorProTrack.Application;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -34,6 +34,8 @@ builder.Services.AddUserDependencies();
 builder.Services.AddCategoryDependencies();
 //dependencias de pedido / preorder
 builder.Services.AddPreOrderDependencies();
+//servicios de la capa de aplicacion
+builder.Services.AddServicesApplicationLayer();
 // Add services to the container.
 builder.Services.AddCors(options =>
 {

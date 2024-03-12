@@ -9,5 +9,6 @@ namespace TailorProTrack.domain.Entities
         public int FKCATEGORYSIZE { get; set; }
 
         public CategorySize? categorySize { get; set; }
+        public List<BuyInventoryDetail>? sizeInBuys { get; set; }
     }
 }

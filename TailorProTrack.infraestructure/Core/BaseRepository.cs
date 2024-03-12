@@ -76,6 +76,7 @@ namespace TailorProTrack.infraestructure.Core
         public virtual void Update(T entity)
         {
             this._entities.Update(entity);
+            _context.SaveChanges();
         }
 
     }

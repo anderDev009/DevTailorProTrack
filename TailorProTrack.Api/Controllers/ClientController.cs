@@ -35,7 +35,7 @@ namespace TailorProTrack.Api.Controllers
             return Ok(response);
         }
 
-        [HttpGet("GetAllClients")]
+        [HttpGet("GetAllClients ")]
         public IActionResult GetAll()
         {
             var result = service.GetAll();

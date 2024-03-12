@@ -16,4 +16,8 @@
     <ProjectReference Include="..\TailorProTrack.Ioc\TailorProTrack.Ioc.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\BuyInventory\" />
+  </ItemGroup>
+
 </Project>
