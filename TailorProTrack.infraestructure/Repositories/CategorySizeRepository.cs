@@ -38,16 +38,6 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context.SaveChanges();
         }
 
-        public override void Remove(CategorySize entity)
-        {
-            CategorySize categorySize = this.GetEntity(entity.ID);
-
-            categorySize.REMOVED = entity.REMOVED;
-            categorySize.USER_MOD = entity.USER_MOD;
-            categorySize.MODIFIED_AT = DateTime.Now;
-
-            this._context.Update(categorySize);
-            this._context.SaveChanges();
-        }
+      
     }
 }

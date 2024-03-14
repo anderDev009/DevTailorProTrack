@@ -31,7 +31,7 @@ namespace TailorProTrack.infraestructure.Core
         }
         public virtual List<T> GetEntities()
         {
-            return _context.Set<T>().ToList();
+            return _context.Set<T>().Where(data => !data.REMOVED).ToList();
         }
 
         public List<T> GetEntitiesPaginated(int page, int itemsPage)
@@ -58,6 +58,7 @@ namespace TailorProTrack.infraestructure.Core
             entityToRemove.USER_MOD = entity.USER_MOD;
             entityToRemove.REMOVED = true;
             this._entities.Update(entityToRemove);
+            _context.SaveChanges();
         }
 
         public virtual int Save(T entity)

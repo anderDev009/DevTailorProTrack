@@ -39,16 +39,6 @@ namespace TailorProTrack.infraestructure.Repositories
 
         }
 
-        public override void Remove(Expenses entity)
-        {
-            Expenses expenses = this.GetEntity(entity.ID);
-
-            expenses.REMOVED = entity.REMOVED;
-            expenses.MODIFIED_AT = DateTime.Now;
-            expenses.USER_MOD = entity.USER_MOD;
-
-            this._context.Update(expenses);
-            this._context.SaveChanges();
-        }
+  
     }
 }
