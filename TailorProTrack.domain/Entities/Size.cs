@@ -10,5 +10,6 @@ namespace TailorProTrack.domain.Entities
 
         public CategorySize? categorySize { get; set; }
         public List<BuyInventoryDetail>? sizeInBuys { get; set; }
+        public List<PreOrderProducts> PreOrderProducts { get; set; }
     }
 }
