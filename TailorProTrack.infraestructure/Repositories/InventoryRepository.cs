@@ -53,7 +53,7 @@ namespace TailorProTrack.infraestructure.Repositories
             foreach(var item in detail)
             {
 
-                Inventory invSearched = _context.Set<Inventory>().Where(i => i.FK_PRODUCT == item.FK_PRODUCT && item.FK_SIZE == item.FK_SIZE).FirstOrDefault();
+                Inventory invSearched = _context.Set<Inventory>().Where(i => i.FK_PRODUCT == item.FK_PRODUCT && i.FK_SIZE == item.FK_SIZE).FirstOrDefault();
                 //comprobamos de que si no existe un producto con ese size se registre 
                 if(invSearched == null)
                 {
@@ -107,6 +107,7 @@ namespace TailorProTrack.infraestructure.Repositories
                     
                 }
                 UpdateQuantityInventory(invSearched.ID);
+                _context.SaveChanges();
             }
             return true;
         }
@@ -114,13 +115,13 @@ namespace TailorProTrack.infraestructure.Repositories
         public bool UpdateQuantityInventory(int id)
         {
             int quantity = _context.Set<InventoryColor>().Where(i => i.FK_INVENTORY == id)
-                .GroupBy(i => i.ID)
+                .GroupBy(i => i.FK_INVENTORY )
                 .Select(i => i.Sum(i => i.QUANTITY)).First();
 
 
             Inventory inv = _context.Set<Inventory>().Find(id);
             inv.QUANTITY = quantity;
-            _context.Update(inv);
+            Update(inv);
             int success = _context.SaveChanges();
             if(success == 0)
             {

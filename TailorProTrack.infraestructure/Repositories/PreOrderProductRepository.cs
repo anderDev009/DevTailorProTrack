@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -52,6 +54,35 @@ namespace TailorProTrack.infraestructure.Repositories
 
             this._ctx.Update(products);
             this._ctx.SaveChanges();
+        }
+        public List<PreOrderProducts> GetMissingColorsByIdPreOrder(int IdPreOrder)
+        {
+            var preOrder = _ctx.Set<PreOrderProducts>().Where(p => p.FK_PREORDER == IdPreOrder).ToList();
+            List<PreOrderProducts> itemsMissing = new List<PreOrderProducts>();
+            foreach(var item in preOrder)
+            {
+                //obteniendo el inventario
+                var inventory = _ctx.Set<Inventory>().Where(i => i.FK_PRODUCT == item.FK_PRODUCT).First();
+                //obteniendo el detalle del inventario
+                var invColor = _ctx.Set<InventoryColor>()
+                    .Where(i => i.FK_INVENTORY== inventory.ID && i.FK_COLOR_PRIMARY == item.COLOR_PRIMARY
+                            && i.FK_COLOR_SECONDARY == item.COLOR_SECONDARY).First();
+                //en caso de que sea null se agrega e indica la cantidad faltante
+                if(invColor == null)
+                {
+                    itemsMissing.Add(item);
+                    break;
+                }
+                int quantity = invColor.QUANTITY - item.QUANTITY;
+                if(quantity < 0)
+                {
+                    //en caso de que la cantidad sea negativa se convierte en positivo indicando 
+                    //que esa es la cantidad faltante.
+                    item.QUANTITY = Math.Abs(quantity);
+                    itemsMissing.Add(item);
+                }
+            }
+            return itemsMissing;
         }
     }
 }

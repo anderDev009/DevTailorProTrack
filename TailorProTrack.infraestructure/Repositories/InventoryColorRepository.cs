@@ -1,4 +1,5 @@
-﻿using TailorProTrack.domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
 using TailorProTrack.infraestructure.Interfaces;
@@ -57,5 +58,7 @@ namespace TailorProTrack.infraestructure.Repositories
                 && data.invColor.FK_COLOR_PRIMARY == colorPrimary && data.invColor.FK_COLOR_SECONDARY == colorSecondary)
                 .Select(data => data.invColor).First();
         }
+
+     
     }
 }
