@@ -11,9 +11,6 @@ namespace TailorProTrack.Application.Dtos.BuyInventoryDtos
         public int FK_PRODUCT {  get; set; }
         public double PRICE {  get; set; }
         public int QUANTITY { get; set; }
-        public int FK_SIZE { get; set; }
-        public int COLOR_PRIMARY { get; set; }
-        public int COLOR_SECONDARY { get; set; }
 
         public ProductDtoGetMapped? Product { get; set; }
         public SizeDtoGetMapped? Size { get; set; }

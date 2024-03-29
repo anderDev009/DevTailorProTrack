@@ -117,6 +117,7 @@ namespace TailorProTrack.Application.Service
                     USER_MOD = dtoRemove.User,
                     MODIFIED_AT = dtoRemove.Date
                 };
+                _repository.Remove(color);
                 result.Message = "Removido con exito.";
             }
             catch (Exception ex)

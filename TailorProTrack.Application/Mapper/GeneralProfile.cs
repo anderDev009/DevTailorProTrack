@@ -64,6 +64,9 @@ namespace TailorProTrack.Application.Mapper
                     .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
                     .ForMember(b => b.REMOVED, opt => opt.Ignore());
             #endregion
+            #region Order -- OrderProduct
+            CreateMap<Order,OrderDtoGetMapped>
+            #endregion
             #region Size
             CreateMap<Size, SizeDtoGetMapped>()
                 .ReverseMap()

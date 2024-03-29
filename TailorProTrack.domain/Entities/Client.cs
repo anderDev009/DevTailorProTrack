@@ -11,5 +11,7 @@ namespace TailorProTrack.domain.Entities
         public string LAST_SURNAME { get; set; }
         public string DNI {  get; set; }
         public string RNC { get; set; }
+
+        public List<Order>? Order {  get; set; }
     }
 }

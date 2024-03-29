@@ -10,5 +10,7 @@ namespace TailorProTrack.domain.Entities
         public int QUANTITY {  get; set; }
         public int FK_INVENTORY { get; set; }
 
+        public List<OrderProduct>? OrderProducts { get; set; }
+        
     }
 }

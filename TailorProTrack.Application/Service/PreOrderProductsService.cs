@@ -102,6 +102,25 @@ namespace TailorProTrack.Application.Service
             }
             return result;
         }
+        //metodo para saber si es posible realizarle una orden a un pedido o indicar que dicho pedido esta completo
+        //modificar logica
+        public bool IsComplete(int IdPreOrder)
+        {
+            try
+            {
+                var listProducts = _preOrderProductRepository.GetByPreOrderId(IdPreOrder);
+                //comprobando que no contenga productos
+                if(listProducts.Count > 0)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
         public ServiceResult Remove(PreOrderProductsDtoRemove dtoRemove)
         {

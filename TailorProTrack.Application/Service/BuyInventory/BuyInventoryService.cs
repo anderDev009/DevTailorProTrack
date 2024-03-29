@@ -1,8 +1,12 @@
 ﻿
 
 using AutoMapper;
+using Azure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 using TailorProTrack.Application.Contracts.BuyInventoryContracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.BuyInventoryDtos;
@@ -48,12 +52,49 @@ namespace TailorProTrack.Application.Service.BuyInventoryService
 
         public ServiceResultWithHeader GetAll(PaginationParams @params)
         {
-            throw new NotImplementedException();
+            ServiceResultWithHeader result = new();
+            try
+            {
+                int registerCount = this._buyInventoryRepository.CountEntities();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+                var buyInventory = this._buyInventoryRepository.SearchEntities()
+                    .Include(b => b.Details)
+                    .ThenInclude(b => new { b.Product, b.Size, b.ColorPrimary,b.ColorSecondary})
+                    .GroupBy(b => b.DATE_MADE)
+                    .OrderDescending()
+                    .Skip((@params.Page - 1) * @params.ItemsPerPage).Take(@params.ItemsPerPage).ToList();
+
+                result.Data = buyInventory;
+                result.Header = header;
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = "Error al obtener las compras";
+            }
+            return result;
         }
 
         public ServiceResult GetById(int id)
         {
-            throw new NotImplementedException();
+            ServiceResult result = new();
+            try
+            {
+                var buy = _buyInventoryRepository.SearchEntities()
+                    .Include(b => b.Details)
+                    .ThenInclude(b => new { b.Product, b.Size, b.ColorPrimary, b.ColorSecondary })
+                    .Where(b => b.ID == id).FirstOrDefault();
+
+                result.Data = result;
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = "Error al obtener la compra";
+            }
+            return result;
         }
 
         public ServiceResult Remove(BuyInventoryDtoRemove dtoRemove)

@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -49,19 +50,19 @@ namespace TailorProTrack.Application.Service
         private readonly IProductService _productService;
         //servicio de detalle ordenes
         private readonly IOrderProductService _orderProductService;
-        
+
         public OrderService(IOrderRepository repository
-                            ,ILogger<IOrderRepository> logger
-                            ,IConfiguration configuration,
+                            , ILogger<IOrderRepository> logger
+                            , IConfiguration configuration,
                             IProductService productService
-                            ,IOrderProductService orderProductService
+                            , IOrderProductService orderProductService
                             , IClientRepository clientRepository
                             , IOrderProductRepository orderProductRepository
                             , IProductRepository productRepository
                             , ITypeProdRepository typeProdRepository
                             , IInventoryService inventoryService
-                            ,IInventoryRepository inventoryRepository
-                            ,ISizeRepository sizeRepository,
+                            , IInventoryRepository inventoryRepository
+                            , ISizeRepository sizeRepository,
                             IInventoryColorRepository inventoryColorRepository,
                             IColorRepository colorRepository,
                             IUserRepository userRepository,
@@ -81,7 +82,7 @@ namespace TailorProTrack.Application.Service
             _repositoryType = typeProdRepository;
             this._inventoryService = inventoryService;
             this._inventoryRepository = inventoryRepository;
-            this._sizeRepository = sizeRepository; 
+            this._sizeRepository = sizeRepository;
             this._inventoryColorRepository = inventoryColorRepository;
             this._colorRepository = colorRepository;
             _userRepository = userRepository;
@@ -94,18 +95,18 @@ namespace TailorProTrack.Application.Service
         //optimizar 
         public ServiceResult Add(OrderDtoAdd dtoAdd)
         {
-            ServiceResult result =  new ServiceResult();
-            try 
+            ServiceResult result = new ServiceResult();
+            try
             {
                 //validaciones
-                dtoAdd.IsValidToAdd(this.Configuration,this._clientRepository,this._userRepository,_preOrderRepository
-                    ,_preOrderProductsRepository, _inventoryRepository,_inventoryColorRepository,_orderProductRepository);
+                dtoAdd.IsValidToAdd(this.Configuration, this._clientRepository, this._userRepository, _preOrderRepository
+                    , _preOrderProductsRepository, _inventoryRepository, _inventoryColorRepository, _orderProductRepository);
                 //logica para agregarele la cantidad
                 decimal amount = 0;
-                foreach(var item in dtoAdd.products)
+                foreach (var item in dtoAdd.products)
                 {
                     amount += this._inventoryService.GetPriceProductByInventoryId(item.FkInventoryColor) * item.Quantity;
-                    
+
                 };
 
                 //agregando la orden
@@ -121,14 +122,15 @@ namespace TailorProTrack.Application.Service
                 };
                 int idOrder = this._repository.Save(orderToAdd);
                 //agregando el detalle de la orden
-                var resultOrderProd = this._orderProductService.AddMany(dtoAdd.products,idOrder);
+                var resultOrderProd = this._orderProductService.AddMany(dtoAdd.products, idOrder);
                 if (!resultOrderProd.Success)
                 {
                     return resultOrderProd;
                 }
                 //mensaje de exito
                 result.Message = "Orden registrada con exito.";
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 result.Success = false;
                 result.Message = $"Error al registrar la orden: {ex.Message}";
@@ -144,38 +146,46 @@ namespace TailorProTrack.Application.Service
                 int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var orders = this._repository.GetEntitiesPaginated(@params.Page,@params.ItemsPerPage).Where(d => !d.REMOVED)
-                                             .Join
-                                             (
-                                                this._clientRepository.GetEntities().Select(data => new
-                                                {
-                                                    data.ID,
-                                                    data.FIRST_NAME,
-                                                    data.FIRST_SURNAME,
-                                                    data.LAST_SURNAME
-                                                }),
-                                                orderFK => orderFK.FK_CLIENT,
-                                                client => client.ID,
-                                                (orderFK, client) => new { orderFK, client }
-                                             )
-                                             .OrderBy(data => data.orderFK.ID)
-                                             .Select(data => new OrderDtoGet
-                                             {
-                                                 Id = data.orderFK.ID,
-                                                 FullName = $"{data.client.FIRST_NAME} {data.client.FIRST_SURNAME} {data.client.LAST_SURNAME}",
-                                                 Amount = data.orderFK.AMOUNT,
-                                                 Checked = data.orderFK.CHECKED,
-                                                 DescriptionJob = data.orderFK.DESCRIPTION_JOB,
-                                                 StatusOrder = data.orderFK.STATUS_ORDER,
-                                                 Quantity = this._orderProductService.GetQuantityByOrderId(data.orderFK.ID).Data,   
-                                             })
-                                             .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                var ordersMapped = _repository.SearchEntities()
+                    .Include(d => d.Client)
+                    .Include(d => d.OrderProducts)
+                    .ThenInclude(d => d.InventoryColor)
+                     .Skip((@params.Page - 1) * @params.ItemsPerPage)
                                              .Take(@params.ItemsPerPage)
                                              .ToList();
-                result.Data = orders;
+                //var orders = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage).Where(d => !d.REMOVED)
+                //                             .Join
+                //                             (
+                //                                this._clientRepository.GetEntities().Select(data => new
+                //                                {
+                //                                    data.ID,
+                //                                    data.FIRST_NAME,
+                //                                    data.FIRST_SURNAME,
+                //                                    data.LAST_SURNAME
+                //                                }),
+                //                                orderFK => orderFK.FK_CLIENT,
+                //                                client => client.ID,
+                //                                (orderFK, client) => new { orderFK, client }
+                //                             )
+                //                             .OrderBy(data => data.orderFK.ID)
+                //                             .Select(data => new OrderDtoGet
+                //                             {
+                //                                 Id = data.orderFK.ID,
+                //                                 FullName = $"{data.client.FIRST_NAME} {data.client.FIRST_SURNAME} {data.client.LAST_SURNAME}",
+                //                                 Amount = data.orderFK.AMOUNT,
+                //                                 Checked = data.orderFK.CHECKED,
+                //                                 DescriptionJob = data.orderFK.DESCRIPTION_JOB,
+                //                                 StatusOrder = data.orderFK.STATUS_ORDER,
+                //                                 Quantity = this._orderProductService.GetQuantityByOrderId(data.orderFK.ID).Data,
+                //                             })
+                //                             .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                //                             .Take(@params.ItemsPerPage)
+                //                             .ToList();
+                result.Data = ordersMapped;
                 result.Header = header;
                 result.Message = "Obtenidos con exito";
-            }catch(Exception ex) 
+            }
+            catch (Exception ex)
             {
                 result.Success = false;
                 result.Message = $"Error al intentar obtener todos: {ex.Message}";
@@ -232,38 +242,38 @@ namespace TailorProTrack.Application.Service
                                                     Products = this._orderProductRepository.GetEntities().Where(data => data.FK_ORDER == id)
                                                                                  .Join
                                                                                  (
-                                                                                  this._inventoryColorRepository.GetEntities().Select(d => new {d.ID,d.FK_INVENTORY,d.FK_COLOR_PRIMARY,d.FK_COLOR_SECONDARY}),
+                                                                                  this._inventoryColorRepository.GetEntities().Select(d => new { d.ID, d.FK_INVENTORY, d.FK_COLOR_PRIMARY, d.FK_COLOR_SECONDARY }),
                                                                                   order => order.FK_INVENTORYCOLOR,
                                                                                   inventoryColor => inventoryColor.ID,
-                                                                                  (order,inventoryColor) => new {order, inventoryColor}
+                                                                                  (order, inventoryColor) => new { order, inventoryColor }
                                                                                  )//color primario
                                                                                  .Join
                                                                                  (
-                                                                                 this._colorRepository.GetEntities().Select(d => new { d.ID,d.CODE_COLOR,d.COLORNAME }),
+                                                                                 this._colorRepository.GetEntities().Select(d => new { d.ID, d.CODE_COLOR, d.COLORNAME }),
                                                                                  combined => combined.inventoryColor.FK_COLOR_PRIMARY,
                                                                                  colorPrimary => colorPrimary.ID,
-                                                                                 (combined, colorPrimary) => new {combined.order,combined.inventoryColor,colorPrimary}
+                                                                                 (combined, colorPrimary) => new { combined.order, combined.inventoryColor, colorPrimary }
                                                                                  )//colorsecundario
                                                                                 .Join
                                                                                  (
                                                                                  this._colorRepository.GetEntities().Select(d => new { d.ID, d.CODE_COLOR, d.COLORNAME }),
                                                                                  combined => combined.inventoryColor.FK_COLOR_SECONDARY,
                                                                                  colorSecondary => colorSecondary.ID,
-                                                                                 (combined, colorSecondary) => new { combined.order, combined.inventoryColor,combined.colorPrimary, colorSecondary }
+                                                                                 (combined, colorSecondary) => new { combined.order, combined.inventoryColor, combined.colorPrimary, colorSecondary }
                                                                                  )
                                                                                  .Join
                                                                                  (
-                                                                                 this._inventoryRepository.GetEntities().Select(d => new {d.ID,d.FK_PRODUCT,d.FK_SIZE}),
+                                                                                 this._inventoryRepository.GetEntities().Select(d => new { d.ID, d.FK_PRODUCT, d.FK_SIZE }),
                                                                                  combined => combined.inventoryColor.FK_INVENTORY,
                                                                                  inventory => inventory.ID,
-                                                                                 (combined, inventory) => new {combined.colorPrimary,combined.colorSecondary, combined.order,combined.inventoryColor, inventory}
+                                                                                 (combined, inventory) => new { combined.colorPrimary, combined.colorSecondary, combined.order, combined.inventoryColor, inventory }
                                                                                  )
                                                                                  .Join
                                                                                  (
-                                                                                 this._sizeRepository.GetEntities().Select(d => new {d.ID,d.SIZE}),
+                                                                                 this._sizeRepository.GetEntities().Select(d => new { d.ID, d.SIZE }),
                                                                                  combined => combined.inventory.FK_SIZE,
                                                                                  size => size.ID,
-                                                                                 (combined, size) => new { combined.colorPrimary, combined.colorSecondary, combined.inventoryColor,combined.inventory,combined.order, size}
+                                                                                 (combined, size) => new { combined.colorPrimary, combined.colorSecondary, combined.inventoryColor, combined.inventory, combined.order, size }
                                                                                  )
                                                                                  .Join(
                                                                                  this._productRepository.GetEntities().Join(this._repositoryType.GetEntities().Select(d => new { d.ID, d.TYPE_PROD })
@@ -274,21 +284,22 @@ namespace TailorProTrack.Application.Service
                                                                                  (combined, product) => new { combined, product }
                                                                                  )
                                                                                  .GroupBy(d => d.combined.inventoryColor.ID)
-                                                                                 .Select(data => new 
+                                                                                 .Select(data => new
                                                                                  {
-                                                                                    Id =  data.Select(d => d.combined.inventoryColor.ID).First(),
-                                                                                    ProductName = data.Select(d => d.product.NAME_PRODUCT).First(),
-                                                                                    Price = data.Select(d => d.product.SALE_PRICE).First(),
-                                                                                    Quantity = data.Select(d  => d.combined.order.QUANTITY).First(),
-                                                                                    Size = data.Select(d => d.combined.size.SIZE).First(),
-                                                                                    ColorPrimary = data.Select(d => new { d.combined.colorPrimary.COLORNAME,d.combined.colorPrimary.CODE_COLOR }).First(),
-                                                                                    ColorSecondary = data.Select(d => new { d.combined.colorSecondary.COLORNAME,d.combined.colorSecondary.CODE_COLOR }).First()
+                                                                                     Id = data.Select(d => d.combined.inventoryColor.ID).First(),
+                                                                                     ProductName = data.Select(d => d.product.NAME_PRODUCT).First(),
+                                                                                     Price = data.Select(d => d.product.SALE_PRICE).First(),
+                                                                                     Quantity = data.Select(d => d.combined.order.QUANTITY).First(),
+                                                                                     Size = data.Select(d => d.combined.size.SIZE).First(),
+                                                                                     ColorPrimary = data.Select(d => new { d.combined.colorPrimary.COLORNAME, d.combined.colorPrimary.CODE_COLOR }).First(),
+                                                                                     ColorSecondary = data.Select(d => new { d.combined.colorSecondary.COLORNAME, d.combined.colorSecondary.CODE_COLOR }).First()
                                                                                  })
-                                                }) ;
-                if (order == null)  throw new Exception("No existe");
+                                                });
+                if (order == null) throw new Exception("No existe");
                 result.Data = order;
                 result.Message = "Obtenido con exito.";
-            }catch(Exception ex )
+            }
+            catch (Exception ex)
             {
                 result.Success = false;
                 result.Message = $"Error al obtener la orden: {ex.Message}";
@@ -302,15 +313,15 @@ namespace TailorProTrack.Application.Service
             try
             {
                 List<InventoryColorDtoGetWithId> invColors = new List<InventoryColorDtoGetWithId>();
-                foreach(var key in keys)
+                foreach (var key in keys)
                 {
-                    var invColor = _inventoryColorService.SearchAvailabilityToAddOrder(key.FkProduct,key.FkSize, key.FkColorPrimary, key.FkColorSecondary);
-                    if(invColor.InventoryColorId != 0)
+                    var invColor = _inventoryColorService.SearchAvailabilityToAddOrder(key.FkProduct, key.FkSize, key.FkColorPrimary, key.FkColorSecondary);
+                    if (invColor.InventoryColorId != 0)
                     {
                         invColors.Add(invColor);
                     }
                 }
-                result.Data  = invColors;
+                result.Data = invColors;
                 result.Message = "Obtenidos con exito.";
             }
             catch (Exception ex)
@@ -322,7 +333,7 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public  ServiceResult GetOrder(int Id)
+        public ServiceResult GetOrder(int Id)
         {
             ServiceResult result = new ServiceResult();
             try
@@ -351,7 +362,7 @@ namespace TailorProTrack.Application.Service
                                                  StatusOrder = data.orderFK.STATUS_ORDER,
                                                  Quantity = this._orderProductService.GetQuantityByOrderId(data.orderFK.ID).Data,
                                                  Detail = this.GetById(Id).Data
-                                             }); 
+                                             });
                 result.Data = orders;
                 result.Message = "Obtenidos con exito";
             }
@@ -398,10 +409,10 @@ namespace TailorProTrack.Application.Service
                                              StatusOrder = data.orderFK.STATUS_ORDER,
                                              Quantity = this._orderProductService.GetQuantityByOrderId(data.orderFK.ID).Data,
                                          })
-                                         .Skip((@params.Page - 1 ) * @params.ItemsPerPage)
+                                         .Skip((@params.Page - 1) * @params.ItemsPerPage)
                                          .Take(@params.ItemsPerPage)
                                          .ToList();
-                                            
+
                 result.Data = orders;
                 result.Header = header;
                 result.Message = "Obtenidos con exito.";
@@ -427,7 +438,8 @@ namespace TailorProTrack.Application.Service
                 this._repository.Remove(order);
 
                 result.Message = "Removido con exito";
-            }catch(Exception ex )
+            }
+            catch (Exception ex)
             {
                 result.Success = false;
                 result.Message = $"Error al intentar remover {ex.Message}";

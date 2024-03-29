@@ -7,7 +7,10 @@ namespace TailorProTrack.domain.Entities
     {
         public int FK_ORDER {  get; set; }  
         public int FK_INVENTORYCOLOR { get; set; }
-        public int QUANTITY {  get; set; }
+        public int QUANTITY { get; set; }
+
+        public Order? Order {  get; set; }
+        public InventoryColor? InventoryColor { get; set; }
 
     }
 }

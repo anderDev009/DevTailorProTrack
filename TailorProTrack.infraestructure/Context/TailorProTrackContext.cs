@@ -84,6 +84,28 @@ namespace TailorProTrack.infraestructure.Context
                 .WithMany(p => p.PreOrderProducts)
                 .HasForeignKey(p => p.FK_SIZE);
             #endregion
+            #region Order
+            modelBuilder.Entity<Order>()
+                .HasOne(x => x.Client)
+                .WithMany(x => x.Order)
+                .HasForeignKey(x => x.FK_CLIENT);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(x => x.PreOrder)
+                .WithMany(x => x.Order)
+                .HasForeignKey(x => x.FK_PREORDER);
+
+            modelBuilder.Entity<Order>()
+                .HasMany(x => x.OrderProducts)
+                .WithOne(x => x.Order)
+                .HasForeignKey(x => x.FK_ORDER);
+            #region OrderProducts
+            modelBuilder.Entity<OrderProduct>()
+                .HasOne(x => x.InventoryColor)
+                .WithMany(x => x.OrderProducts)
+                .HasForeignKey(x => x.FK_INVENTORYCOLOR);
+            #endregion
+            #endregion
             #endregion
 
         }
