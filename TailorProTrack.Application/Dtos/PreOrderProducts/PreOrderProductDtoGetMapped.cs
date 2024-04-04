@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using TailorProTrack.Application.Dtos.Color;
 using TailorProTrack.Application.Dtos.Product;
 using TailorProTrack.Application.Dtos.Size;
 
@@ -16,5 +17,7 @@ namespace TailorProTrack.Application.Dtos.PreOrderProducts
         public int? COLOR_SECONDARY { get; set; }
         public SizeDtoGetMapped? Size {  get; set; }
         public ProductDtoGetMapped? Product { get; set; }
+        public ColorDtoGetMapped? ColorPrimary {  get; set; }
+        public ColorDtoGetMapped? ColorSecondary {  get; set; }
     }
 }

@@ -16,6 +16,8 @@ namespace TailorProTrack.domain.Entities
         public PreOrder? PreOrder { get; set; }
         public Size? Size { get; set; }
         public Product? Product {  get; set; }
+        public Color? ColorPrimary {  get; set; }
+        public Color? ColorSecondary { get; set; }
     }
 }
     

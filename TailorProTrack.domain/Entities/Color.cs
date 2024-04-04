@@ -14,5 +14,8 @@ namespace TailorProTrack.domain.Entities
 
         public List<BuyInventoryDetail>? ColorPrimaryInBuys { get; set; }
         public List<BuyInventoryDetail>? ColorSecondaryInBuys { get; set; }
+
+        public List<PreOrderProducts>? ColorPrimaryInPreOrder {  get; set; }
+        public List<PreOrderProducts>? ColorSecondaryInPreOrder { get; set; }
     }
 }

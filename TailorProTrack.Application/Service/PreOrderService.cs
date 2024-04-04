@@ -1,6 +1,10 @@
-﻿using TailorProTrack.Application.Contracts;
+﻿using AutoMapper;
+using Azure;
+using Microsoft.EntityFrameworkCore;
+using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Contracts.Client;
 using TailorProTrack.Application.Core;
+using TailorProTrack.Application.Dtos.Client;
 using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
 using TailorProTrack.domain.Entities;
@@ -18,6 +22,8 @@ namespace TailorProTrack.Application.Service
         private readonly IClientRepository _clientRepository;
         private readonly IPreOrderProductsRepository _preOrderProductsRepository;
 
+        //mapper
+        private readonly IMapper _mapper;
 
         //servicios 
         private readonly IPreOrderProductService _preOrderProductService;
@@ -26,7 +32,7 @@ namespace TailorProTrack.Application.Service
         public PreOrderService(IPreOrderRepository preOrderRepository, ISizeRepository sizeRepository,
                         IProductRepository productRepository, IClientRepository clientRepository,
                         IPreOrderProductService preOrderProductService, IPreOrderProductsRepository preOrderProductsRepository,
-                        IClientService clientService)
+                        IClientService clientService, IMapper mapper)
         {
             _preOrderRepository = preOrderRepository;
             _sizeRepository = sizeRepository;
@@ -35,6 +41,7 @@ namespace TailorProTrack.Application.Service
             _preOrderProductService = preOrderProductService;
             _preOrderProductsRepository = preOrderProductsRepository;
             _clientService = clientService;
+            _mapper = mapper;
         }
 
         public ServiceResult Add(PreOrderDtoAdd dtoAdd)
@@ -78,26 +85,19 @@ namespace TailorProTrack.Application.Service
                 PaginationMetaData header = new PaginationMetaData(countRegister, @params.Page, @params.ItemsPerPage);
 
                 var preOrders = this._preOrderRepository.SearchEntities()
-                                                        .Join
-                                                        (
-                                                        this._preOrderProductsRepository.SearchEntities(),
-                                                        preOrder => preOrder.ID,
-                                                        preOrderProducts => preOrderProducts.FK_PREORDER,
-                                                        (preOrder, products) => new { preOrder, products }
-                                                        )
-                                                        .Join(_clientRepository.SearchEntities(),
-                                                        group => group.preOrder.FK_CLIENT,client=> client.ID,
-                                                        (group,client) => new {group.products,group.preOrder,client})
-                                                        .Select
-                                                        (group => new
-                                                        {
-                                                            Id = group.preOrder.ID,
-                                                            Client = group.client,
-                                                            Items = group.products//el first veo si lo cambio
-                                                        }
-                                                        ).ToList();
+                                                        .Include(x => x.PreOrderProducts)
+                                                           .ThenInclude(x => x.Size)
+                                                        .Include(x => x.PreOrderProducts)
+                                                           .ThenInclude(x => x.Product)
+                                                        .Include(x => x.PreOrderProducts)
+                                                           .ThenInclude(x => x.ColorPrimary)
+                                                        .Include(x => x.PreOrderProducts)
+                                                            .ThenInclude(x => x.ColorSecondary)
+                                                        .Include(x => x.Client)
+                                                        .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                                        .Take(@params.ItemsPerPage).Where(data => !data.REMOVED).ToList();
 
-                result.Data = preOrders;
+                result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
                 result.Header = header;
                 result.Message = "Obtenidos con exito";
             }

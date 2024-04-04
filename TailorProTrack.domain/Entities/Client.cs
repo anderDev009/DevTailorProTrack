@@ -13,5 +13,6 @@ namespace TailorProTrack.domain.Entities
         public string RNC { get; set; }
 
         public List<Order>? Order {  get; set; }
+        public List<PreOrder>? PreOrder { get; set; }
     }
 }
