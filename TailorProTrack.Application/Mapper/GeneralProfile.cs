@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using TailorProTrack.Application.Dtos.BuyInventoryDtos;
 using TailorProTrack.Application.Dtos.Client;
 using TailorProTrack.Application.Dtos.Color;
+using TailorProTrack.Application.Dtos.Order;
+using TailorProTrack.Application.Dtos.OrderProduct;
 using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
 using TailorProTrack.Application.Dtos.Product;
@@ -40,7 +42,7 @@ namespace TailorProTrack.Application.Mapper
                  .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                  .ForMember(b => b.USER_MOD, opt => opt.Ignore())
                  .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
-                 .ForMember(b => b.REMOVED, opt => opt.Ignore()); 
+                 .ForMember(b => b.REMOVED, opt => opt.Ignore());
 
             #endregion
             #region BuyInventoryDetail // Detalle de compra
@@ -70,9 +72,25 @@ namespace TailorProTrack.Application.Mapper
                     .ForMember(b => b.REMOVED, opt => opt.Ignore());
             #endregion
             #region Order -- OrderProduct
-            //CreateMap<Order,OrderDtoGetMapped>
+            CreateMap<OrderProduct, OrderProductDtoGetMapped>()
+                .ReverseMap()
+                .ForMember(b => b.CREATED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                    .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                    .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.REMOVED, opt => opt.Ignore())
+                    .ForMember(x => x.InventoryColor, opt => opt.Ignore());
+            CreateMap<Order, OrderDtoGetMapped>()
+                .ReverseMap()
+                   .ForMember(b => b.CREATED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                    .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                    .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.REMOVED, opt => opt.Ignore());
+
+
             #region PreOrder
-            CreateMap<PreOrder,PreOrderDtoGetMapped>()
+            CreateMap<PreOrder, PreOrderDtoGetMapped>()
                  .ReverseMap()
                  .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                     .ForMember(b => b.USER_MOD, opt => opt.Ignore())
@@ -80,13 +98,22 @@ namespace TailorProTrack.Application.Mapper
                     .ForMember(b => b.REMOVED, opt => opt.Ignore());
             #endregion
             #endregion 
-            #region preorderproduct
-            CreateMap<PreOrderProducts,PreOrderProductDtoGetMapped>()
+            #region PreOrder
+            CreateMap<PreOrderProducts, PreOrderProductDtoGetMapped>()
                 .ReverseMap()
                 .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                 .ForMember(b => b.USER_MOD, opt => opt.Ignore())
                 .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
                 .ForMember(b => b.REMOVED, opt => opt.Ignore());
+
+            CreateMap<PreOrder, PreOrderDtoGetMapped>()
+                .ReverseMap()
+                .ForMember(b => b.CREATED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                    .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                    .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.REMOVED, opt => opt.Ignore());
+
             #endregion
             #region Size
             CreateMap<Size, SizeDtoGetMapped>()
@@ -112,7 +139,7 @@ namespace TailorProTrack.Application.Mapper
                     .ForMember(b => b.REMOVED, opt => opt.Ignore());
             #endregion
             #region Color
-            CreateMap<Color,ColorDtoGetMapped>()
+            CreateMap<Color, ColorDtoGetMapped>()
                 .ReverseMap()
                   .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                     .ForMember(b => b.USER_MOD, opt => opt.Ignore())

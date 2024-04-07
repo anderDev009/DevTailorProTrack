@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TailorProTrack.Application.Dtos.Client;
+using TailorProTrack.Application.Dtos.OrderProduct;
 using TailorProTrack.Application.Dtos.PreOrder;
+using TailorProTrack.domain.Entities;
 
 namespace TailorProTrack.Application.Dtos.Order
 {
@@ -18,8 +20,9 @@ namespace TailorProTrack.Application.Dtos.Order
         public string DESCRIPTION_JOB { get; set; }
         public string? STATUS_ORDER { get; set; }
 
-        public ClientDtoGetMapped? Client { get; set; }
+        public ClientDtoGet? Client { get; set; }
         public PreOrderDtoGetMapped? PreOrder { get; set; }
+        public List<OrderProductDtoGetMapped>? OrderProducts { get; set; }
 
     }
 }

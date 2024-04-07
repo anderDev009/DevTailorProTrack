@@ -1,5 +1,6 @@
 ﻿
 
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,7 @@ namespace TailorProTrack.Application.Service
     {
         private readonly IOrderRepository _repository;
         private readonly ILogger logger;
+        private readonly IMapper _mapper;
         //repositorios
         //user repository
         private readonly IUserRepository _userRepository;
@@ -68,7 +70,8 @@ namespace TailorProTrack.Application.Service
                             IUserRepository userRepository,
                             IPreOrderRepository preOrderRepository,
                             IPreOrderProductsRepository preOrderProductsRepository,
-                            IInventoryColorService inventoryColorService
+                            IInventoryColorService inventoryColorService,
+                            IMapper mapper
                             )
         {
             this._repository = repository;
@@ -89,6 +92,7 @@ namespace TailorProTrack.Application.Service
             _preOrderRepository = preOrderRepository;
             _preOrderProductsRepository = preOrderProductsRepository;
             _inventoryColorService = inventoryColorService;
+            _mapper = mapper;
         }
 
         public IConfiguration Configuration { get; }
@@ -149,7 +153,7 @@ namespace TailorProTrack.Application.Service
                 var ordersMapped = _repository.SearchEntities()
                     .Include(d => d.Client)
                     .Include(d => d.OrderProducts)
-                    .ThenInclude(d => d.InventoryColor)
+                    //.ThenInclude(d => d.InventoryColor)
                      .Skip((@params.Page - 1) * @params.ItemsPerPage)
                                              .Take(@params.ItemsPerPage)
                                              .ToList();
@@ -181,7 +185,7 @@ namespace TailorProTrack.Application.Service
                 //                             .Skip((@params.Page - 1) * @params.ItemsPerPage)
                 //                             .Take(@params.ItemsPerPage)
                 //                             .ToList();
-                result.Data = ordersMapped;
+                result.Data = _mapper.Map<List<OrderDtoGetMapped>>(ordersMapped);
                 result.Header = header;
                 result.Message = "Obtenidos con exito";
             }
