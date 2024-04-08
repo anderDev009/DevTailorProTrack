@@ -10,7 +10,7 @@ namespace TailorProTrack.infraestructure.Repositories
     public class InventoryRepository : BaseRepository<Inventory>, IInventoryRepository
     {
         private readonly TailorProTrackContext _context;
-        public InventoryRepository(TailorProTrackContext ctx) : base(ctx) 
+        public InventoryRepository(TailorProTrackContext ctx) : base(ctx)
         {
             this._context = ctx;
         }
@@ -48,14 +48,14 @@ namespace TailorProTrack.infraestructure.Repositories
             return entity.ID;
         }
 
-        public bool AddInventoryByBuy( List<BuyInventoryDetail> detail)
+        public bool AddInventoryByBuy(List<BuyInventoryDetail> detail)
         {
-            foreach(var item in detail)
+            foreach (var item in detail)
             {
 
                 Inventory invSearched = _context.Set<Inventory>().Where(i => i.FK_PRODUCT == item.FK_PRODUCT && i.FK_SIZE == item.FK_SIZE).FirstOrDefault();
                 //comprobamos de que si no existe un producto con ese size se registre 
-                if(invSearched == null)
+                if (invSearched == null)
                 {
                     Inventory inv = new Inventory
                     {
@@ -73,41 +73,45 @@ namespace TailorProTrack.infraestructure.Repositories
                         FK_COLOR_PRIMARY = item.COLOR_PRIMARY,
                         FK_COLOR_SECONDARY = item.COLOR_SECONDARY,
                         FK_INVENTORY = inv.ID,
-                        QUANTITY = item.QUANTITY,     
+                        QUANTITY = item.QUANTITY,
                         //temporal
                         USER_CREATED = 1
                     });
                     _context.SaveChanges();
                     UpdateQuantityInventory(inv.ID);
-                    break;
-                }
-                //comprobamos que exista el invColor
-                if (!_context.Set<InventoryColor>().Any(c => c.FK_INVENTORY == invSearched.ID && c.FK_COLOR_PRIMARY == item.COLOR_PRIMARY && c.FK_COLOR_SECONDARY == item.COLOR_SECONDARY)) 
-                {
-                    _context.Set<InventoryColor>().Add(new InventoryColor
-                    {
-                        CREATED_AT = DateTime.Now,
-                        FK_COLOR_PRIMARY = item.COLOR_PRIMARY,
-                        FK_COLOR_SECONDARY = item.COLOR_SECONDARY,
-                        QUANTITY = item.QUANTITY,
-                        FK_INVENTORY = invSearched.ID,
-
-                        //temporal
-                        USER_CREATED = 1
-                    });
-                    _context.SaveChanges();
+                    //break;
                 }
                 else
                 {
-                    InventoryColor invColor = _context.Set<InventoryColor>().Where(i => i.FK_INVENTORY == invSearched.ID && i.FK_COLOR_PRIMARY == item.COLOR_PRIMARY && i.FK_COLOR_SECONDARY == item.COLOR_SECONDARY).First();
+                    //comprobamos que exista el invColor
+                    if (!_context.Set<InventoryColor>().Any(c => c.FK_INVENTORY == invSearched.ID && c.FK_COLOR_PRIMARY == item.COLOR_PRIMARY && c.FK_COLOR_SECONDARY == item.COLOR_SECONDARY))
+                    {
+                        _context.Set<InventoryColor>().Add(new InventoryColor
+                        {
+                            CREATED_AT = DateTime.Now,
+                            FK_COLOR_PRIMARY = item.COLOR_PRIMARY,
+                            FK_COLOR_SECONDARY = item.COLOR_SECONDARY,
+                            QUANTITY = item.QUANTITY,
+                            FK_INVENTORY = invSearched.ID,
 
-                    invColor.QUANTITY += item.QUANTITY;
-                    _context.Set<InventoryColor>().Update(invColor);
+                            //temporal
+                            USER_CREATED = 1
+                        });
+                        _context.SaveChanges();
+                    }
+                    else
+                    {
+                        InventoryColor invColor = _context.Set<InventoryColor>().Where(i => i.FK_INVENTORY == invSearched.ID && i.FK_COLOR_PRIMARY == item.COLOR_PRIMARY && i.FK_COLOR_SECONDARY == item.COLOR_SECONDARY).First();
+
+                        invColor.QUANTITY += item.QUANTITY;
+                        _context.Set<InventoryColor>().Update(invColor);
+                        _context.SaveChanges();
+
+                    }
+                    UpdateQuantityInventory(invSearched.ID);
                     _context.SaveChanges();
-                    
                 }
-                UpdateQuantityInventory(invSearched.ID);
-                _context.SaveChanges();
+
             }
             return true;
         }
@@ -115,7 +119,7 @@ namespace TailorProTrack.infraestructure.Repositories
         public bool UpdateQuantityInventory(int id)
         {
             int quantity = _context.Set<InventoryColor>().Where(i => i.FK_INVENTORY == id)
-                .GroupBy(i => i.FK_INVENTORY )
+                .GroupBy(i => i.FK_INVENTORY)
                 .Select(i => i.Sum(i => i.QUANTITY)).First();
 
 
@@ -123,7 +127,7 @@ namespace TailorProTrack.infraestructure.Repositories
             inv.QUANTITY = quantity;
             Update(inv);
             int success = _context.SaveChanges();
-            if(success == 0)
+            if (success == 0)
             {
                 return false;
             }
