@@ -319,7 +319,7 @@ namespace TailorProTrack.Application.Service
                 List<InventoryColorDtoGetWithId> invColors = new List<InventoryColorDtoGetWithId>();
                 foreach (var key in keys)
                 {
-                    var invColor = _inventoryColorService.SearchAvailabilityToAddOrder(key.FkProduct, key.FkSize, key.FkColorPrimary, key.FkColorSecondary);
+                    var invColor = _inventoryColorService.SearchAvailabilityToAddOrder(key.FkSize,key.FkProduct, key.FkColorPrimary, key.FkColorSecondary);
                     if (invColor.InventoryColorId != 0)
                     {
                         invColors.Add(invColor);
