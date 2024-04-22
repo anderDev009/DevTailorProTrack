@@ -15,5 +15,7 @@ namespace TailorProTrack.domain.Entities
         public Type_prod? Type { get; set; }
         public List<BuyInventoryDetail>? productsInBuys { get; set; }
         public List<PreOrderProducts>? PreOrderProducts { get; set; }
+        public List<ProductColor>? ProductColors { get; set; }
+        public List<ProductSize>? ProductSizes { get; set; }
     }
 }
