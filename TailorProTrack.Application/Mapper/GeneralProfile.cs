@@ -9,6 +9,7 @@ using TailorProTrack.Application.Dtos.OrderProduct;
 using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
 using TailorProTrack.Application.Dtos.Product;
+using TailorProTrack.Application.Dtos.ProductColor;
 using TailorProTrack.Application.Dtos.Size;
 using TailorProTrack.domain.Entities;
 
@@ -145,6 +146,55 @@ namespace TailorProTrack.Application.Mapper
                     .ForMember(b => b.USER_MOD, opt => opt.Ignore())
                     .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
                     .ForMember(b => b.REMOVED, opt => opt.Ignore());
+            #endregion
+            #region Product-Color
+            //dto get
+            CreateMap<ProductColor, ProductColorDtoGet>()
+                .ForMember(x => x.Id, opt => opt.MapFrom(src => src.ID))
+                .ForMember(x => x.FkProduct, opt => opt.MapFrom(src => src.FK_PRODUCT))
+                .ForMember(x => x.FkColor, opt => opt.MapFrom(src => src.FK_COLOR))
+                .ReverseMap()
+                   .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                    .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                    .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.REMOVED, opt => opt.Ignore());
+            //dto add
+            CreateMap<ProductColor, ProductColorDtoAdd>()
+                .ForMember(x => x.FkProduct, opt => opt.MapFrom(src => src.FK_PRODUCT))
+                .ForMember(x => x.FkColor, opt => opt.MapFrom(src => src.FK_COLOR))
+                .ReverseMap()
+                  .ForMember(b => b.ID, opt => opt.Ignore())
+                  .ForMember(b => b.Product, opt => opt.Ignore())
+                  .ForMember(b => b.Color, opt => opt.Ignore())
+                  .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                  .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                  .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                  .ForMember(b => b.REMOVED, opt => opt.Ignore());
+            //dto remove
+            CreateMap<ProductColor, ProductColorDtoRemove>()
+                .ForMember(x => x.Id, opt => opt.MapFrom(src => src.ID))
+                .ReverseMap()
+                  .ForMember(b => b.Product, opt => opt.Ignore())
+                  .ForMember(b => b.Color, opt => opt.Ignore())
+                  .ForMember(b => b.FK_COLOR, opt => opt.Ignore())
+                  .ForMember(b => b.FK_PRODUCT, opt => opt.Ignore())
+                  .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                  .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                  .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                  .ForMember(b => b.REMOVED, opt => opt.Ignore()); 
+
+            //dto update
+            CreateMap<ProductColor,ProductColorDtoUpdate>()
+                .ForMember(x => x.Id, opt => opt.MapFrom(src => src.ID))
+                .ForMember(x => x.FkProduct, opt => opt.MapFrom(src => src.FK_PRODUCT))
+                .ForMember(x => x.FkColor, opt => opt.MapFrom(src => src.FK_COLOR))
+                .ReverseMap()
+                  .ForMember(b => b.Product, opt => opt.Ignore())
+                  .ForMember(b => b.Color, opt => opt.Ignore())
+                  .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                  .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                  .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                  .ForMember(b => b.REMOVED, opt => opt.Ignore());
             #endregion
         }
     }
