@@ -103,7 +103,7 @@ namespace TailorProTrack.Application.Service
             try
             {
                 //validaciones
-                dtoAdd.IsValidToAdd(this.Configuration, this._clientRepository, this._userRepository, _preOrderRepository
+                string message = dtoAdd.IsValidToAdd(this.Configuration, this._clientRepository, this._userRepository, _preOrderRepository
                     , _preOrderProductsRepository, _inventoryRepository, _inventoryColorRepository, _orderProductRepository);
                 //logica para agregarele la cantidad
                 decimal amount = 0;
@@ -133,6 +133,11 @@ namespace TailorProTrack.Application.Service
                 }
                 //mensaje de exito
                 result.Message = "Orden registrada con exito.";
+                //la validacion devuelve una cadena donde indica el ID de los productos que no se pudieron registrar
+                if(message != "")
+                {
+                    result.Message += $" Productos no registrados por falta de cantidad: {message}";
+                }
             }
             catch (Exception ex)
             {
