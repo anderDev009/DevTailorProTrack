@@ -32,6 +32,8 @@ namespace TailorProTrack.infraestructure.Context
 
         public DbSet<BuyInventory> BUY_INVENTORY { get; set; }
         public DbSet<BuyInventoryDetail> BUY_INVENTORY_DETAIL { get; set; }
+        public DbSet<ProductColor> PRODUCT_COLOR { get; set; }
+        public DbSet<ProductSize> PRODUCT_SIZE { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -67,6 +69,22 @@ namespace TailorProTrack.infraestructure.Context
             #endregion
             #region product
             modelBuilder.Entity<Product>().HasOne(p => p.Type).WithMany(t => t.Products).HasForeignKey(p => p.FK_TYPE);
+            #endregion
+            #region Product-Color
+            modelBuilder.Entity<ProductColor>().HasOne(p => p.Product)
+                .WithMany(p => p.ProductColors)
+                .HasForeignKey(p => p.FK_PRODUCT);
+            modelBuilder.Entity<ProductColor>().HasOne(p => p.Color)
+                .WithMany(p => p.ProductColor)
+                .HasForeignKey(p => p.FK_COLOR);
+            #endregion
+            #region Product Size
+            modelBuilder.Entity<ProductSize>().HasOne(p => p.Product)
+                .WithMany(p => p.ProductSizes)
+                .HasForeignKey(p => p.FK_PRODUCT);
+            modelBuilder.Entity<ProductSize>().HasOne(p => p.Size)
+                .WithMany(p => p.ProductSize)
+                .HasForeignKey(p => p.FK_SIZE);
             #endregion
             #region PreOrder Products
             modelBuilder.Entity<PreOrderProducts>()
