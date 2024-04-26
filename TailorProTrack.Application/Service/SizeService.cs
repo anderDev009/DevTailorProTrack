@@ -154,7 +154,7 @@ namespace TailorProTrack.Application.Service
                                                           size = group.Key.SIZE,
                                                           quantity = group.Key.QUANTITY,
                                                           idCategory = group.Select(d => d.size.FKCATEGORYSIZE).First(),
-                                                          nameCategory = group.Select(d => d.sizeC.CATEGORY.First())
+                                                          nameCategory = group.Select(d => d.sizeC.CATEGORY).First()
                                                       });
                 //                .Join
                 //(
