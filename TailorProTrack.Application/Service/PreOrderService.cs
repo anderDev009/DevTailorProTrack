@@ -52,6 +52,7 @@ namespace TailorProTrack.Application.Service
                 PreOrder preOrder = new PreOrder
                 {
                     FK_CLIENT = dtoAdd.FkClient,
+                    DATE_DELIVERY = dtoAdd.DateDelivery
 
                 };
 
@@ -122,7 +123,9 @@ namespace TailorProTrack.Application.Service
                                             Id = data.ID,
                                             //Quantity = data.QUANTITY,
                                             Client = this._clientService.GetById(data.FK_CLIENT).Data,
-                                            Items = this._preOrderProductService.GetByPreOrder(data.ID).Data
+                                            Items = this._preOrderProductService.GetByPreOrder(data.ID).Data,
+                                            DateCreated = data.CREATED_AT,
+                                            DateDelivery = data.DATE_DELIVERY
                                         });
                 result.Data = preOrder;
                 result.Message = "Obtenido con exito";

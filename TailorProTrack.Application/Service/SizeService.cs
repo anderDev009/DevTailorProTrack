@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 using TailorProTrack.Application.Contracts.Size;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Size;
@@ -74,7 +75,7 @@ namespace TailorProTrack.Application.Service
                 int registerCount = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage).Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var sizes = this._repository.GetEntities().Where(d => !d.REMOVED)
+                var sizes = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage).Where(d => !d.REMOVED)
                                             .Join
                                             (
                                                 this._cateogoryRepository.GetEntities(),
@@ -137,14 +138,23 @@ namespace TailorProTrack.Application.Service
                                                         size => size.ID,
                                                         inventory => inventory.FK_SIZE,
                                                         (size,inventory) => new{ size, inventory }
-                                                      ).Where(data=> data.inventory.FK_PRODUCT == id)
+                                                      )
+                                                      .Join
+                                                      (
+                                                        _cateogoryRepository.GetEntities().Where(d=>!d.REMOVED),
+                                                        group => group.size.FKCATEGORYSIZE,
+                                                        sizeCategory => sizeCategory.ID,
+                                                        (group,sizeC) => new {group.size,group.inventory,sizeC}
+                                                      )
+                                                      .Where(data=> data.inventory.FK_PRODUCT == id)
                                                       .GroupBy(data=> new {data.inventory.ID,data.size.SIZE, data.inventory.QUANTITY})
                                                       .Select(group => new
                                                       {
                                                           idInventory = group.Key.ID,
                                                           size = group.Key.SIZE,
                                                           quantity = group.Key.QUANTITY,
-                                                          idCategory = group.Select(d => d.size.FKCATEGORYSIZE).First()
+                                                          idCategory = group.Select(d => d.size.FKCATEGORYSIZE).First(),
+                                                          nameCategory = group.Select(d => d.sizeC.CATEGORY.First())
                                                       });
                 //                .Join
                 //(

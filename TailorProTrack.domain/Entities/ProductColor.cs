@@ -1,6 +1,6 @@
 ﻿using TailorProTrack.domain.Core;
 
-;
+
 
 namespace TailorProTrack.domain.Entities
 {

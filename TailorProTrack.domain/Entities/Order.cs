@@ -14,6 +14,7 @@ namespace TailorProTrack.domain.Entities
 
         public string DESCRIPTION_JOB {  get; set; }
         public string? STATUS_ORDER { get; set; }
+        public string SEND_TO {  get; set; }
         public Client? Client { get; set; }
         public PreOrder? PreOrder {  get; set; }
         public List<OrderProduct>? OrderProducts {  get; set; } 

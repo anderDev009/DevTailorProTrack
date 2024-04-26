@@ -69,6 +69,7 @@ namespace TailorProTrack.Application.Extentions
                     InventoryColor invColor = inventoryColorProducts;
                     invColor.QUANTITY -= product.Quantity;
                     inventoryColorRepository.Update(invColor);
+                    inventoryRepository.UpdateQuantityInventory(invColor.FK_INVENTORY);
                     addedOne = true;
                 }
                 else

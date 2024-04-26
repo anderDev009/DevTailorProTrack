@@ -17,6 +17,8 @@ namespace TailorProTrack.Application.Dtos.Order
         public int FK_PREORDER { get; set; }
         public bool CHECKED {  get; set; }
         public decimal AMOUNT { get; set; }
+        public string SEND_TO { get; set; }
+
         public string DESCRIPTION_JOB { get; set; }
         public string? STATUS_ORDER { get; set; }
 

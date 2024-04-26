@@ -123,6 +123,7 @@ namespace TailorProTrack.Application.Service
                     AMOUNT = amount,
                     DESCRIPTION_JOB = dtoAdd.DescriptionJob,
                     STATUS_ORDER = "pendiente",
+                    SEND_TO = dtoAdd.sendTo
                 };
                 int idOrder = this._repository.Save(orderToAdd);
                 //agregando el detalle de la orden
