@@ -12,7 +12,7 @@ using TailorProTrack.infraestructure.Interfaces;
 
 namespace TailorProTrack.Application.Service
 {
-    public class SaleService : GenericService<SaleDtoAdd, SaleDtoRemove, SaleDtoUpdate, Sales>, ISaleService
+    public class SaleService : GenericService<SaleDtoAdd,SaleDtoUpdate,SaleDtoGet,Sales>, ISaleService
     {
         private readonly ISalesRepository _repository;
         private readonly IMapper _mapper;

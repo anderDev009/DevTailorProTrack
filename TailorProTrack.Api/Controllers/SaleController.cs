@@ -60,7 +60,7 @@ namespace TailorProTrack.Api.Controllers
         [HttpPut("UpdateSale")]
         public IActionResult Update([FromBody] SaleDtoUpdate dtoUpdate)
         {
-            var result = this._SaleService.Update(dtoUpdate);
+            var result = this._SaleService.Update(dtoUpdate,dtoUpdate.Id);
 
             if (!result.Success)
             {
@@ -70,9 +70,9 @@ namespace TailorProTrack.Api.Controllers
         }
 
         [HttpDelete("RemoveSale")]
-        public IActionResult Remove([FromBody] SaleDtoRemove dtoRemove)
+        public IActionResult Remove(int id)
         {
-            var result = this._SaleService.Remove(dtoRemove);
+            var result = this._SaleService.Remove(id);
             if (!result.Success)
             {
                 return BadRequest(result);

@@ -6,7 +6,7 @@ using TailorProTrack.domain.Entities;
 
 namespace TailorProTrack.Application.Contracts
 {
-    public interface ISaleService : IBaseServiceGeneric<SaleDtoAdd,SaleDtoRemove,SaleDtoUpdate,Sales>
+    public interface ISaleService : IBaseServiceGeneric<SaleDtoAdd, SaleDtoUpdate, SaleDtoGet, Sales>
     {
     }
 }

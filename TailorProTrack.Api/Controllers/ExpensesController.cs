@@ -56,7 +56,7 @@ namespace TailorProTrack.Api.Controllers
         [HttpPut("UpdateExpenses")]
         public IActionResult UpdateById([FromBody] ExpensesDtoUpdate dtoUpdate)
         {
-            var result = this._expensesService.Update(dtoUpdate);
+            var result = this._expensesService.Update(dtoUpdate,dtoUpdate.Id);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -65,9 +65,9 @@ namespace TailorProTrack.Api.Controllers
         }
 
         [HttpDelete("RemoveExpense")]
-        public IActionResult Remove([FromBody] ExpensesDtoRemove dtoRemove)
+        public IActionResult Remove(int id)
         {
-            var result = this._expensesService.Remove(dtoRemove);
+            var result = this._expensesService.Remove(id);
             if (!result.Success)
             {
                 return BadRequest(result);
