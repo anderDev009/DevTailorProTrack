@@ -9,18 +9,23 @@ namespace TailorProTrack.infraestructure.Repositories
 {
     public class SalesRepository : BaseRepository<Sales>, ISalesRepository
     {
-        private readonly TailorProTrackContext _context; 
-        
-        public SalesRepository(TailorProTrackContext context) : base(context)
+        private readonly TailorProTrackContext _context;
+        private readonly IPreOrderProductsRepository _preOrderProductsRepository;
+        public SalesRepository(TailorProTrackContext context, IPreOrderProductsRepository preOrderProductsRepository) : base(context)
         {
             _context = context;
+            _preOrderProductsRepository = preOrderProductsRepository;
         }
 
 
         public override int Save(Sales entity)
         {
             entity.CREATED_AT = DateTime.Now;
-
+            entity.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.ID);
+            if(entity.ITBIS != null)
+            {
+                entity.TOTAL_AMOUNT += (decimal)entity.ITBIS;
+            }
             this._context.Add(entity);
             this._context.SaveChanges();
 
@@ -35,7 +40,11 @@ namespace TailorProTrack.infraestructure.Repositories
             sale.FK_PREORDER = entity.FK_PREORDER;
             sale.USER_MOD = entity.USER_MOD;
             sale.MODIFIED_AT = DateTime.Now;
-
+            entity.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.ID);
+            if (entity.ITBIS != null)
+            {
+                entity.TOTAL_AMOUNT += (decimal)entity.ITBIS;
+            }
             this._context.Update(sale);
             this._context.SaveChanges();
         }

@@ -15,7 +15,9 @@ namespace TailorProTrack.Application.Core
         where T : class
     {
         ServiceResultWithHeader GetAll(PaginationParams @params);
+        ServiceResultWithHeader GetAllWithInclude(PaginationParams @params,List<string> properties);
         ServiceResult GetById(int id);
+        ServiceResult GetByIdWithInclude(int id,List<string> properties);
         ServiceResult Add(DtoAdd dtoAdd);
         ServiceResult Remove(int ID);
         ServiceResult Update(DtoUpdate dtoUpdate, int id);

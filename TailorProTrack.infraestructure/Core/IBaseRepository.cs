@@ -12,6 +12,9 @@ namespace TailorProTrack.infraestructure.Core
         int CountEntities();
         List<T> GetEntities();
         List<T> GetEntitiesPaginated(int page, int itemsPage);
+        List<T> GetAllWithInclude(int page, int itemsPage,List<string> properties);
+        T GetByIdWithInclude(int id,List<string> properties);
+
         List<T> FindAll(Expression<Func<T, bool>> filter);
         T GetEntity(int id);
         List<T> GetEntityToJoin(int id);

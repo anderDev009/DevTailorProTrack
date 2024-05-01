@@ -9,7 +9,7 @@ using TailorProTrack.infraestructure.Interfaces;
 
 namespace TailorProTrack.Application.Service
 {
-    public class ProductColorService : IGenericService<ProductColorDtoAdd,
+    public class ProductColorService : GenericService<ProductColorDtoAdd,
                                                         ProductColorDtoUpdate,
                                                         ProductColorDtoGet,
                                                         ProductColor>, IProductColorService

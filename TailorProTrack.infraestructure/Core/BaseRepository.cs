@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using TailorProTrack.domain.Core;
 using TailorProTrack.infraestructure.Context;
@@ -29,6 +30,27 @@ namespace TailorProTrack.infraestructure.Core
         {
             return this._entities.Where(filter).ToList();
         }
+
+        public List<T> GetAllWithInclude(int page, int itemsPage, List<string> properties)
+        {
+            var queryable = _context.Set<T>().AsQueryable();
+            foreach(var property in properties)
+            {
+                queryable.Include(property);
+            }
+            return queryable.Where(data => !data.REMOVED).Skip((page - 1) * itemsPage).Take(itemsPage).ToList();
+        }
+
+        public T GetByIdWithInclude(int id, List<string> properties)
+        {
+            var queryable = _context.Set<T>().AsQueryable();
+            foreach (var property in properties)
+            {
+                queryable.Include(property);
+            }
+            return queryable.Where(data => data.ID == id).First();
+        }
+
         public virtual List<T> GetEntities()
         {
             return _context.Set<T>().Where(data => !data.REMOVED).ToList();

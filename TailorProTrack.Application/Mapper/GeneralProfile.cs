@@ -11,6 +11,7 @@ using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
 using TailorProTrack.Application.Dtos.Product;
 using TailorProTrack.Application.Dtos.ProductColor;
+using TailorProTrack.Application.Dtos.Sale;
 using TailorProTrack.Application.Dtos.Size;
 using TailorProTrack.domain.Entities;
 
@@ -229,7 +230,7 @@ namespace TailorProTrack.Application.Mapper
                     .ForMember(b => b.REMOVED, opt => opt.Ignore())
                     .ForMember(b => b.PaymentType, opt => opt.Ignore());
 
-            CreateMap<Expenses,ExpensesDtoGet>()
+            CreateMap<Expenses, ExpensesDtoGet>()
                 .ForMember(x => x.Id, src => src.MapFrom(x => x.ID))
                 .ForMember(x => x.IdPaymentType, src => src.MapFrom(x => x.FK_PAYMENT_TYPE))
                 .ForMember(x => x.Name, src => src.MapFrom(x => x.NAME))
@@ -237,12 +238,52 @@ namespace TailorProTrack.Application.Mapper
                 .ForMember(x => x.Amount, src => src.MapFrom(x => x.AMOUNT))
                 .ForMember(x => x.Voucher, src => src.MapFrom(x => x.VOUCHER))
                 .ForMember(x => x.DocumentNumber, src => src.MapFrom(x => x.VOUCHER))
+                .ForMember(x => x.PaymentType, src => src.MapFrom(x => x.PaymentType.TYPE_PAYMENT))
                   .ReverseMap()
                    .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                     .ForMember(b => b.USER_MOD, opt => opt.Ignore())
                     .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
-                    .ForMember(b => b.REMOVED, opt => opt.Ignore())
-                    .ForMember(b => b.PaymentType, opt => opt.Ignore());
+                    .ForMember(b => b.REMOVED, opt => opt.Ignore());
+            #endregion
+            #region Sales
+            CreateMap<Sales, SaleDtoAdd>()
+                .ForMember(x => x.CodIsc, opt => opt.MapFrom(x => x.COD_ISC))
+                .ForMember(x => x.FkOrder, opt => opt.MapFrom(x => x.FK_PREORDER))
+                .ForMember(x => x.Itbis, opt => opt.MapFrom(x => x.ITBIS))
+                .ForMember(x => x.CodIsc, opt => opt.MapFrom(x => x.COD_ISC))
+                .ReverseMap()
+                .ForMember(x => x.TOTAL_AMOUNT, opt => opt.Ignore())
+                 .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                 .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                 .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                 .ForMember(b => b.REMOVED, opt => opt.Ignore());
+
+            CreateMap<Sales, SaleDtoUpdate>()
+               .ForMember(x => x.Id, opt => opt.MapFrom(x => x.ID))
+               .ForMember(x => x.CodIsc, opt => opt.MapFrom(x => x.COD_ISC))
+               .ForMember(x => x.FkOrder, opt => opt.MapFrom(x => x.FK_PREORDER))
+               .ForMember(x => x.Itbis, opt => opt.MapFrom(x => x.ITBIS))
+               .ForMember(x => x.CodIsc, opt => opt.MapFrom(x => x.COD_ISC))
+               .ReverseMap()
+               .ForMember(x => x.TOTAL_AMOUNT, opt => opt.Ignore())
+                .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                .ForMember(b => b.REMOVED, opt => opt.Ignore());
+
+
+            CreateMap<Sales, SaleDtoGet>()
+               .ForMember(x => x.Id, opt => opt.MapFrom(x => x.ID))
+               .ForMember(x => x.CodIsc, opt => opt.MapFrom(x => x.COD_ISC))
+               .ForMember(x => x.FkOrder, opt => opt.MapFrom(x => x.FK_PREORDER))
+               .ForMember(x => x.Itbis, opt => opt.MapFrom(x => x.ITBIS))
+               .ForMember(x => x.CodIsc, opt => opt.MapFrom(x => x.COD_ISC))
+               .ForMember(x => x.Amount, opt => opt.MapFrom(x => x.TOTAL_AMOUNT))
+               .ReverseMap()
+                .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                .ForMember(b => b.REMOVED, opt => opt.Ignore());
             #endregion
         }
     }
