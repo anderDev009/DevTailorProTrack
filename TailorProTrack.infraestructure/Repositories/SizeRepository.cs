@@ -85,5 +85,15 @@ namespace TailorProTrack.infraestructure.Repositories
                     categorySize = data.categorySize,
                 }).ToList();
         }
+
+        public List<Size> SizeByAsociatedProductId(int productId)
+        {
+            List<Size> sizes = _context.Set<Size>()
+                .Include(x => x.ProductSize)
+                .Where(c => c.ProductSize.Any(x => x.FK_PRODUCT == productId))
+                .ToList();
+
+            return sizes;
+        }
     }
 }

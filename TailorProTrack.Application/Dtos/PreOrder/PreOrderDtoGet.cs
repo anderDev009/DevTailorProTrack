@@ -13,6 +13,8 @@ namespace TailorProTrack.Application.Dtos.PreOrder
         public int QUANTITY { get; set; }
         public int COLOR_PRIMARY { get; set; }
         public int? COLOR_SECONDARY { get; set; }
+        //campo para saber is es editable el pedido
+        public bool? IsEditable { get; set; }
 
         public PreOrderDtoGetMapped? PreOrder { get; set; }
         public SizeDtoGetMapped? Size { get; set; }

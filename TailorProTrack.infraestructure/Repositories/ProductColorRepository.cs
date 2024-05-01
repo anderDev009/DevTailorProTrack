@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.EntityFrameworkCore;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -14,5 +15,14 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             _ctx = ctx;
         }
+
+        //public Task<Product> GetProductByProductIdAsync(int productId)
+        //{
+        //    ProductColor product = _ctx.Set<ProductColor>()
+        //        .Include(x => x.Product)
+        //        .Include(x => x.Color)
+        //        .Where(p => p.FK_PRODUCT == productid)
+
+        //}
     }
 }

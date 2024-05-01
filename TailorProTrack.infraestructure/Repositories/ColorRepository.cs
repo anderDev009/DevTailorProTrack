@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -24,6 +25,12 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             return this._entities.Where(color => EF.Functions.Like(color.COLORNAME, $"{name}%")).ToList();
 
+        }
+
+        public List<Color> FilterByProductAsociated(int productId)
+        {
+            List<Color> colors = _context.Set<Color>().Include(x => x.ProductColor).Where(c => c.ProductColor.Any(x => x.FK_PRODUCT == productId)).ToList();
+            return colors;
         }
 
         public override int Save(Color entity)

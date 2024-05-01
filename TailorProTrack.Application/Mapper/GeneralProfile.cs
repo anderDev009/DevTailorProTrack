@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TailorProTrack.Application.Dtos.BuyInventoryDtos;
 using TailorProTrack.Application.Dtos.Client;
 using TailorProTrack.Application.Dtos.Color;
+using TailorProTrack.Application.Dtos.Expenses;
 using TailorProTrack.Application.Dtos.Order;
 using TailorProTrack.Application.Dtos.OrderProduct;
 using TailorProTrack.Application.Dtos.PreOrder;
@@ -108,6 +109,7 @@ namespace TailorProTrack.Application.Mapper
                 .ForMember(b => b.REMOVED, opt => opt.Ignore());
 
             CreateMap<PreOrder, PreOrderDtoGetMapped>()
+                .ForMember(b => b.IsEditable, opt => opt.Ignore())
                 .ForMember(b => b.DateCreated, opt => opt.MapFrom(src => src.CREATED_AT))
                 .ForMember(b => b.DateDelivery, opt => opt.MapFrom(src => src.DATE_DELIVERY))
                 .ReverseMap()
@@ -182,10 +184,10 @@ namespace TailorProTrack.Application.Mapper
                   .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                   .ForMember(b => b.USER_MOD, opt => opt.Ignore())
                   .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
-                  .ForMember(b => b.REMOVED, opt => opt.Ignore()); 
+                  .ForMember(b => b.REMOVED, opt => opt.Ignore());
 
             //dto update
-            CreateMap<ProductColor,ProductColorDtoUpdate>()
+            CreateMap<ProductColor, ProductColorDtoUpdate>()
                 .ForMember(x => x.Id, opt => opt.MapFrom(src => src.ID))
                 .ForMember(x => x.FkProduct, opt => opt.MapFrom(src => src.FK_PRODUCT))
                 .ForMember(x => x.FkColor, opt => opt.MapFrom(src => src.FK_COLOR))
@@ -196,6 +198,51 @@ namespace TailorProTrack.Application.Mapper
                   .ForMember(b => b.USER_MOD, opt => opt.Ignore())
                   .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
                   .ForMember(b => b.REMOVED, opt => opt.Ignore());
+            #endregion
+            #region Expenses
+            CreateMap<Expenses, ExpensesDtoAdd>()
+                .ForMember(x => x.IdPaymentType, src => src.MapFrom(x => x.FK_PAYMENT_TYPE))
+                .ForMember(x => x.Name, src => src.MapFrom(x => x.NAME))
+                .ForMember(x => x.Description, src => src.MapFrom(x => x.DESCR))
+                .ForMember(x => x.Amount, src => src.MapFrom(x => x.AMOUNT))
+                .ForMember(x => x.Voucher, src => src.MapFrom(x => x.VOUCHER))
+                .ForMember(x => x.DocumentNumber, src => src.MapFrom(x => x.VOUCHER))
+                  .ReverseMap()
+                   .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                    .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                    .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.REMOVED, opt => opt.Ignore())
+                    .ForMember(b => b.PaymentType, opt => opt.Ignore());
+
+            CreateMap<Expenses, ExpensesDtoUpdate>()
+                .ForMember(x => x.Id, src => src.MapFrom(x => x.ID))
+                .ForMember(x => x.IdPaymentType, src => src.MapFrom(x => x.FK_PAYMENT_TYPE))
+                .ForMember(x => x.Name, src => src.MapFrom(x => x.NAME))
+                .ForMember(x => x.Description, src => src.MapFrom(x => x.DESCR))
+                .ForMember(x => x.Amount, src => src.MapFrom(x => x.AMOUNT))
+                .ForMember(x => x.Voucher, src => src.MapFrom(x => x.VOUCHER))
+                .ForMember(x => x.DocumentNumber, src => src.MapFrom(x => x.VOUCHER))
+                  .ReverseMap()
+                   .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                    .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                    .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.REMOVED, opt => opt.Ignore())
+                    .ForMember(b => b.PaymentType, opt => opt.Ignore());
+
+            CreateMap<Expenses,ExpensesDtoGet>()
+                .ForMember(x => x.Id, src => src.MapFrom(x => x.ID))
+                .ForMember(x => x.IdPaymentType, src => src.MapFrom(x => x.FK_PAYMENT_TYPE))
+                .ForMember(x => x.Name, src => src.MapFrom(x => x.NAME))
+                .ForMember(x => x.Description, src => src.MapFrom(x => x.DESCR))
+                .ForMember(x => x.Amount, src => src.MapFrom(x => x.AMOUNT))
+                .ForMember(x => x.Voucher, src => src.MapFrom(x => x.VOUCHER))
+                .ForMember(x => x.DocumentNumber, src => src.MapFrom(x => x.VOUCHER))
+                  .ReverseMap()
+                   .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                    .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                    .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.REMOVED, opt => opt.Ignore())
+                    .ForMember(b => b.PaymentType, opt => opt.Ignore());
             #endregion
         }
     }

@@ -7,5 +7,6 @@ namespace TailorProTrack.infraestructure.Interfaces
     {
         List<Size> FilterByName(string name);
         List<Size> FilterByIdCategory(int categoryId);  
+        List<Size> SizeByAsociatedProductId(int  productId);
     }
 }

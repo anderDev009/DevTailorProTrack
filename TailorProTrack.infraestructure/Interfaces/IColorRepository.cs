@@ -7,5 +7,6 @@ namespace TailorProTrack.infraestructure.Interfaces
     {
         List<Color> FilterByName(string name);
         List<Color> FilterByColorCode(string color);
+        List<Color> FilterByProductAsociated(int productId);    
     }
 }

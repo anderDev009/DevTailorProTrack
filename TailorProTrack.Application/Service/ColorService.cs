@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts.Color;
 using TailorProTrack.Application.Core;
@@ -13,12 +14,13 @@ namespace TailorProTrack.Application.Service
     {
         private readonly IColorRepository _repository;
         private readonly ILogger logger;
-
+        private readonly IMapper _mapper;
         public ColorService(IColorRepository colorRepository, ILogger<IColorRepository> logger,
-                            IConfiguration configuration)
+                            IConfiguration configuration, IMapper mapper)
         {
             this._repository = colorRepository;
             this.logger = logger;
+            _mapper = mapper;
             Configuration = configuration;
         }
 
@@ -105,6 +107,12 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public List<ColorDtoGet> GetColorsAsociatedByProductId(int Id)
+        {
+            List<Color> colors = _repository.FilterByProductAsociated(Id);
+            return _mapper.Map<List<ColorDtoGet>>(colors);
+        }
+
         public ServiceResult Remove(ColorDtoRemove dtoRemove)
         {
             ServiceResult result = new ServiceResult();
@@ -149,5 +157,7 @@ namespace TailorProTrack.Application.Service
             }
             return result;
         }
+
+        
     }
 }

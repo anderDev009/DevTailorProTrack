@@ -117,6 +117,7 @@ namespace TailorProTrack.Application.Service
 
             try
             {
+                bool isEditable = _preOrderRepository.PreOrderIsEditable(id);
                 var preOrder = this._preOrderRepository.GetEntityToJoin(id)
                                         .Select(data => new
                                         {
@@ -125,7 +126,8 @@ namespace TailorProTrack.Application.Service
                                             Client = this._clientService.GetById(data.FK_CLIENT).Data,
                                             Items = this._preOrderProductService.GetByPreOrder(data.ID).Data,
                                             DateCreated = data.CREATED_AT,
-                                            DateDelivery = data.DATE_DELIVERY
+                                            DateDelivery = data.DATE_DELIVERY,
+                                            IsEditable = isEditable
                                         });
                 result.Data = preOrder;
                 result.Message = "Obtenido con exito";

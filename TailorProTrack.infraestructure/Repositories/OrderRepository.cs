@@ -9,10 +9,14 @@ namespace TailorProTrack.infraestructure.Repositories
     public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         private readonly TailorProTrackContext _context;
+        private readonly IInventoryColorRepository _inventoryColorRepository;
+        private readonly IInventoryRepository _inventoryRepository;
 
-        public OrderRepository(TailorProTrackContext context) : base(context)
+        public OrderRepository(TailorProTrackContext context, IInventoryColorRepository inventoryColorRepository, IInventoryRepository inventoryRepository) : base(context)
         {
             this._context = context;
+            _inventoryColorRepository = inventoryColorRepository;
+            _inventoryRepository = inventoryRepository;
         }
 
         public override int Save(Order entity)
@@ -44,13 +48,22 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public override void Remove(Order entity)
         {
-            Order order = this.GetEntity(entity.ID);
-
-            order.REMOVED = true;
-            order.USER_MOD = entity.USER_MOD;
-            order.MODIFIED_AT = DateTime.Now;
-            this._context.Update(order);
-            this._context.SaveChanges();
+            List<OrderProduct> orderProducts = _context.Set<OrderProduct>()
+                                                       .Where(x => x.FK_ORDER == entity.ID)
+                                                       .ToList();
+            //logica para devolver el inventario color
+            foreach(var product in orderProducts)
+            {
+                //obteniendo el inventario color para agregarle la cantidad
+                InventoryColor invColor = _inventoryColorRepository.GetEntity(product.FK_INVENTORYCOLOR);
+                invColor.QUANTITY    += product.QUANTITY;
+                //actualizando la cantidad 
+                _inventoryColorRepository.Update(invColor);
+                //actualizar el inventario mientras se van agregando 
+                _inventoryRepository.UpdateQuantityInventory(invColor.FK_INVENTORY);
+            }
+            //eliminar la orden
+            _context.Set<Order>().Remove(entity);
         }
 
         public void UpdateAmount(Order order)

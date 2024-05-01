@@ -20,6 +20,6 @@ namespace TailorProTrack.Application.Service
         {
             _mapper = mapper;
             _productColorRepository = productColorRepository;   
-        }
+        }   
     }
 }
