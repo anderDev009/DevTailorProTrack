@@ -1,7 +1,4 @@
-﻿
-
-
-namespace TailorProTrack.Application.Contracts.Report
+﻿namespace TailorProTrack.Application.Contracts.Report
 {
     public interface IReportExpenses
     {

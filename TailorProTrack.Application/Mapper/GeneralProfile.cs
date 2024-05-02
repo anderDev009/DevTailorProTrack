@@ -11,6 +11,7 @@ using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
 using TailorProTrack.Application.Dtos.Product;
 using TailorProTrack.Application.Dtos.ProductColor;
+using TailorProTrack.Application.Dtos.ProductSize;
 using TailorProTrack.Application.Dtos.Sale;
 using TailorProTrack.Application.Dtos.Size;
 using TailorProTrack.domain.Entities;
@@ -284,6 +285,46 @@ namespace TailorProTrack.Application.Mapper
                 .ForMember(b => b.USER_MOD, opt => opt.Ignore())
                 .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
                 .ForMember(b => b.REMOVED, opt => opt.Ignore());
+            #endregion
+            #region Product - Size
+            CreateMap<ProductSize, ProductSizeDtoAdd>()
+                .ForMember(x => x.IdProduct, src => src.MapFrom(x => x.FK_PRODUCT))
+                .ForMember(x => x.IdSize, src => src.MapFrom(x => x.FK_SIZE))
+                .ReverseMap()
+                .ForMember(x => x.ID, opt => opt.Ignore())
+                .ForMember(x => x.Product, opt => opt.Ignore())
+                .ForMember(x => x.Size, opt => opt.Ignore())
+                //auditable properties
+                .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                .ForMember(b => b.REMOVED, opt => opt.Ignore());
+            
+            CreateMap<ProductSize, ProductSizeDtoUpdate>()
+                .ForMember(x => x.Id, src => src.MapFrom(x => x.ID))
+                .ForMember(x => x.IdProduct, src => src.MapFrom(x => x.FK_PRODUCT))
+                .ForMember(x => x.IdSize, src => src.MapFrom(x => x.FK_SIZE))
+                .ReverseMap()
+                .ForMember(x => x.Product, opt => opt.Ignore())
+                .ForMember(x => x.Size, opt => opt.Ignore())
+                //auditable properties
+                .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                .ForMember(b => b.REMOVED, opt => opt.Ignore());
+
+
+            CreateMap<ProductSize, ProductSizeDtoGet>()
+                .ForMember(x => x.Id, src => src.MapFrom(x => x.ID))
+                .ForMember(x => x.IdProduct, src => src.MapFrom(x => x.FK_PRODUCT))
+                .ForMember(x => x.IdSize, src => src.MapFrom(x => x.FK_SIZE))
+                .ReverseMap()
+                //auditable properties
+                .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                .ForMember(b => b.REMOVED, opt => opt.Ignore());
+
             #endregion
         }
     }

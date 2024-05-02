@@ -1,6 +1,4 @@
-﻿
-
-using TailorProTrack.Application.Core;
+﻿using TailorProTrack.Application.Core;
 
 namespace TailorProTrack.Application.Contracts.Report
 {
