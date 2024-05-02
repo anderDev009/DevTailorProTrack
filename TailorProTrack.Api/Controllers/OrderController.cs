@@ -100,7 +100,7 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
-
+        //cancelar orden
         [HttpDelete("CancelOrder")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
