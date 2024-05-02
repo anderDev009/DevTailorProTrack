@@ -6,7 +6,7 @@ using TailorProTrack.Application.Dtos.ProductSize;
 using TailorProTrack.Application.Service.BaseServices;
 using TailorProTrack.infraestructure.Interfaces;
 
-namespace TailorProTrack.Application.Service.ProductService
+namespace TailorProTrack.Application.Service.ProductSizeService
 {
     public class ProductSizeService : GenericService<ProductSizeDtoAdd, ProductSizeDtoUpdate,
                                                     ProductSizeDtoGet, domain.Entities.ProductSize>, IProductSizeService
