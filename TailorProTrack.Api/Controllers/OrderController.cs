@@ -100,5 +100,18 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
+
+        [HttpDelete("CancelOrder")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult CancelOrder(int id)
+        {
+            ServiceResult result = orderService.Remove(new OrderDtoRemove { Id = id });
+            if (!result.Success) 
+            { 
+                return StatusCode(StatusCodes.Status500InternalServerError,result.Message);
+            }
+            return NoContent();
+        }
     }
 }
