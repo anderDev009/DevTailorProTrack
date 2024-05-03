@@ -22,7 +22,7 @@ namespace TailorProTrack.Api.Controllers
         [HttpGet("GetProductsColor")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ProductColorDtoGet>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAll(PaginationParams @params)
+        public IActionResult GetAll([FromQuery]PaginationParams @params)
         {
             try
             {
