@@ -58,7 +58,7 @@ namespace TailorProTrack.Application.Service.BaseServices
             return result;
         }
 
-        public ServiceResultWithHeader GetAllWithInclude(PaginationParams @params, List<string> properties)
+        public virtual ServiceResultWithHeader GetAllWithInclude(PaginationParams @params, List<string> properties)
         {
             ServiceResultWithHeader result = new(); ;
             try

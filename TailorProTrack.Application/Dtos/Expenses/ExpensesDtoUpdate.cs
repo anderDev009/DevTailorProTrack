@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TailorProTrack.Application.Dtos.Expenses
 {
-    public class ExpensesDtoUpdate : ExpensesDtoBase
+    public class ExpensesDtoUpdate 
     {
         public int Id { get; set; }
         [Required]

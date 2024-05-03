@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
+using TailorProTrack.Application.Dtos.Color;
 using TailorProTrack.Application.Dtos.Product;
 using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
@@ -14,14 +16,18 @@ namespace TailorProTrack.Application.Service
     {
         private readonly IProductRepository _repository;
         private readonly ITypeProdRepository _repositoryType;
+        private readonly IColorRepository _colorRepository;
+        private readonly IMapper _mapper;
         private readonly ILogger logger;
         public ProductService(IProductRepository repository,IConfiguration configuration,
-            ILogger<ProductRepository> logger, ITypeProdRepository typeRepository)
+            ILogger<ProductRepository> logger, ITypeProdRepository typeRepository, IColorRepository colorRepository, IMapper mapper)
         {
             _repository = repository;
             this.logger = logger;
             this.Configuration = configuration;
             this._repositoryType = typeRepository;
+            _colorRepository = colorRepository;
+            _mapper = mapper;
         }
 
         public IConfiguration Configuration;
@@ -114,6 +120,7 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
+                
                 var product = this._repository.GetEntityToJoin(id)
                                                .Join(this._repositoryType.GetEntities(),
                                                       product => product.FK_TYPE,
@@ -127,6 +134,9 @@ namespace TailorProTrack.Application.Service
                                                     type = data.typeProd.TYPE_PROD,
                                                     sale_price = data.product.SALE_PRICE
                                                 }).First();
+
+                var colorsAsociated = _colorRepository.FilterByProductAsociated(product.Id);
+                product.ColorsAsociated = _mapper.Map<ColorDtoGet>(colorsAsociated);
                 result.Data = product;
                 result.Message = "Obtenido con exito";
             }

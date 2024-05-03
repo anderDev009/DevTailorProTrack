@@ -36,7 +36,7 @@ namespace TailorProTrack.infraestructure.Core
             var queryable = _context.Set<T>().AsQueryable();
             foreach(var property in properties)
             {
-                queryable.Include(property);
+                queryable =  queryable.Include(property);
             }
             return queryable.Where(data => !data.REMOVED).Skip((page - 1) * itemsPage).Take(itemsPage).ToList();
         }
@@ -46,7 +46,7 @@ namespace TailorProTrack.infraestructure.Core
             var queryable = _context.Set<T>().AsQueryable();
             foreach (var property in properties)
             {
-                queryable.Include(property);
+                queryable = queryable.Include(property);
             }
             return queryable.Where(data => data.ID == id).First();
         }
@@ -98,7 +98,8 @@ namespace TailorProTrack.infraestructure.Core
 
         public virtual void Update(T entity)
         {
-            this._entities.Update(entity);
+            var target = _context.Set<T>().Find(entity.ID);
+            _context.Entry(target).CurrentValues.SetValues(entity);
             _context.SaveChanges();
         }
 

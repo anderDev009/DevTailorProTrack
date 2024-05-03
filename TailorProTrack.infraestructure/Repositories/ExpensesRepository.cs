@@ -18,26 +18,14 @@ namespace TailorProTrack.infraestructure.Repositories
         public override int Save(Expenses entity)
         {
             entity.CREATED_AT = DateTime.Now;
+            entity.USER_CREATED = 1;
             this._context.Add(entity);
             this._context.SaveChanges();
             return entity.ID;
 
         }
 
-        public override void Update(Expenses entity)
-        {
-            Expenses expenses = this.GetEntity(entity.ID);
-
-            expenses.NAME = entity.NAME;
-            expenses.DESCR = entity.DESCR;
-            expenses.VOUCHER = entity.VOUCHER;
-            expenses.MODIFIED_AT = DateTime.Now;
-            expenses.USER_MOD = entity.USER_MOD;
-
-            this._context.Update(expenses);
-            this._context.SaveChanges();
-
-        }
+    
 
   
     }
