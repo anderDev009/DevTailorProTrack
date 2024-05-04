@@ -85,8 +85,9 @@ namespace TailorProTrack.Application.Service
                                                     name_prod = data.Key.NAME_PRODUCT,
                                                     description = data.Key.DESCRIPTION_PRODUCT,
                                                     type = data.Select(d => d.typeProd.TYPE_PROD).FirstOrDefault(),
-                                                    sale_price = data.Key.SALE_PRICE
-                                                })
+                                                    sale_price = data.Key.SALE_PRICE,
+                                                    ColorsAsociated =  _mapper.Map<List<ColorDtoGetMapped>>(_colorRepository.FilterByProductAsociated(data.Key.ID))
+            })
                                                 .ToList();
                                  //.Join(this._repositoryType.GetEntities(),
                                  //       product => product.ID,
@@ -136,7 +137,7 @@ namespace TailorProTrack.Application.Service
                                                 }).First();
 
                 var colorsAsociated = _colorRepository.FilterByProductAsociated(product.Id);
-                product.ColorsAsociated = _mapper.Map<ColorDtoGet>(colorsAsociated);
+                product.ColorsAsociated = _mapper.Map<List<ColorDtoGetMapped>>(colorsAsociated);
                 result.Data = product;
                 result.Message = "Obtenido con exito";
             }

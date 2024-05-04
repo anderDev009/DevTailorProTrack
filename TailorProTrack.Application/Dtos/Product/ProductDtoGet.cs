@@ -15,6 +15,6 @@ namespace TailorProTrack.Application.Dtos.Product
         public decimal sale_price { get; set; }
         public string? type { get; set; }
         
-        public ColorDtoGet? ColorsAsociated { get; set; }
+        public List<ColorDtoGetMapped>? ColorsAsociated { get; set; }
     } 
 }
