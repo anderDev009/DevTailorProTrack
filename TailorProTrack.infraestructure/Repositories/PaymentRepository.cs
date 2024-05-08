@@ -18,36 +18,28 @@ namespace TailorProTrack.infraestructure.Repositories
         public override int Save(Payment entity)
         {
             entity.CREATED_AT = DateTime.Now;
+            entity.USER_CREATED = 1;
+            //logica para sumarle el monto a la cuenta
+            if(entity.FK_BANK_ACCOUNT != null)
+            {
+                BankAccount account = _context.Set<BankAccount>().Find((int)entity.FK_BANK_ACCOUNT);
+                if(account == null) 
+                {
+                    throw new Exception("Cuenta de banco invalida.");
+                }
+                //sumandole el monto a la cuenta
+                account.BALANCE += entity.AMOUNT;
+                //actualizando el monto
+                _context.Set<BankAccount>().Update(account);
+            }
+           
             this._context.Add(entity); 
             this._context.SaveChanges();
             return entity.ID;
         }
 
-        public override void Update(Payment entity)
-        {
-            Payment payment = this.GetEntity(entity.ID);
+  
 
-            payment.AMOUNT = entity.AMOUNT;
-            payment.FK_ORDER = entity.FK_ORDER;
-            payment.FK_TYPE_PAYMENT = entity.FK_TYPE_PAYMENT;
-            payment.MODIFIED_AT = DateTime.Now;
-            payment.USER_MOD = entity.USER_MOD;
-            payment.FK_BANK_ACCOUNT = entity.FK_BANK_ACCOUNT;
-
-            this._context.Update(payment);
-            this._context.SaveChanges();
-        }
-
-        public override void Remove(Payment entity)
-        {
-            Payment payment = this.GetEntity(entity.ID);
-
-            payment.USER_MOD = entity.USER_MOD;
-            payment.MODIFIED_AT = DateTime.Now;
-            payment.REMOVED = true;
-
-            this._context.Update(payment);
-            this._context.SaveChanges();
-        }
+     
     }
 }
