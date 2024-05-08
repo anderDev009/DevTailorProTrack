@@ -209,12 +209,14 @@ namespace TailorProTrack.Application.Mapper
                 .ForMember(x => x.Amount, src => src.MapFrom(x => x.AMOUNT))
                 .ForMember(x => x.Voucher, src => src.MapFrom(x => x.VOUCHER))
                 .ForMember(x => x.DocumentNumber, src => src.MapFrom(x => x.VOUCHER))
+                .ForMember(x => x.FkBankAccount, src => src.MapFrom(x => x.FK_BANK_ACCOUNT))
                   .ReverseMap()
                    .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                     .ForMember(b => b.USER_MOD, opt => opt.Ignore())
                     .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
                     .ForMember(b => b.REMOVED, opt => opt.Ignore())
-                    .ForMember(b => b.PaymentType, opt => opt.Ignore());
+                    .ForMember(b => b.PaymentType, opt => opt.Ignore())
+                    .ForMember(b => b.BankAccount, opt => opt.Ignore());
 
             CreateMap<Expenses, ExpensesDtoUpdate>()
                 .ForMember(x => x.Id, src => src.MapFrom(x => x.ID))
@@ -224,11 +226,13 @@ namespace TailorProTrack.Application.Mapper
                 .ForMember(x => x.Amount, src => src.MapFrom(x => x.AMOUNT))
                 .ForMember(x => x.Voucher, src => src.MapFrom(x => x.VOUCHER))
                 .ForMember(x => x.DocumentNumber, src => src.MapFrom(x => x.VOUCHER))
+                .ForMember(x => x.FkBankAccount, src => src.MapFrom(x => x.FK_BANK_ACCOUNT))
                   .ReverseMap()
                    .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                     .ForMember(b => b.USER_MOD, opt => opt.Ignore())
                     .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
                     .ForMember(b => b.REMOVED, opt => opt.Ignore())
+                    .ForMember(b => b.BankAccount, opt => opt.Ignore())
                     .ForMember(b => b.PaymentType, opt => opt.Ignore());
 
             CreateMap<Expenses, ExpensesDtoGet>()
@@ -240,6 +244,7 @@ namespace TailorProTrack.Application.Mapper
                 .ForMember(x => x.Voucher, src => src.MapFrom(x => x.VOUCHER))
                 .ForMember(x => x.DocumentNumber, src => src.MapFrom(x => x.VOUCHER))
                 .ForMember(x => x.PaymentType, src => src.MapFrom(x => x.PaymentType.TYPE_PAYMENT))
+                .ForMember(x => x.BankAccount, src => src.MapFrom(x => x.BankAccount.BANK_ACCOUNT))
                   .ReverseMap()
                    .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                     .ForMember(b => b.USER_MOD, opt => opt.Ignore())
