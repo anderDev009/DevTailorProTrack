@@ -32,7 +32,7 @@ namespace TailorProTrack.Api.Controllers
         [HttpGet("GetExpenses")]
         public IActionResult Get([FromQuery] PaginationParams @params)
         {
-            var result = this._expensesService.GetAllWithInclude(@params,new List<string> { "PaymentType" });
+            var result = this._expensesService.GetAllWithInclude(@params,new List<string> { "PaymentType","BankAccount" });
             ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
             if (!response.Success)
             {
