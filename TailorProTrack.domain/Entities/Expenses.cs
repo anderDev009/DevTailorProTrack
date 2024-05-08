@@ -13,7 +13,8 @@ namespace TailorProTrack.domain.Entities
         public string? VOUCHER { get; set; }
         public string? DOCUMENT_NUMBER { get; set; }
         public int FK_PAYMENT_TYPE {  get; set; }
-
+        public int? FK_BANK_ACCOUNT {  get; set; }
+        public BankAccount? BankAccount {  get; set; }
         public PaymentType? PaymentType { get; set; }
     }
 }
