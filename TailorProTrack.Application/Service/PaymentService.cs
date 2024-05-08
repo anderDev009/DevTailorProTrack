@@ -25,7 +25,7 @@ namespace TailorProTrack.Application.Service
         //repositorio de bancos
         private readonly IBankRepository _bankRepository;
         //repositorio cuenta de bancos
-        private readonly IBankAccountRepository _bankAccRepository; 
+        private readonly IBankAccountRepository _bankAccRepository;
         public PaymentService(IPaymentRepository repository, ILogger<IPaymentRepository> logger,
                               IPaymentTypeRepository typeRepository, IOrderService orderService,
                               IConfiguration configuration, IOrderRepository orderRepository,
@@ -56,7 +56,8 @@ namespace TailorProTrack.Application.Service
                     FK_ORDER = dtoAdd.FkOrder,
                     FK_TYPE_PAYMENT = dtoAdd.FkTypePayment,
                     FK_BANK_ACCOUNT = dtoAdd.FkBankAccount,
-                    USER_CREATED = dtoAdd.User
+                    USER_CREATED = dtoAdd.User,
+                    ACCOUNT_PAYMENT = dtoAdd.AccountPayment
                 };
 
                 this._repository.Save(payment);
@@ -79,7 +80,7 @@ namespace TailorProTrack.Application.Service
                 int registerCount = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage).Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var payments = this._repository.GetEntities().Where(d => !d.REMOVED).Select(d => new { d.ID, d.FK_ORDER, d.FK_TYPE_PAYMENT, d.AMOUNT })
+                var payments = this._repository.GetEntities().Where(d => !d.REMOVED).Select(d => new { d.ID, d.FK_ORDER, d.FK_TYPE_PAYMENT, d.AMOUNT, d.ACCOUNT_PAYMENT })
                                                                            .Join
                                                                            (
                                                                             this._typeRepository.GetEntities().Select(d => new { d.ID, d.TYPE_PAYMENT }),
@@ -91,6 +92,8 @@ namespace TailorProTrack.Application.Service
                                                                            .Select(d => new PaymentDtoGet
                                                                            {
                                                                                IdOrder = d.Key,
+                                                                               AccountPayment = d
+                                                                               .Select(x => x.payment.ACCOUNT_PAYMENT).First(),
                                                                                Amount = d.Sum(d => d.payment.AMOUNT),
                                                                                PaymentNumbers = d.Select(d => d.type.ID).Count()
                                                                            }).ToList();
@@ -111,7 +114,7 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                var payments = this._repository.GetEntities().Where(d => !d.REMOVED && d.ID == id).Select(d => new { d.ID, d.FK_ORDER, d.FK_TYPE_PAYMENT, d.AMOUNT })
+                var payments = this._repository.GetEntities().Where(d => !d.REMOVED && d.ID == id).Select(d => new { d.ID, d.FK_ORDER, d.FK_TYPE_PAYMENT, d.AMOUNT, d.ACCOUNT_PAYMENT })
                                                                            .Join
                                                                            (
                                                                             this._typeRepository.GetEntities().Select(d => new { d.ID, d.TYPE_PAYMENT }),
@@ -123,9 +126,10 @@ namespace TailorProTrack.Application.Service
                                                                            .Select(d => new PaymentDtoGet
                                                                            {
                                                                                IdOrder = d.Key,
+                                                                               AccountPayment = d.Select(x => x.payment.ACCOUNT_PAYMENT).First()
                                                                                Amount = d.Sum(d => d.payment.AMOUNT),
                                                                                PaymentNumbers = d.Select(d => d.type.ID).Count()
-                                                                           });
+                                                                           });   ;
                 if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
                 result.Data = payments;
                 result.Message = "Obtenido con exito.";
@@ -156,11 +160,11 @@ namespace TailorProTrack.Application.Service
                                                                                      .Join(this._bankRepository.GetEntities(),
                                                                                            bankAcc => bankAcc.FK_BANK,
                                                                                            bank => bank.ID,
-                                                                                           (bankAcc, bank) => new {bankAcc,bank}
-                                                                                     ).Select(data => new {data.bankAcc.ID,data.bankAcc.BANK_ACCOUNT,data.bank.NAME}),
+                                                                                           (bankAcc, bank) => new { bankAcc, bank }
+                                                                                     ).Select(data => new { data.bankAcc.ID, data.bankAcc.BANK_ACCOUNT, data.bank.NAME }),
                                                             group => group.payment.FK_BANK_ACCOUNT,
                                                             bankAcc => bankAcc.ID,
-                                                            (group, bankAcc) => new {group.payment,group.type, bankAcc}
+                                                            (group, bankAcc) => new { group.payment, group.type, bankAcc }
                                                             )
                                                .Select(d => new
                                                {
@@ -168,7 +172,7 @@ namespace TailorProTrack.Application.Service
                                                    Amount = d.payment.AMOUNT,
                                                    Type = d.type.TYPE_PAYMENT,
                                                    Bank = d.bankAcc.NAME,
-                                                   Account = d.bankAcc.BANK_ACCOUNT 
+                                                   Account = d.bankAcc.BANK_ACCOUNT
                                                });
                 if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
                 var orderPayments = new
@@ -222,6 +226,7 @@ namespace TailorProTrack.Application.Service
                     ID = dtoUpdate.Id,
                     USER_MOD = dtoUpdate.User,
                     AMOUNT = dtoUpdate.Amount,
+                    ACCOUNT_PAYMENT = dtoUpdate.AccountPayment,
                     FK_ORDER = dtoUpdate.FkOrder,
                     FK_TYPE_PAYMENT = dtoUpdate.FkTypePayment,
                     FK_BANK_ACCOUNT = dtoUpdate.FkBankAccount,
