@@ -126,7 +126,7 @@ namespace TailorProTrack.Application.Service
                                                                            .Select(d => new PaymentDtoGet
                                                                            {
                                                                                IdOrder = d.Key,
-                                                                               AccountPayment = d.Select(x => x.payment.ACCOUNT_PAYMENT).First()
+                                                                               AccountPayment = d.Select(x => x.payment.ACCOUNT_PAYMENT).First(),
                                                                                Amount = d.Sum(d => d.payment.AMOUNT),
                                                                                PaymentNumbers = d.Select(d => d.type.ID).Count()
                                                                            });   ;

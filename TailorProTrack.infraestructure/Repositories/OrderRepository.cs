@@ -64,6 +64,7 @@ namespace TailorProTrack.infraestructure.Repositories
             }
             //eliminar la orden
             _context.Set<Order>().Remove(entity);
+            _context.SaveChanges();
         }
 
         public void UpdateAmount(Order order)

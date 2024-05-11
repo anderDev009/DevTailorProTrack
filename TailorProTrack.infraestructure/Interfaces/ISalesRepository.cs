@@ -7,5 +7,6 @@ namespace TailorProTrack.infraestructure.Interfaces
 {
     public interface ISalesRepository : IBaseRepository<Sales>
     {
+        void ConfirmSale(int idSales);
     }
 }

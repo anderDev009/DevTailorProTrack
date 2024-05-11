@@ -12,6 +12,7 @@ namespace TailorProTrack.domain.Entities
         public int QUANTITY { get; set; }
         public int COLOR_PRIMARY { get; set; }
         public int? COLOR_SECONDARY { get; set; }
+        public decimal? CUSTOM_PRICE { get; set; }
 
         public PreOrder? PreOrder { get; set; }
         public Size? Size { get; set; }

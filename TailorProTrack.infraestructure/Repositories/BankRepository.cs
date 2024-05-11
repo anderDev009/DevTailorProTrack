@@ -15,6 +15,8 @@ namespace TailorProTrack.infraestructure.Repositories
             _context = ctx;
         }
 
+     
+
         public override int Save(Bank entity)
         {
             entity.CREATED_AT = DateTime.Now;
@@ -23,6 +25,7 @@ namespace TailorProTrack.infraestructure.Repositories
             return entity.ID;
         }
 
+        
         public override void Update(Bank entity)
         {
             Bank bank = this.GetEntity(entity.ID);
@@ -35,6 +38,6 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context.SaveChanges();
         }
 
-     
+        
     }
 }

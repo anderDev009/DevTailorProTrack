@@ -32,6 +32,7 @@ namespace TailorProTrack.infraestructure.Repositories
             return entity.ID;
         }
 
+
         public override void Update(Sales entity)
         {
             Sales sale = this.GetEntity(entity.ID);
@@ -56,6 +57,14 @@ namespace TailorProTrack.infraestructure.Repositories
             sale.USER_MOD = entity.USER_MOD;
             sale.MODIFIED_AT = DateTime.Now;
             sale.REMOVED = true;
+        }
+
+        public void ConfirmSale(int idSales)
+        {
+            Sales sale = _context.Set<Sales>().Find(idSales);
+            sale.INVOICED = true;
+            _context.Set<Sales>().Update(sale);
+            _context.SaveChanges();
         }
     }
 }

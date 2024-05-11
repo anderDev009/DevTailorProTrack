@@ -13,19 +13,27 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             _context = ctx;
         }
-        public override void Update(BankAccount entity)
+      
+        public void AddBalance(int IdAccount, decimal Balance)
         {
-            BankAccount bankAccount = this.GetEntity(entity.ID);
-
-            bankAccount.FK_BANK = entity.FK_BANK;
-            bankAccount.BANK_ACCOUNT = entity.BANK_ACCOUNT;
-            bankAccount.USER_MOD = entity.USER_MOD;
-            bankAccount.MODIFIED_AT = DateTime.Now;
-
-            this._context.Update(bankAccount);
-            this._context.SaveChanges();
+            BankAccount account = _context.Set<BankAccount>().Find(IdAccount);
+            if (account == null)
+            {
+                throw new Exception("Cuenta inexistente");
+            }
+            account.BALANCE += Balance;
+            _context.SaveChanges();
+        }
+        public void SubstractBalance(int IdAccount, decimal Balance)
+        {
+            BankAccount account = _context.Set<BankAccount>().Find(IdAccount);
+            if (account == null)
+            {
+                throw new Exception("Cuenta inexistente");
+            }
+            account.BALANCE -= Balance;
+            _context.SaveChanges();
         }
 
-  
     }
 }

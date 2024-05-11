@@ -19,13 +19,29 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public decimal GetAmountByIdPreOrder(int preOrderId)
         {
-            return _entities
-                     .Join(_ctx.PRODUCT,
-                     preOrderProducts => preOrderProducts.FK_PRODUCT,
-                     product => product.ID,
-                     (preorderProducts, product) => new { preorderProducts, product })
-                     .Where(data => data.preorderProducts.FK_PREORDER == preOrderId)
-                     .Sum(data => (data.product.SALE_PRICE * data.preorderProducts.QUANTITY));
+            decimal totalAmount = 0;
+            var preOrder = _ctx.Set<PreOrderProducts>().Where(x => x.FK_PREORDER == preOrderId)
+                .Include(x => x.Product)
+                .ToList();
+            foreach(var product in preOrder) 
+            {
+                if(product.CUSTOM_PRICE != 0)
+                {
+                    totalAmount += product.QUANTITY * (decimal)product.CUSTOM_PRICE;
+                }
+                else
+                {
+                    totalAmount += product.QUANTITY * product.Product.SALE_PRICE;
+                }
+            }
+            return totalAmount;
+            //return _entities
+            //         .Join(_ctx.PRODUCT,
+            //         preOrderProducts => preOrderProducts.FK_PRODUCT,
+            //         product => product.ID,
+            //         (preorderProducts, product) => new { preorderProducts, product })
+            //         .Where(data => data.preorderProducts.FK_PREORDER == preOrderId)
+            //         .Sum(data => (data.product.SALE_PRICE * data.preorderProducts.QUANTITY));
         }
 
         public List<PreOrderProducts> GetByPreOrderId(int PreOrderId)

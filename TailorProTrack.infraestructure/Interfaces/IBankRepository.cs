@@ -6,5 +6,6 @@ namespace TailorProTrack.infraestructure.Interfaces
 {
     public interface IBankRepository : IBaseRepository<Bank>
     {
+       
     }
 }
