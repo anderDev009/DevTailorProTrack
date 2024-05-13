@@ -107,10 +107,10 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public List<ColorDtoGet> GetColorsAsociatedByProductId(int Id)
+        public List<ColorDtoGetMapped> GetColorsAsociatedByProductId(int Id)
         {
             List<Color> colors = _repository.FilterByProductAsociated(Id);
-            return _mapper.Map<List<ColorDtoGet>>(colors);
+            return _mapper.Map<List<ColorDtoGetMapped>>(colors);
         }
 
         public ServiceResult Remove(ColorDtoRemove dtoRemove)

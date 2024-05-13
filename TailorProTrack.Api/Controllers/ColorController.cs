@@ -79,7 +79,7 @@ namespace TailorProTrack.Api.Controllers
         }
         //obtener colores asociados 
         [HttpGet("GetColorsAsociatedById")]
-        [ProducesResponseType(StatusCodes.Status200OK,Type = typeof(List<ColorDtoGet>))]
+        [ProducesResponseType(StatusCodes.Status200OK,Type = typeof(ColorDtoGetMapped))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetColorsAsociatedById(int id)
         {
