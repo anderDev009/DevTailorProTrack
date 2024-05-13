@@ -10,6 +10,7 @@ namespace TailorProTrack.Application.Contracts
     {
         ServiceResult SaveMany(List<PreOrderProductsDtoAdd> preOrderProducts, int FkPreOrder);
         ServiceResult GetByPreOrder(int orderId);
+        ServiceResult GetDiffItems();
         bool IsComplete(int IdPreOrder); 
     }
 }

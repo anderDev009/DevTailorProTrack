@@ -56,11 +56,12 @@ namespace TailorProTrack.infraestructure.Repositories
             {
                 //obteniendo el inventario color para agregarle la cantidad
                 InventoryColor invColor = _inventoryColorRepository.GetEntity(product.FK_INVENTORYCOLOR);
-                invColor.QUANTITY    += product.QUANTITY;
+                invColor.QUANTITY += product.QUANTITY;
                 //actualizando la cantidad 
                 _inventoryColorRepository.Update(invColor);
                 //actualizar el inventario mientras se van agregando 
                 _inventoryRepository.UpdateQuantityInventory(invColor.FK_INVENTORY);
+                _context.Set<OrderProduct>().Remove(product);
             }
             //eliminar la orden
             _context.Set<Order>().Remove(entity);

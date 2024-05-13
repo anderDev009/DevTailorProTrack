@@ -11,7 +11,7 @@ namespace TailorProTrack.infraestructure.Repositories
     public class PreOrderProductRepository : BaseRepository<PreOrderProducts>, IPreOrderProductsRepository
     {
         private readonly TailorProTrackContext _ctx;
-        private readonly IProductRepository _productRepository; 
+        private readonly IProductRepository _productRepository;
         public PreOrderProductRepository(TailorProTrackContext ctx) : base(ctx)
         {
             _ctx = ctx;
@@ -23,9 +23,9 @@ namespace TailorProTrack.infraestructure.Repositories
             var preOrder = _ctx.Set<PreOrderProducts>().Where(x => x.FK_PREORDER == preOrderId)
                 .Include(x => x.Product)
                 .ToList();
-            foreach(var product in preOrder) 
+            foreach (var product in preOrder)
             {
-                if(product.CUSTOM_PRICE != 0)
+                if (product.CUSTOM_PRICE != 0)
                 {
                     totalAmount += product.QUANTITY * (decimal)product.CUSTOM_PRICE;
                 }
@@ -75,22 +75,22 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             var preOrder = _ctx.Set<PreOrderProducts>().Where(p => p.FK_PREORDER == IdPreOrder).ToList();
             List<PreOrderProducts> itemsMissing = new List<PreOrderProducts>();
-            foreach(var item in preOrder)
+            foreach (var item in preOrder)
             {
                 //obteniendo el inventario
                 var inventory = _ctx.Set<Inventory>().Where(i => i.FK_PRODUCT == item.FK_PRODUCT).First();
                 //obteniendo el detalle del inventario
                 var invColor = _ctx.Set<InventoryColor>()
-                    .Where(i => i.FK_INVENTORY== inventory.ID && i.FK_COLOR_PRIMARY == item.COLOR_PRIMARY
+                    .Where(i => i.FK_INVENTORY == inventory.ID && i.FK_COLOR_PRIMARY == item.COLOR_PRIMARY
                             && i.FK_COLOR_SECONDARY == item.COLOR_SECONDARY).First();
                 //en caso de que sea null se agrega e indica la cantidad faltante
-                if(invColor == null)
+                if (invColor == null)
                 {
                     itemsMissing.Add(item);
                     break;
                 }
                 int quantity = invColor.QUANTITY - item.QUANTITY;
-                if(quantity < 0)
+                if (quantity < 0)
                 {
                     //en caso de que la cantidad sea negativa se convierte en positivo indicando 
                     //que esa es la cantidad faltante.
@@ -99,6 +99,72 @@ namespace TailorProTrack.infraestructure.Repositories
                 }
             }
             return itemsMissing;
+        }
+
+        public List<PreOrderProducts> GetMissingProducts()
+        {
+            List<PreOrderProducts> products = _ctx.Set<PreOrderProducts>()
+                                                  .Include(x => x.Size)
+                                                  .Include(x => x.PreOrder)
+                                                  .Include(x => x.Product)
+                                                  .Include(x => x.ColorPrimary)
+                                                  .Include(x => x.ColorSecondary)
+                                                  //.Where(x => )
+                                                  .ToList();
+
+            ; List<PreOrderProducts> productsCleaned = new();
+            foreach (var product in products)
+            {
+
+                //asegurando de que no se haya agregado a la lista
+                var temp = productsCleaned.Where(x => x.FK_PRODUCT == product.FK_PRODUCT
+                                                && x.FK_SIZE == product.FK_SIZE && x.COLOR_PRIMARY == product.COLOR_PRIMARY
+                                                && x.COLOR_SECONDARY == product.COLOR_SECONDARY).FirstOrDefault
+                                                ();
+                if (temp == null)
+                {
+                    temp = new();
+
+                }
+                else
+                {
+                    productsCleaned.Remove(temp);
+                }
+
+
+                var inventory = _ctx.Set<Inventory>()
+                    .Include(x => x.InventoryColor)
+                    .Where(x => x.FK_PRODUCT == product.FK_PRODUCT
+                && x.FK_SIZE == product.FK_SIZE
+                && x.InventoryColor.Any(x => x.FK_COLOR_PRIMARY == product.COLOR_PRIMARY
+                                    && x.FK_COLOR_SECONDARY == product.COLOR_SECONDARY)
+                ).FirstOrDefault();
+
+                //obteniendo el color para saber si esta disponible
+                if (inventory != null)
+                {
+                    int quantity = inventory.InventoryColor.Where(x => x.FK_COLOR_PRIMARY == product.COLOR_PRIMARY
+                                    && x.FK_COLOR_SECONDARY == product.COLOR_SECONDARY).First().QUANTITY;
+                    temp.QUANTITY += quantity - product.QUANTITY;
+
+                }
+                else
+                {
+                    temp.QUANTITY -= product.QUANTITY;
+                }
+                //asgignando los atributos 
+                temp.ID = product.ID;
+                temp.FK_PRODUCT = product.FK_PRODUCT;
+                temp.Product = product.Product;
+                temp.FK_SIZE = product.FK_SIZE;
+                temp.Size = product.Size;
+                temp.ColorPrimary = product.ColorPrimary;
+                temp.ColorSecondary = product.ColorSecondary;
+                temp.COLOR_PRIMARY = product.COLOR_PRIMARY;
+                temp.COLOR_SECONDARY = product.COLOR_SECONDARY;
+                productsCleaned.Add(temp);
+            }
+            return productsCleaned.Where(x => x.QUANTITY < 0).ToList();
         }
     }
 }

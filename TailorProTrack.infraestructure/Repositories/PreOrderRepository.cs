@@ -20,15 +20,6 @@ namespace TailorProTrack.infraestructure.Repositories
             return !_ctx.Set<Order>().Any(x => x.FK_PREORDER == id);
         }
 
-        public override void Update(PreOrder entity)
-        {
-            PreOrder preOrder = this.GetEntity(entity.ID);
-
-            preOrder.FK_CLIENT = entity.FK_CLIENT;
-            preOrder.USER_MOD = entity.USER_MOD;
-            preOrder.MODIFIED_AT = DateTime.Now;
-
-            this._ctx.Update(preOrder);
-        }
+   
     }
 }

@@ -1,4 +1,5 @@
 ﻿
+using AutoMapper;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
@@ -16,15 +17,19 @@ namespace TailorProTrack.Application.Service
         private readonly ISizeRepository _sizeRepository;
         //repositorio colores 
         private readonly IColorRepository _colorRepository;
+        //
+        private readonly IMapper _mapper;
         public PreOrderProductsService(IPreOrderProductsRepository preOrderProductsRepository,
                                        IProductRepository productRepository,
                                        ISizeRepository sizeRepository,
-                                       IColorRepository colorRepository)
+                                       IColorRepository colorRepository,
+                                       IMapper mapper)
         {
             _preOrderProductRepository = preOrderProductsRepository;
             _productRepository = productRepository;
             _sizeRepository = sizeRepository;
             _colorRepository = colorRepository;
+            _mapper = mapper;
 
         }
         public ServiceResult Add(PreOrderProductsDtoAdd dtoAdd)
@@ -102,6 +107,25 @@ namespace TailorProTrack.Application.Service
             }
             return result;
         }
+
+        public ServiceResult GetDiffItems()
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                var products = _preOrderProductRepository.GetMissingProducts();
+                result.Data = _mapper.Map<List<PreOrderProductDtoGetMapped>>(products);
+                result.Message = "Obtenido con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al remover: {ex.Message}";
+                throw;
+            }
+            return result;
+        }
+
         //metodo para saber si es posible realizarle una orden a un pedido o indicar que dicho pedido esta completo
         //modificar logica
         public bool IsComplete(int IdPreOrder)

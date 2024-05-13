@@ -152,6 +152,13 @@ namespace TailorProTrack.infraestructure.Context
                 .WithMany(x => x.Expenses)
                 .HasForeignKey(x => x.FK_BANK_ACCOUNT);
             #endregion
+            #region Inventory
+            modelBuilder.Entity<Inventory>()
+                .HasMany(x => x.InventoryColor)
+                .WithOne(x => x.Inventory)
+                .HasForeignKey(x => x.FK_INVENTORY);
+
+            #endregion
             #endregion
 
         }

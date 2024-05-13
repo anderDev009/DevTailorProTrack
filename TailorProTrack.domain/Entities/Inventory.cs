@@ -8,5 +8,7 @@ namespace TailorProTrack.domain.Entities
         public int FK_SIZE {  get; set; }   
         public int FK_PRODUCT { get; set; } 
         public int QUANTITY {  get; set; }
+        
+        public List<InventoryColor>? InventoryColor { get; set; }
     }
 }
