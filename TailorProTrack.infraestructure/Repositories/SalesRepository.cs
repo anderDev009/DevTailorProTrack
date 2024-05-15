@@ -38,9 +38,20 @@ namespace TailorProTrack.infraestructure.Repositories
         }
         public override Sales GetEntity(int id)
         {
-            return _context.Set<Sales>().Include(x => x.PreOrder).ThenInclude(x => x.PreOrderProducts).Where(x => x.ID == id).FirstOrDefault();
+            return _context.Set<Sales>()
+                .Include(x => x.PreOrder)
+                .ThenInclude(x => x.PreOrderProducts).ThenInclude(x => x.Product)
+                .Include(x => x.PreOrder)
+                .ThenInclude(x => x.PreOrderProducts).ThenInclude(x => x.Size)
+                .Include(x => x.PreOrder)
+                .ThenInclude(x => x.PreOrderProducts).ThenInclude(x => x.ColorPrimary)
+                .Include(x => x.PreOrder)
+                .ThenInclude(x => x.PreOrderProducts).ThenInclude(x => x.ColorSecondary)
+                .Include(x => x.PreOrder)
+                .ThenInclude(x => x.Client)
+                .Where(x => x.ID == id).FirstOrDefault();
         }
-
+       
         public override void Update(Sales entity)
         {
             Sales sale = this.GetEntity(entity.ID);
