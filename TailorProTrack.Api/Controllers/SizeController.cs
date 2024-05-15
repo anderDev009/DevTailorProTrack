@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts.Size;
 using TailorProTrack.Application.Core;
+using TailorProTrack.Application.Dtos.Sale;
 using TailorProTrack.Application.Dtos.Size;
 
 namespace TailorProTrack.Api.Controllers
@@ -90,7 +91,19 @@ namespace TailorProTrack.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetSizesAsociatedByProId")]
+        [ProducesResponseType(StatusCodes.Status200OK,Type = typeof(List<SizeDtoGetMapped>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetSizesAsociated(int prodId)
+        {
 
+            var result = this._service.GetSizesAsociatedByProdId(prodId);
+            if (!result.Success || result.Data == null)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
 
         
     }

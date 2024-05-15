@@ -10,7 +10,7 @@ namespace TailorProTrack.Application.Dtos.ProductSize
         public int Id { get; set; }
         public int IdProduct { get; set; }
         public int IdSize {  get; set; }
-        public ProductDtoGet? Product { get; set; }
-        public SizeDtoGet? Size { get; set; }
+        public ProductDtoGetMapped? Product { get; set; }
+        public SizeDtoGetMapped? Size { get; set; }
     }
 }

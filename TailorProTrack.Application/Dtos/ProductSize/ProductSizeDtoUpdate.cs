@@ -7,6 +7,7 @@ namespace TailorProTrack.Application.Dtos.ProductSize
 {
     public class ProductSizeDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required]
         public int IdSize { get; set; }

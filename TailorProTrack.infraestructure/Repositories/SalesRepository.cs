@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.EntityFrameworkCore;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -20,6 +21,10 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public override int Save(Sales entity)
         {
+            if (IsConfirmed(entity.FK_PREORDER))
+            {
+                throw new Exception("Pedido ya facturado");
+            }
             entity.CREATED_AT = DateTime.Now;
             entity.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.ID);
             if(entity.ITBIS != null)
@@ -31,7 +36,10 @@ namespace TailorProTrack.infraestructure.Repositories
 
             return entity.ID;
         }
-
+        public override Sales GetEntity(int id)
+        {
+            return _context.Set<Sales>().Include(x => x.PreOrder).ThenInclude(x => x.PreOrderProducts).Where(x => x.ID == id).FirstOrDefault();
+        }
 
         public override void Update(Sales entity)
         {
@@ -65,6 +73,12 @@ namespace TailorProTrack.infraestructure.Repositories
             sale.INVOICED = true;
             _context.Set<Sales>().Update(sale);
             _context.SaveChanges();
+        }
+
+        private bool IsConfirmed(int idPreOrder)
+        {
+            bool isConfirmed = _context.Set<Sales>().Any(x => x.INVOICED == true && x.FK_PREORDER == idPreOrder);
+            return isConfirmed;
         }
     }
 }

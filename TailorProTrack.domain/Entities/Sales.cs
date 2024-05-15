@@ -12,5 +12,7 @@ namespace TailorProTrack.domain.Entities
         public string? B14 { get; set; }
         public bool? INVOICED { get; set; }
         public decimal TOTAL_AMOUNT { get; set; }
+
+        public PreOrder? PreOrder { get; set; }
     }
 }

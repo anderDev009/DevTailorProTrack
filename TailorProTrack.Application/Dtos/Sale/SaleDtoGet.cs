@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Extensions.Logging.Abstractions;
+using TailorProTrack.Application.Dtos.PreOrder;
 
 namespace TailorProTrack.Application.Dtos.Sale
 {
@@ -12,5 +13,7 @@ namespace TailorProTrack.Application.Dtos.Sale
         public int IdPreOrder { get; set; }
         public decimal? Itbis { get; set; } = null;
         public int FkOrder {  get; set; }
+
+        public PreOrderDtoGetMapped? PreOrder {  get; set; }
     }
 }

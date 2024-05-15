@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
+using System.Xml.XPath;
 using TailorProTrack.Application.Contracts.Size;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Size;
@@ -18,13 +20,15 @@ namespace TailorProTrack.Application.Service
         private readonly IInventoryRepository _inventoryRepository;
         private readonly IInventoryColorRepository _inventorySizeRepository;
         private readonly ICategorySizeRepository _cateogoryRepository;
+        private readonly IMapper _mapper;
         private ILogger logger;
         public SizeService(ISizeRepository repository,
             IInventoryRepository inventoryRepository,
             IInventoryColorRepository inventorySizeRepository,
             ICategorySizeRepository categoryRepository,
             ILogger<SizeRepository> logger, 
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IMapper mapper)
         {
             _repository = repository;
             this.logger = logger;
@@ -32,6 +36,7 @@ namespace TailorProTrack.Application.Service
             this._inventorySizeRepository = inventorySizeRepository;
             this.configuration = configuration;
             _cateogoryRepository = categoryRepository;
+            _mapper = mapper;
         }
         private  IConfiguration configuration { get; }
 
@@ -121,6 +126,23 @@ namespace TailorProTrack.Application.Service
             {
                 result.Success = false;
                 result.Message = "Error al obtener el size";
+            }
+            return result;
+        }
+
+        public ServiceResult GetSizesAsociatedByProdId(int prodId)
+        {
+            ServiceResult result = new();
+            try
+            {
+                var sizes = _repository.SizeByAsociatedProductId(prodId);
+                result.Data = _mapper.Map<List<SizeDtoGetMapped>>(sizes);
+                result.Message = "Obtenidos con exito.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al obtener: {ex.Message}";
             }
             return result;
         }

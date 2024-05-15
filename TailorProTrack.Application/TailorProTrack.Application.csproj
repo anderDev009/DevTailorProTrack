@@ -15,4 +15,8 @@
     <ProjectReference Include="..\TailorProTrack.infraestructure\TailorProTrack.infraestructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dtos\SizeColor\" />
+  </ItemGroup>
+
 </Project>
