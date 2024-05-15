@@ -26,6 +26,7 @@ namespace TailorProTrack.Application.Service
                     USER_CREATED = dtoAdd.User,
                     FK_BANK = dtoAdd.FkBank,
                     BANK_ACCOUNT = dtoAdd.BankAccount,
+                    BALANCE = dtoAdd.Balance
                 };
 
                 this._bankAccountRepository.Save(bankAcc);
