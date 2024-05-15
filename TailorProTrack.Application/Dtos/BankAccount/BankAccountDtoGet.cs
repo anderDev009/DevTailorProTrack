@@ -7,5 +7,6 @@ namespace TailorProTrack.Application.Dtos.BankAccount
         public int Id { get; set; }
         public string Account {  get; set; }
         public string BankType { get; set; }
+        public decimal Balance { get; set; }
     }
 }

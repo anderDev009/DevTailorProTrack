@@ -52,7 +52,8 @@ namespace TailorProTrack.Application.Service
                                                                 {
                                                                     Id = data.bankAcc.ID,
                                                                     Account = data.bankAcc.BANK_ACCOUNT,
-                                                                    BankType = data.bank.NAME
+                                                                    BankType = data.bank.NAME,
+                                                                    Balance = data.bankAcc.BALANCE,
                                                                 }).ToList();
 
                 result.Header = header;
@@ -83,7 +84,8 @@ namespace TailorProTrack.Application.Service
                                                                 {
                                                                     Id = data.bankAcc.ID,
                                                                     Account = data.bankAcc.BANK_ACCOUNT,
-                                                                    BankType = data.bank.NAME
+                                                                    BankType = data.bank.NAME, 
+                                                                    Balance = data.bankAcc.BALANCE,
                                                                 });
 
                 result.Data = bankAccount;
@@ -108,7 +110,7 @@ namespace TailorProTrack.Application.Service
                     USER_MOD = dtoRemove.User,
                 };
 
-                this._bankAccountRepository.Save(bankAcc);
+                this._bankAccountRepository.Remove(bankAcc);
                 result.Message = "Agregado con exito";
             }
             catch (Exception ex)
@@ -129,9 +131,10 @@ namespace TailorProTrack.Application.Service
                     USER_MOD = dtoUpdate.User,
                     FK_BANK = dtoUpdate.FkBank,
                     BANK_ACCOUNT = dtoUpdate.BankAccount,
+                    BALANCE = dtoUpdate.Balance
                 };
 
-                this._bankAccountRepository.Save(bankAcc);
+                this._bankAccountRepository.Update(bankAcc);
                 result.Message = "Agregado con exito";
             }
             catch (Exception ex)
