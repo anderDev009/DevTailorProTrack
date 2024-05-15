@@ -33,7 +33,7 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<BuyInventory> BUY_INVENTORY { get; set; }
         public DbSet<BuyInventoryDetail> BUY_INVENTORY_DETAIL { get; set; }
         public DbSet<ProductColor> PRODUCTS_COLOR { get; set; }
-        public DbSet<ProductSize> PRODUCT_SIZE { get; set; }
+        public DbSet<ProductSize> PRODUCTS_SIZE { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
