@@ -11,6 +11,11 @@ namespace TailorProTrack.Application.Service
     {
         public readonly IBankAccountRepository _bankAccountRepository;
         public readonly IBankRepository _bankRepository;
+        public BankAccountService(IBankAccountRepository bankAccountRepository, IBankRepository bankRepository)
+        {
+            _bankAccountRepository = bankAccountRepository;
+            _bankRepository = bankRepository;
+        }
         public ServiceResult Add(BankAccountDtoAdd dtoAdd)
         {
             ServiceResult result = new ServiceResult();
