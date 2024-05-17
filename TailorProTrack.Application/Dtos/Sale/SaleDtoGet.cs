@@ -16,7 +16,7 @@ namespace TailorProTrack.Application.Dtos.Sale
         public int FkOrder {  get; set; }
        
         public DateTime Fecha { get; set; }
-        public domain.Entities.Client? client {  get; set; }
+        public string? ClientName {  get; set; }
         public PreOrderDtoGetMapped? PreOrder {  get; set; }
     }
 }
