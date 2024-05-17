@@ -22,6 +22,9 @@ namespace TailorProTrack.Application.Service
             _repository = saleRepository;
             _mapper = mapper;
         }
-    
+        public override ServiceResultWithHeader GetAllWithInclude(PaginationParams @params, List<string> properties)
+        {
+            return base.GetAllWithInclude(@params, properties);
+        }
     }
 }

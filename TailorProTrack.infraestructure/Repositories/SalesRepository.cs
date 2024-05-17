@@ -17,7 +17,10 @@ namespace TailorProTrack.infraestructure.Repositories
             _context = context;
             _preOrderProductsRepository = preOrderProductsRepository;
         }
-
+        public override List<Sales> GetEntitiesPaginated(int page, int itemsPage)
+        {
+            return this._context.Set<Sales>().Where(data => !data.REMOVED).Skip((page - 1) * itemsPage).Include(x => x.PreOrder).ThenInclude(x => x.Client).Take(itemsPage).ToList();
+        }
 
         public override int Save(Sales entity)
         {
