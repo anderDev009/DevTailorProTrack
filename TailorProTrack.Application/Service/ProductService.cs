@@ -5,6 +5,7 @@ using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Color;
 using TailorProTrack.Application.Dtos.Product;
+using TailorProTrack.Application.Dtos.Size;
 using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
@@ -17,10 +18,11 @@ namespace TailorProTrack.Application.Service
         private readonly IProductRepository _repository;
         private readonly ITypeProdRepository _repositoryType;
         private readonly IColorRepository _colorRepository;
+        private readonly ISizeRepository _sizeRepository;
         private readonly IMapper _mapper;
         private readonly ILogger logger;
         public ProductService(IProductRepository repository,IConfiguration configuration,
-            ILogger<ProductRepository> logger, ITypeProdRepository typeRepository, IColorRepository colorRepository, IMapper mapper)
+            ILogger<ProductRepository> logger, ITypeProdRepository typeRepository, IColorRepository colorRepository, ISizeRepository sizeRepository,  IMapper mapper)
         {
             _repository = repository;
             this.logger = logger;
@@ -28,6 +30,7 @@ namespace TailorProTrack.Application.Service
             this._repositoryType = typeRepository;
             _colorRepository = colorRepository;
             _mapper = mapper;
+            _sizeRepository = sizeRepository;
         }
 
         public IConfiguration Configuration;
@@ -133,7 +136,11 @@ namespace TailorProTrack.Application.Service
                                                     name_prod = data.product.NAME_PRODUCT,
                                                     description = data.product.DESCRIPTION_PRODUCT,
                                                     type = data.typeProd.TYPE_PROD,
-                                                    sale_price = data.product.SALE_PRICE
+                                                    sale_price = data.product.SALE_PRICE,
+                                                    ColorsAsociated = _mapper.Map<List<ColorDtoGetMapped>>(_colorRepository.FilterByProductAsociated(data.product.ID)),
+                                                    SizesAsociated =  _mapper.Map<List<SizeDtoGetMapped>>(_sizeRepository.SizeByAsociatedProductId(data.product.ID))
+
+
                                                 }).First();
 
                 var colorsAsociated = _colorRepository.FilterByProductAsociated(product.Id);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TailorProTrack.Application.Dtos.Color;
+using TailorProTrack.Application.Dtos.Size;
 
 namespace TailorProTrack.Application.Dtos.Product
 {
@@ -16,5 +17,6 @@ namespace TailorProTrack.Application.Dtos.Product
         public string? type { get; set; }
         
         public List<ColorDtoGetMapped>? ColorsAsociated { get; set; }
+        public List<SizeDtoGetMapped>? SizesAsociated { get; set; }
     } 
 }

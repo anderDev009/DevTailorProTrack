@@ -1,5 +1,6 @@
 ﻿
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
@@ -186,7 +187,8 @@ namespace TailorProTrack.Application.Service
                         QUANTITY = product.Quantity,
                         USER_CREATED = product.User,
                         CREATED_AT = DateTime.Now,
-                        FK_PREORDER = FkPreOrder
+                        FK_PREORDER = FkPreOrder,
+                        CUSTOM_PRICE = product.customPrice
                     });
                 }
 
@@ -205,7 +207,28 @@ namespace TailorProTrack.Application.Service
 
         public ServiceResult Update(PreOrderProductsDtoUpdate dtoUpdate)
         {
-            throw new NotImplementedException();
+            ServiceResult result = new();
+            try
+            {
+                _preOrderProductRepository.Update(new PreOrderProducts
+                {
+                    COLOR_PRIMARY = dtoUpdate.FkColorPrimary,
+                    COLOR_SECONDARY = dtoUpdate.FkColorSecondary,
+                    FK_SIZE = dtoUpdate.FkSize,
+                    ID = dtoUpdate.Id,
+                    QUANTITY = dtoUpdate.Quantity,
+                    USER_CREATED = dtoUpdate.User,
+
+                }); 
+                result.Message= "Modificado con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = "Error";
+            }
+            return result;
         }
+
     }
 }

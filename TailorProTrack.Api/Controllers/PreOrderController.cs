@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.PreOrder;
+using TailorProTrack.Application.Dtos.PreOrderProducts;
 
 namespace TailorProTrack.Api.Controllers
 {
@@ -12,10 +13,12 @@ namespace TailorProTrack.Api.Controllers
     public class PreOrderController : Controller
     {
         private IPreOrderService _preOrderService;
+        private IPreOrderProductService _preOrderProductService;
 
-        public PreOrderController(IPreOrderService preOrderService)
+        public PreOrderController(IPreOrderService preOrderService, IPreOrderProductService preOrderProductService)
         {
             _preOrderService = preOrderService;
+            _preOrderProductService = preOrderProductService;
         }
         [HttpGet("GetPreOrders")]
         public IActionResult Get([FromQuery] PaginationParams @params)
@@ -45,6 +48,16 @@ namespace TailorProTrack.Api.Controllers
         public IActionResult Save([FromBody] PreOrderDtoAdd dtoAdd)
         {
             var result = _preOrderService.Add(dtoAdd);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+        [HttpPut("UpdatePreOrderProducts")]
+        public IActionResult UpdatePreOrderProducts([FromBody] PreOrderProductsDtoUpdate dtoUpdate)
+        {
+            var result = _preOrderProductService.Update(dtoUpdate);
             if (!result.Success)
             {
                 return BadRequest(result);
