@@ -43,7 +43,7 @@ namespace TailorProTrack.Api.Controllers
             }
             Response.AddHeaderPaginationJson(result.Header);
             return Ok(response);
-        }
+        }   
 
         [HttpGet("GetSale")]
         public IActionResult GetById(int id)
