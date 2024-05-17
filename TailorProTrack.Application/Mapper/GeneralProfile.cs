@@ -268,7 +268,6 @@ namespace TailorProTrack.Application.Mapper
                .ForMember(x => x.Id, opt => opt.MapFrom(x => x.ID))
                .ForMember(x => x.CodIsc, opt => opt.MapFrom(x => x.COD_ISC))
                .ForMember(x => x.FkOrder, opt => opt.MapFrom(x => x.FK_PREORDER))
-               .ForMember(x => x.Itbis, opt => opt.MapFrom(x => x.ITBIS))
                .ForMember(x => x.CodIsc, opt => opt.MapFrom(x => x.COD_ISC))
                .ReverseMap()
                .ForMember(x => x.TOTAL_AMOUNT, opt => opt.Ignore())
