@@ -29,6 +29,7 @@ namespace TailorProTrack.infraestructure.Repositories
             entity.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.ID);
             if(entity.ITBIS != null)
             {
+                entity.ITBIS = (decimal)((double)entity.TOTAL_AMOUNT * 0.18);
                 entity.TOTAL_AMOUNT += (decimal)entity.ITBIS;
             }
             this._context.Add(entity);
