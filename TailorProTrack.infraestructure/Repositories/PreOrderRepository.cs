@@ -19,7 +19,7 @@ namespace TailorProTrack.infraestructure.Repositories
         //obtener cuentas por cobrar
         public List<PreOrder> GetAccountsReceivable()
         {
-            var preOrders = _ctx.Set<PreOrder>().Where(x => x.REMOVED == false && x.COMPLETED == false).ToList();
+            var preOrders = _ctx.Set<PreOrder>().Where(x => x.REMOVED == false && x.COMPLETED == null || x.COMPLETED == false).ToList();
 
             List<PreOrder> preOrderReport = new();
             foreach(var item in preOrders)
