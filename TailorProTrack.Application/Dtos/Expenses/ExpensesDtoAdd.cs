@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
 
 namespace TailorProTrack.Application.Dtos.Expenses
@@ -17,5 +18,6 @@ namespace TailorProTrack.Application.Dtos.Expenses
         public int IdPaymentType {  get; set; }
 
         public int? FkBankAccount {  get; set; }
+        public bool? Completed { get; set; } = false;
     }
 }

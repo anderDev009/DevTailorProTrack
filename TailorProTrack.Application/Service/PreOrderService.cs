@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.Json;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Contracts.Client;
 using TailorProTrack.Application.Core;
@@ -52,7 +53,8 @@ namespace TailorProTrack.Application.Service
                 PreOrder preOrder = new PreOrder
                 {
                     FK_CLIENT = dtoAdd.FkClient,
-                    DATE_DELIVERY = dtoAdd.DateDelivery
+                    DATE_DELIVERY = dtoAdd.DateDelivery,
+                    COMPLETED = false
 
                 };
 
@@ -73,6 +75,23 @@ namespace TailorProTrack.Application.Service
             {
                 result.Success = false;
                 result.Message = $"Error al agregar el pedido: {ex.Message}";
+            }
+            return result;
+        }
+
+        public ServiceResult GetAccountsReceivable()
+        {
+            ServiceResult result = new();
+            try
+            {
+                var report = _preOrderRepository.GetAccountsReceivable();
+                result.Data = _mapper.Map<List<PreOrder>>(report);
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error: {ex.Message}";
             }
             return result;
         }
@@ -141,6 +160,23 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult GetPreOrdersByRecentDate()
+        {
+            ServiceResult result = new();
+            try
+            {
+                var report = _preOrderRepository.GetPreOrdersByRecentDate();
+                result.Data = _mapper.Map<List<PreOrder>>(report);
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error: {ex.Message}";
+            }
+            return result;
+        }
+
         public ServiceResult Remove(PreOrderDtoRemove dtoRemove)
         {
             ServiceResult result = new ServiceResult();
@@ -174,6 +210,7 @@ namespace TailorProTrack.Application.Service
                     ID = dtoUpdate.Id,
                     FK_CLIENT = dtoUpdate.FkClient,
                     USER_MOD = dtoUpdate.User,
+                    COMPLETED = dtoUpdate.Completed
                 };
 
                 this._preOrderRepository.Update(preOrder);

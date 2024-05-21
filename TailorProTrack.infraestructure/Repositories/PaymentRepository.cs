@@ -9,10 +9,13 @@ namespace TailorProTrack.infraestructure.Repositories
     public class PaymentRepository : BaseRepository<Payment>,IPaymentRepository
     {
         private readonly TailorProTrackContext _context;
+        private readonly IPreOrderProductsRepository _preOrderProductRepository;
 
-        public PaymentRepository(TailorProTrackContext context) : base(context)
+
+        public PaymentRepository(TailorProTrackContext context, IPreOrderProductsRepository preOrderProductRepository) : base(context)
         {
             _context = context;
+            _preOrderProductRepository = preOrderProductRepository;
         }
 
         public override int Save(Payment entity)
@@ -51,6 +54,20 @@ namespace TailorProTrack.infraestructure.Repositories
                 _context.SaveChanges();
             } 
             base.Remove(entity);
+        }
+
+        public bool ConfirmPayment(int idPreOrder)
+        {
+            //obteniendo el total del pedido
+            decimal totalAmount = _preOrderProductRepository.GetAmountByIdPreOrder(idPreOrder);
+            //confirmando el total
+            decimal amountPreOrder = _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT);
+            //retornando el bool
+            if(totalAmount > amountPreOrder)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

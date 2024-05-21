@@ -9,5 +9,6 @@ namespace TailorProTrack.Application.Contracts
 {
     public interface IExpensesService : IBaseServiceGeneric<ExpensesDtoAdd,ExpensesDtoUpdate,ExpensesDtoGet,Expenses>
     {
+        ServiceResult GetAccountsPayable();
     }
 }

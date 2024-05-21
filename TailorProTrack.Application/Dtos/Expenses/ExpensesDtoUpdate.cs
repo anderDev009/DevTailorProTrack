@@ -17,6 +17,8 @@ namespace TailorProTrack.Application.Dtos.Expenses
         public string? DocumentNumber { get; set; } = null;
         [Required]
         public int IdPaymentType { get; set; }
+        [Required]
+        public bool? Completed { get; set; } = false;
         public int? FkBankAccount { get; set; }
 
     }

@@ -57,6 +57,9 @@ namespace TailorProTrack.infraestructure.Repositories
             base.Remove(entity);
         }
 
-
+        public List<Expenses> GetAccountsPayable()
+        {
+            return _context.Set<Expenses>().Where(x => x.COMPLETED == false).ToList();
+        }
     }
 }
