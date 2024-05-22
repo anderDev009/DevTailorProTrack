@@ -93,6 +93,18 @@ namespace TailorProTrack.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,ex.Message);
             }
         }
+
+        [HttpDelete("RemoveColor")]
+        public IActionResult Remove(int id)
+        {
+            var result = _service.Remove(new ColorDtoRemove(){Date = DateTime.UtcNow,Id = id,User = 1});
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,result.Message);
+            }
+            return NoContent();
+        }
    
     
 

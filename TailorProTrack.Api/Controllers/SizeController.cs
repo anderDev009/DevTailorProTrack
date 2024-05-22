@@ -105,6 +105,18 @@ namespace TailorProTrack.Api.Controllers
             return Ok(result);
         }
 
-        
+        [HttpDelete("RemoveSize")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult DeleteById(int id)
+        {
+            var result = this._service.Remove(new SizeDtoRemove(){Date = DateTime.UtcNow,Id = id, User = 1});
+            if (!result.Success || result.Data == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            return NoContent();
+        }
+
     }
 }

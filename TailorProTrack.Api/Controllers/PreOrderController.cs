@@ -64,5 +64,16 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
+
+        [HttpDelete("RemovePreOrder")]
+        public IActionResult DeleteById(int id)
+        {
+            var result = _preOrderService.Remove(new PreOrderDtoRemove(){Date = DateTime.UtcNow,Id = id,User = 1});
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,result.Message);
+            }
+            return NoContent();
+        }
     }
 }
