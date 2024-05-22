@@ -35,5 +35,21 @@ namespace TailorProTrack.Application.Service
             }
             return result;
         }
+
+        public ServiceResult ConfirmExpenses(int IdExpense)
+        {
+            ServiceResult result = new();
+            try
+            {
+                _expensesRepository.ConfirmExpenses(IdExpense);
+                result.Message = "Confirmado con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error: {ex.Message}";
+            }
+            return result;
+        }
     }
 }

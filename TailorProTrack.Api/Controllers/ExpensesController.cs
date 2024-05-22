@@ -74,5 +74,19 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
+
+        [HttpPatch("ConfirmExpenses")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult ConfirmExpenses(int id)
+        {
+            var result = this._expensesService.ConfirmExpenses(id);
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,result.Message);
+            }
+            return NoContent();
+        }
+
     }
 }

@@ -61,5 +61,13 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             return _context.Set<Expenses>().Where(x => x.COMPLETED == false).ToList();
         }
+
+        public void ConfirmExpenses(int idExpense)
+        {
+            Expenses expense = this.GetEntity(idExpense);
+            //completar el gasto
+            expense.COMPLETED = true;
+            this.Update(expense);
+        }
     }
 }
