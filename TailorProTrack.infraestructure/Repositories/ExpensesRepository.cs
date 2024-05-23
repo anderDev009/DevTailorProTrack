@@ -65,9 +65,13 @@ namespace TailorProTrack.infraestructure.Repositories
         public void ConfirmExpenses(int idExpense)
         {
             Expenses expense = this.GetEntity(idExpense);
-            //completar el gasto
-            expense.COMPLETED = true;
-            this.Update(expense);
+            if (expense != null)
+            {
+                //completar el gasto
+                expense.COMPLETED = true;
+                this.Update(expense);
+            }
+         
         }
     }
 }

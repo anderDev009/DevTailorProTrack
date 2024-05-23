@@ -25,7 +25,7 @@ namespace TailorProTrack.Application.Service
             try
             {
                 var report = _expensesRepository.GetAccountsPayable();
-                result.Data = _mapper.Map<List<ExpensesDtoAdd>>(report);
+                result.Data = _mapper.Map<List<ExpensesDtoGet>>(report);
                 result.Message = "Obtenidos con exito";
             }
             catch (Exception ex)
