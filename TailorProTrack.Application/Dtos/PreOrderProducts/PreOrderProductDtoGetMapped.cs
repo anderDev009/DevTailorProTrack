@@ -15,6 +15,7 @@ namespace TailorProTrack.Application.Dtos.PreOrderProducts
         public int QUANTITY { get; set; }
         public int COLOR_PRIMARY { get; set; }
         public int? COLOR_SECONDARY { get; set; }
+        public decimal? CUSTOM_PRICE { get; set; }
         public SizeDtoGetMapped? Size {  get; set; }
         public ProductDtoGetMapped? Product { get; set; }
         public ColorDtoGetMapped? ColorPrimary {  get; set; }
