@@ -1,6 +1,7 @@
 ﻿
 
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -59,7 +60,10 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public List<Expenses> GetAccountsPayable()
         {
-            return _context.Set<Expenses>().Where(x => x.COMPLETED == false).ToList();
+            return _context.Set<Expenses>()
+                .Include(x => x.BankAccount)
+                .Include(x => x.PaymentType)
+                .Where(x => x.COMPLETED == false).ToList();
         }
 
         public void ConfirmExpenses(int idExpense)

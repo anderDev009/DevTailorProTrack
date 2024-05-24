@@ -44,7 +44,9 @@ builder.Services.AddCors(options =>
         {
             builder.WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .WithExposedHeaders(["x-pagination"])
+                ;
         });
 });
 builder.Services.AddControllers();
