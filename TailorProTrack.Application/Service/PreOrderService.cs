@@ -58,7 +58,8 @@ namespace TailorProTrack.Application.Service
                     FkProduct = data.FkProduct,
                     FkSize = data.FkSize,
                     Quantity = data.Quantity,
-                    User = dtoAdd.User
+                    User = dtoAdd.User,
+                    customPrice = data.customPrice
                 }).ToList(), id);
                 result.Message = data.Message;
                 
