@@ -30,7 +30,7 @@ namespace TailorProTrack.infraestructure.Repositories
             }
             entity.CREATED_AT = DateTime.Now;
             entity.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.FK_PREORDER);
-            if(entity.ITBIS != null)
+            if(entity.ITBIS != null || entity.ITBIS >= 0)
             {
                 entity.ITBIS = (decimal)((double)entity.TOTAL_AMOUNT * 0.18);
                 entity.TOTAL_AMOUNT += (decimal)entity.ITBIS;
