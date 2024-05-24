@@ -26,7 +26,7 @@ namespace TailorProTrack.infraestructure.Repositories
             List<PreOrder> preOrderReport = new();
             foreach(var item in preOrders)
             {
-                if (_paymentRepository.ConfirmPayment(item.ID))
+                if (!_paymentRepository.ConfirmPayment(item.ID))
                 {
                     preOrderReport.Add(item);
                 }
