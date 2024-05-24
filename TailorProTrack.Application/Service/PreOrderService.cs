@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Contracts.Client;
@@ -18,11 +19,7 @@ namespace TailorProTrack.Application.Service
 
         //repositorios
         private readonly IPreOrderRepository _preOrderRepository;
-        private readonly ISizeRepository _sizeRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IClientRepository _clientRepository;
         private readonly IPreOrderProductsRepository _preOrderProductsRepository;
-
         //mapper
         private readonly IMapper _mapper;
 
@@ -30,19 +27,16 @@ namespace TailorProTrack.Application.Service
         private readonly IPreOrderProductService _preOrderProductService;
         //
         private readonly IClientService _clientService;
-        public PreOrderService(IPreOrderRepository preOrderRepository, ISizeRepository sizeRepository,
-                        IProductRepository productRepository, IClientRepository clientRepository,
-                        IPreOrderProductService preOrderProductService, IPreOrderProductsRepository preOrderProductsRepository,
+        public PreOrderService(IPreOrderRepository preOrderRepository,
+                        IPreOrderProductService preOrderProductService,
+                        IPreOrderProductsRepository preOrderProductsRepository,
                         IClientService clientService, IMapper mapper)
         {
             _preOrderRepository = preOrderRepository;
-            _sizeRepository = sizeRepository;
-            _productRepository = productRepository;
-            _clientRepository = clientRepository;
             _preOrderProductService = preOrderProductService;
-            _preOrderProductsRepository = preOrderProductsRepository;
             _clientService = clientService;
             _mapper = mapper;
+            _preOrderProductsRepository = preOrderProductsRepository;
         }
 
         public ServiceResult Add(PreOrderDtoAdd dtoAdd)
@@ -85,7 +79,11 @@ namespace TailorProTrack.Application.Service
             try
             {
                 var report = _preOrderRepository.GetAccountsReceivable();
-                result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(report);
+                List<PreOrderDtoGetMapped> preOrders = _mapper.Map<List<PreOrderDtoGetMapped>>(report);
+                foreach (var item in preOrders)
+                {
+                    item.Amount = _preOrderProductsRepository.GetAmountByIdPreOrder(item.ID);
+                }
                 result.Message = "Obtenidos con exito";
             }
             catch (Exception ex)

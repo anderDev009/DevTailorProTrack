@@ -36,11 +36,7 @@ namespace TailorProTrack.infraestructure.Repositories
             return entity.ID;
         }
 
-        public override void Remove(Size entity)
-        {
-            this._context.Update(entity);
-            this._context.SaveChanges();
-        }
+   
         public override void Update(Size entity)
         {
             Size sizeToUpdate = this.GetEntity(entity.ID);

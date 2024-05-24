@@ -15,7 +15,6 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             this._context = ctx;
         }
-
         public List<Color> FilterByColorCode(string color)
         {
             return this._entities.Where(clr => EF.Functions.Like(clr.CODE_COLOR, $"{color}%")).ToList();

@@ -21,6 +21,7 @@ namespace TailorProTrack.infraestructure.Repositories
         public List<PreOrder> GetAccountsReceivable()
         {
             var preOrders = _ctx.Set<PreOrder>()
+                .Include(x => x.Client)
                 .Where(x => x.REMOVED == false && x.COMPLETED == null || x.COMPLETED == false).ToList();
 
             List<PreOrder> preOrderReport = new();
