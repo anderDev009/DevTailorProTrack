@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
-using Azure;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Microsoft.EntityFrameworkCore.Storage.Json;
+
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Contracts.Client;
 using TailorProTrack.Application.Core;
-using TailorProTrack.Application.Dtos.Client;
 using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
 using TailorProTrack.domain.Entities;
@@ -19,7 +16,8 @@ namespace TailorProTrack.Application.Service
 
         //repositorios
         private readonly IPreOrderRepository _preOrderRepository;
-        private readonly IPreOrderProductsRepository _preOrderProductsRepository;
+
+        private readonly IPaymentRepository _paymentRepository;
         //mapper
         private readonly IMapper _mapper;
 
@@ -29,14 +27,14 @@ namespace TailorProTrack.Application.Service
         private readonly IClientService _clientService;
         public PreOrderService(IPreOrderRepository preOrderRepository,
                         IPreOrderProductService preOrderProductService,
-                        IPreOrderProductsRepository preOrderProductsRepository,
+                        IPaymentRepository paymentRepository ,
                         IClientService clientService, IMapper mapper)
         {
             _preOrderRepository = preOrderRepository;
             _preOrderProductService = preOrderProductService;
             _clientService = clientService;
             _mapper = mapper;
-            _preOrderProductsRepository = preOrderProductsRepository;
+            _paymentRepository = paymentRepository;
         }
 
         public ServiceResult Add(PreOrderDtoAdd dtoAdd)
@@ -82,7 +80,7 @@ namespace TailorProTrack.Application.Service
                 List<PreOrderDtoGetMapped> preOrders = _mapper.Map<List<PreOrderDtoGetMapped>>(report);
                 foreach (var item in preOrders)
                 {
-                    item.Amount = _preOrderProductsRepository.GetAmountByIdPreOrder(item.ID);
+                    item.Amount = _paymentRepository.GetAmountPendingByIdPreOrder(item.ID);
                 }
                 result.Message = "Obtenidos con exito";
             }
