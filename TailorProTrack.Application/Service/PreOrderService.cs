@@ -85,7 +85,7 @@ namespace TailorProTrack.Application.Service
             try
             {
                 var report = _preOrderRepository.GetAccountsReceivable();
-                result.Data = _mapper.Map<List<PreOrder>>(report);
+                result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(report);
                 result.Message = "Obtenidos con exito";
             }
             catch (Exception ex)

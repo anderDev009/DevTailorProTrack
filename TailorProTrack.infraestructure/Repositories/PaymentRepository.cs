@@ -63,7 +63,7 @@ namespace TailorProTrack.infraestructure.Repositories
             //confirmando el total
             decimal amountPreOrder = _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT);
             //retornando el bool
-            if(totalAmount >= amountPreOrder)
+            if(totalAmount <= amountPreOrder)
             {
                 return false;
             }
