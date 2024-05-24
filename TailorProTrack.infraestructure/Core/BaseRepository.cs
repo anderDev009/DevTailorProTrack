@@ -76,7 +76,7 @@ namespace TailorProTrack.infraestructure.Core
            
             T entityToRemove = this.GetEntity(entity.ID);
 
-            entityToRemove.MODIFIED_AT = DateTime.UtcNow;
+            entityToRemove.MODIFIED_AT = DateTime.Now;
             entityToRemove.USER_MOD = entity.USER_MOD;
             entityToRemove.REMOVED = true;
             this._entities.Update(entityToRemove);

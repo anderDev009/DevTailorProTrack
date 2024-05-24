@@ -29,7 +29,7 @@ namespace TailorProTrack.infraestructure.Repositories
                 throw new Exception("Pedido ya facturado");
             }
             entity.CREATED_AT = DateTime.Now;
-            entity.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.ID);
+            entity.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.FK_PREORDER);
             if(entity.ITBIS != null)
             {
                 entity.ITBIS = (decimal)((double)entity.TOTAL_AMOUNT * 0.18);

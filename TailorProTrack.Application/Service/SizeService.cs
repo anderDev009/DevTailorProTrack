@@ -249,6 +249,7 @@ namespace TailorProTrack.Application.Service
             {
                 Size sizeToRemove = new Size
                 {
+                    ID = dtoRemove.Id,
                     MODIFIED_AT = dtoRemove.Date,
                     USER_MOD = dtoRemove.User,
                     REMOVED = true
