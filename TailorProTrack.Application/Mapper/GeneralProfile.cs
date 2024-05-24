@@ -123,6 +123,7 @@ namespace TailorProTrack.Application.Mapper
             #endregion
             #region Size
             CreateMap<Size, SizeDtoGetMapped>()
+                .ForMember(x => x.Category, src => src.MapFrom(data => data.categorySize.CATEGORY))
                 .ReverseMap()
                  .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                  .ForMember(b => b.USER_MOD, opt => opt.Ignore())

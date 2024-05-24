@@ -86,6 +86,7 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             List<Size> sizes = _context.Set<Size>()
                 .Include(x => x.ProductSize)
+                .Include(x => x.categorySize)
                 .Where(c => c.ProductSize.Any(x => x.FK_PRODUCT == productId))
                 .ToList();
 
