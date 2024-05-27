@@ -89,10 +89,9 @@ namespace TailorProTrack.Application.Service
             ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
-                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+                
 
-                var inventory = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage)
+                var inventoryCount = this._repository.GetEntities()
                                  .Where(d => !d.REMOVED)
                                  .Select(data => new
                                  {
@@ -144,7 +143,65 @@ namespace TailorProTrack.Application.Service
                                      availableSizes = this._sizeService.GetSizesAvailablesProductById(group.Key.ID).Data,
                                      last_replenishment = (group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy") == "01/01/0001" ? "" : group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy"))
                                  })
-                                 .ToList();
+                                .ToList().Count();
+
+                int registerCount = inventoryCount;
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+                var inventory = this._repository.GetEntities()
+                                 .Where(d => !d.REMOVED)
+                                 .Select(data => new
+                                 {
+                                     data.ID,
+                                     data.FK_SIZE,
+                                     data.FK_PRODUCT,
+                                     data.QUANTITY,
+                                     data.REMOVED
+                                 })
+                                 .Join
+                                  (
+                                  this._sizeRepository.GetEntities()
+                                                      .Where(d => !d.REMOVED)
+                                                      .Select(data => new
+                                                      {
+                                                          data.ID,
+                                                          data.SIZE,
+                                                          data.FKCATEGORYSIZE
+
+                                                      }
+                                                       ),
+                                 inventory => inventory.FK_SIZE,
+                                 size => size.ID,
+                                 (inventory, size) => new { inventory, size }
+                                  )
+                                 .Join
+                                 (
+                                 this._productRepository.GetEntities()
+                                                        .Select(data => new
+                                                        {
+                                                            data.ID,
+                                                            data.NAME_PRODUCT,
+                                                            data.DESCRIPTION_PRODUCT,
+                                                            data.SALE_PRICE,
+                                                            data.LAST_REPLENISHMENT,
+                                                        }),
+                                 combined => combined.inventory.FK_PRODUCT,
+                                 product => product.ID,
+                                 (combined, product) => new { combined.inventory, combined.size, product }
+                                 )
+                                 .Where(data => !data.inventory.REMOVED)
+                                 .GroupBy(data => new { data.product.ID, data.product.NAME_PRODUCT, data.product.SALE_PRICE, data.product.LAST_REPLENISHMENT })
+                                 .Select(group => new InventoryDtoGet
+                                 {
+                                     id = group.Key.ID,
+                                     product_name = group.Key.NAME_PRODUCT,
+                                     price = group.Key.SALE_PRICE,
+                                     quantity = group.Sum(d => d.inventory.QUANTITY),
+                                     availableSizes = this._sizeService.GetSizesAvailablesProductById(group.Key.ID).Data,
+                                     last_replenishment = (group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy") == "01/01/0001" ? "" : group.Key.LAST_REPLENISHMENT.ToString("MM/dd/yyyy"))
+                                 })
+                                 .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                 .Take(@params.ItemsPerPage)
+                                .ToList();
                 result.Data = inventory;
                 result.Header = header;
                 result.Message = "Inventario obtenido correctamente";

@@ -51,15 +51,17 @@ namespace TailorProTrack.Application.Service
             ServiceResultWithHeader result = new ServiceResultWithHeader();
             try
             {
-                int registerCount = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage).Where(d => !d.REMOVED).Count();
+                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
-                var types = this._repository.GetEntities().Where(d => !d.REMOVED)
+                var types = this._repository.SearchEntities().Where(d => !d.REMOVED)
                     .OrderBy(data => data.ID)
                     .Select(d => new PaymentTypeDtoGet
                 {
                     Id =  d.ID,
                     Type = d.TYPE_PAYMENT
                 })
+                    .Skip((@params.Page - 1) * @params.ItemsPerPage)
+                    .Take(@params.ItemsPerPage)
                     .ToList();
 
                 result.Data = types;
@@ -127,7 +129,7 @@ namespace TailorProTrack.Application.Service
                     USER_MOD = dtoUpdate.User,
                  
                 };
-
+                _repository.Update(type);
                 result.Message = "Actualizado con exito.";
             }
             catch (Exception ex)

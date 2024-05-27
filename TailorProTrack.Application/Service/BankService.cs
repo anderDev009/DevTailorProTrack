@@ -25,6 +25,7 @@ namespace TailorProTrack.Application.Service
                 {
                     NAME = dtoAdd.Name,
                     USER_CREATED = dtoAdd.User
+                    
                 };
                 this._bankRepository.Save(bank);
                 result.Message = "Agregado con exito";

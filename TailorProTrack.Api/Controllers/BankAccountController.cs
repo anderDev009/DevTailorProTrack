@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
+using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.BankAccount;
@@ -27,6 +28,7 @@ namespace TailorProTrack.Api.Controllers
             {
                 return StatusCode(500, result);
             }
+            Response.AddHeaderPaginationJson(result.Header);
             return Ok(result);
         }
 

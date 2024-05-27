@@ -10,6 +10,8 @@ namespace TailorProTrack.Application.Core
             TotalCount = totalCount;
             CurrentPage = currentPage;
             TotalPages = (int)Math.Ceiling(TotalCount / (double)itemsPerPage);
+            HasNext = CurrentPage < TotalPages;
+            HasPrevious = (CurrentPage > 1 && CurrentPage <= TotalPages);
         }
         public int CurrentPage { get; set; }
         public int TotalCount { get; set; }
