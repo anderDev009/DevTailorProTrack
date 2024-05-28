@@ -146,16 +146,7 @@ namespace TailorProTrack.infraestructure.Context
                 .WithOne(x => x.PreOrder)
                 .HasForeignKey(x => x.FK_PREORDER);
             #endregion
-            #region Expenses
-            modelBuilder.Entity<Expenses>()
-                .HasOne(x => x.PaymentType)
-                .WithMany(x => x.Expenses)
-                .HasForeignKey(x => x.FK_PAYMENT_TYPE);
-
-            modelBuilder.Entity<Expenses>()
-                .HasOne(x => x.BankAccount)
-                .WithMany(x => x.Expenses)
-                .HasForeignKey(x => x.FK_BANK_ACCOUNT);
+            #region Expenses 
             #endregion
             #region Inventory
             modelBuilder.Entity<Inventory>()

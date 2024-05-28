@@ -83,6 +83,8 @@ namespace TailorProTrack.Application.Service
                 {
                     item.Amount = _paymentRepository.GetAmountPendingByIdPreOrder(item.ID);
                 }
+
+                result.Data = preOrders;
                 result.Message = "Obtenidos con exito";
             }
             catch (Exception ex)

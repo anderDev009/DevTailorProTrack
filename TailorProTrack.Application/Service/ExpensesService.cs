@@ -19,22 +19,22 @@ namespace TailorProTrack.Application.Service
             _mapper = mapper;
         }
 
-        public ServiceResult GetAccountsPayable()
-        {
-            ServiceResult result = new();
-            try
-            {
-                var report = _expensesRepository.GetAccountsPayable();
-                result.Data = _mapper.Map<List<ExpensesDtoGet>>(report);
-                result.Message = "Obtenidos con exito";
-            }
-            catch (Exception ex)
-            {
-                result.Success = false;
-                result.Message = $"Error {ex.Message}";
-            }
-            return result;
-        }
+        //public ServiceResult GetAccountsPayable()
+        //{
+        //    ServiceResult result = new();
+        //    try
+        //    {
+        //        var report = _expensesRepository.GetAccountsPayable();
+        //        result.Data = _mapper.Map<List<ExpensesDtoGet>>(report);
+        //        result.Message = "Obtenidos con exito";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result.Success = false;
+        //        result.Message = $"Error {ex.Message}";
+        //    }
+        //    return result;
+        //}
 
         public ServiceResult ConfirmExpenses(int IdExpense)
         {

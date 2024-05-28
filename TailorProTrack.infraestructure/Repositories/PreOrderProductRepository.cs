@@ -25,7 +25,7 @@ namespace TailorProTrack.infraestructure.Repositories
                 .ToList();
             foreach (var product in preOrder)
             {
-                if (product.CUSTOM_PRICE != null || product.CUSTOM_PRICE != 0)
+                if (product.CUSTOM_PRICE != null && product.CUSTOM_PRICE != 0)
                 {
                     totalAmount += product.QUANTITY * (decimal)product.CUSTOM_PRICE;
                 }

@@ -80,7 +80,7 @@ namespace TailorProTrack.Application.Service
                 int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var payments = this._repository.SearchEntities().Where(d => !d.REMOVED).Select(d => new { d.ID, d.FK_ORDER, d.FK_TYPE_PAYMENT, d.AMOUNT, d.ACCOUNT_PAYMENT })
+                var payments = this._repository.GetEntities().Where(d => !d.REMOVED).Select(d => new { d.ID, d.FK_ORDER, d.FK_TYPE_PAYMENT, d.AMOUNT, d.ACCOUNT_PAYMENT })
                                                                            .Join
                                                                            (
                                                                             this._typeRepository.GetEntities().Select(d => new { d.ID, d.TYPE_PAYMENT }),

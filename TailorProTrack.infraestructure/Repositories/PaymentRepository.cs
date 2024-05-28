@@ -63,7 +63,7 @@ namespace TailorProTrack.infraestructure.Repositories
             //confirmando el total
             decimal amountPreOrder = GetAmountPendingByIdPreOrder(idPreOrder);
             //retornando el bool
-            if(totalAmount <= amountPreOrder)
+            if(totalAmount >= amountPreOrder)
             {
                 return false;
             }

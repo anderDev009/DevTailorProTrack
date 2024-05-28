@@ -38,15 +38,15 @@ namespace TailorProTrack.Api.Controllers.Report
             }
             return Ok(result);
         }
-        [HttpGet("GetAccountsPayable")]
-        public IActionResult GetAccountsPayable()
-        {
-            var result = _expensesService.GetAccountsPayable();
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
-        }
+        //[HttpGet("GetAccountsPayable")]
+        //public IActionResult GetAccountsPayable()
+        //{
+        //    var result = _expensesService.GetAccountsPayable();
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(result);
+        //    }
+        //    return Ok(result);
+        //}
     }
 }

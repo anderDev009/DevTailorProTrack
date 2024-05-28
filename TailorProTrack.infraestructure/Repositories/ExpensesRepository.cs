@@ -19,53 +19,16 @@ namespace TailorProTrack.infraestructure.Repositories
             _bankAccountRepository = bankAccountRepository;
         }
 
-        public override int Save(Expenses entity)
-        {
-            entity.CREATED_AT = DateTime.Now;
-            entity.USER_CREATED = 1;
-            //logica para descontar de la tarjeta 
-            //obteniendo la cuenta de banco de la entidad
-            if(entity.FK_BANK_ACCOUNT != null)
-            {
-                BankAccount account = _bankAccountRepository.GetEntity((int)entity.FK_BANK_ACCOUNT);
-                
-                if(account == null)
-                {
-                    throw new Exception("Cuenta de banco no existente.");
-                }
-                //en caso de que la cuenta tenga mas o igual que el monto solicitado
-                if(account.BALANCE >= entity.AMOUNT)
-                {
-                    _bankAccountRepository.SubstractBalance((int)entity.FK_BANK_ACCOUNT, entity.AMOUNT);
-                }
-                //actualizando la entidad
-                _context.Set<BankAccount>().Update(account);
-
-            }
-            this._context.Add(entity);
-            this._context.SaveChanges();
-            return entity.ID;
-
-        }
+  
 
         public override void Remove(Expenses entity)
         {
             //devolviendo el saldo a la cuenta en caso de ser eliminada
-            if(entity.FK_BANK_ACCOUNT != 0)
-            {
-                _bankAccountRepository.AddBalance((int)entity.FK_BANK_ACCOUNT, entity.AMOUNT);
-            }
+        
             base.Remove(entity);
         }
 
-        public List<Expenses> GetAccountsPayable()
-        {
-            return _context.Set<Expenses>()
-                .Include(x => x.BankAccount)
-                .Include(x => x.PaymentType)
-                .Where(x => x.COMPLETED == false).ToList();
-        }
-
+     
         public void ConfirmExpenses(int idExpense)
         {
             Expenses expense = this.GetEntity(idExpense);
