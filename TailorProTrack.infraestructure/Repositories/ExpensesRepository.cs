@@ -20,14 +20,6 @@ namespace TailorProTrack.infraestructure.Repositories
         }
 
   
-
-        public override void Remove(Expenses entity)
-        {
-            //devolviendo el saldo a la cuenta en caso de ser eliminada
-        
-            base.Remove(entity);
-        }
-
      
         public void ConfirmExpenses(int idExpense)
         {

@@ -3,7 +3,7 @@ using TailorProTrack.infraestructure.Core;
 
 namespace TailorProTrack.infraestructure.Interfaces;
 
-public interface IPaymentExpenses : IBaseRepository<PaymentExpenses>
+public interface IPaymentExpensesRepository : IBaseRepository<PaymentExpenses>
 {
     
 }
