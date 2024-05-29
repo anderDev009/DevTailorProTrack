@@ -27,6 +27,7 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<Bank> BANK { get; set; }
         public DbSet<BankAccount> BANK_ACCOUNT { get; set; }
         public DbSet<Expenses> EXPENSES { get; set; }
+        public DbSet<PaymentExpenses> PAYMENT_EXPENSES { get; set; }
         public DbSet<PreOrder> PRE_ORDER {  get; set; }
         public DbSet<PreOrderProducts> PRE_ORDER_PRODUCTS {  get; set; }
 
@@ -146,7 +147,17 @@ namespace TailorProTrack.infraestructure.Context
                 .WithOne(x => x.PreOrder)
                 .HasForeignKey(x => x.FK_PREORDER);
             #endregion
-            #region Expenses 
+            #region Expenses
+
+            modelBuilder.Entity<PaymentExpenses>().HasOne(x => x.Expense).WithMany(x => x.PaymentsExpenses)
+                .HasForeignKey(x => x.FK_EXPENSE);
+
+            modelBuilder.Entity<PaymentExpenses>().HasOne(x => x.BankAccount).WithMany(x => x.PaymentExpenses)
+                .HasForeignKey(x => x.FK_BANK_ACCOUNT);
+
+            modelBuilder.Entity<PaymentExpenses>().HasOne(x => x.PaymentType)
+                .WithMany(x => x.PaymentExpensesList)
+                .HasForeignKey(x => x.FK_PAYMENT_TYPE);
             #endregion
             #region Inventory
             modelBuilder.Entity<Inventory>()
