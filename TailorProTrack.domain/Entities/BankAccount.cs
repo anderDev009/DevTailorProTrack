@@ -9,6 +9,6 @@ namespace TailorProTrack.domain.Entities
         public int FK_BANK {  get; set; }
         public decimal BALANCE { get; set; }
 
-        public List<Expenses>? Expenses { get; set; }
+        public List<PaymentExpenses>? PaymentExpenses { get; set; }
     }
 }

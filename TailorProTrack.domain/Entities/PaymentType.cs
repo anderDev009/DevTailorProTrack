@@ -8,6 +8,6 @@ namespace TailorProTrack.domain.Entities
     {
         public string TYPE_PAYMENT {  get; set; }
 
-        public List<Expenses>? Expenses {  get; set; }
+        public List<PaymentExpenses>? PaymentExpensesList { get; set; }
     }
 }

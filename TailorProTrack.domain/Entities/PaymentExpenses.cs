@@ -12,6 +12,6 @@ namespace TailorProTrack.domain.Entities
         
         public Expenses? Expense { get; set; }
         public PaymentType? PaymentType { get; set; }
-        public BankAccount? BankAccount { get; set; }
+        public BankAccount? BankAccount { get; set;  }
     }
 }
