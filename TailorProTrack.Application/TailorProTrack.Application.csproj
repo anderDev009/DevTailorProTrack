@@ -6,4 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TailorProTrack.domain\TailorProTrack.domain.csproj" />
+    <ProjectReference Include="..\TailorProTrack.infraestructure\TailorProTrack.infraestructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dtos\SizeColor\" />
+  </ItemGroup>
+
 </Project>

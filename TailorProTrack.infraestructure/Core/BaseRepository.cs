@@ -1,51 +1,107 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using TailorProTrack.domain.Core;
 using TailorProTrack.infraestructure.Context;
 
 namespace TailorProTrack.infraestructure.Core
 {
-    public class BaseRepository<T> : IBaseRepository<T> where T : class
+    public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
         private readonly TailorProTrackContext _context;
-        private DbSet<T> _entities;
+        protected DbSet<T> _entities;
         public BaseRepository(TailorProTrackContext ctx) 
         {
             this._context = ctx;
             _entities = this._context.Set<T>();
-        } 
-        public bool Exists(Expression<Func<T, bool>> filter)
-        {
-            return this._entities.Any();
         }
 
-        public List<T> FindAll(Expression<Func<T, bool>> filter)
+        public int CountEntities()
+        {
+            return this._entities.Where(data => !data.REMOVED).Count();
+        }
+
+        public virtual  bool Exists(Expression<Func<T, bool>> filter)
+        {
+            return this._entities.Any(filter);
+        }
+
+        public virtual List<T> FindAll(Expression<Func<T, bool>> filter)
         {
             return this._entities.Where(filter).ToList();
         }
 
-        public T GetEntity(int id)
+        public List<T> GetAllWithInclude(int page, int itemsPage, List<string> properties)
         {
-            return this.GetEntity(id);
+            var queryable = _context.Set<T>().AsQueryable();
+            foreach(var property in properties)
+            {
+                queryable =  queryable.Include(property);
+            }
+            return queryable.Where(data => !data.REMOVED).Skip((page - 1) * itemsPage).Take(itemsPage).ToList();
         }
 
-        public void Remove(T entity)
+        public T GetByIdWithInclude(int id, List<string> properties)
         {
-            this._entities.Remove(entity);
+            var queryable = _context.Set<T>().AsQueryable();
+            foreach (var property in properties)
+            {
+                queryable = queryable.Include(property);
+            }
+            return queryable.Where(data => data.ID == id).First();
         }
 
-        public void Save(T entity)
+        public virtual List<T> GetEntities()
         {
+            return _context.Set<T>().Where(data => !data.REMOVED).ToList();
+        }
+
+        public virtual List<T> GetEntitiesPaginated(int page, int itemsPage)
+        {
+            return this._entities.Where(data => !data.REMOVED).Skip((page - 1) * itemsPage).Take(itemsPage).ToList();
+        }
+
+        public virtual T GetEntity(int id)
+        {
+            return this._entities.Find(id);
+        }
+
+        public virtual List<T> GetEntityToJoin(int id)
+        {
+            return this._entities.Where(data => data.ID == id).ToList();
+        }
+
+        public virtual void Remove(T entity)
+        {
+           
+            T entityToRemove = this.GetEntity(entity.ID);
+
+            entityToRemove.MODIFIED_AT = DateTime.Now;
+            entityToRemove.USER_MOD = entity.USER_MOD;
+            entityToRemove.REMOVED = true;
+            this._entities.Update(entityToRemove);
+            _context.SaveChanges();
+        }
+
+        public virtual int Save(T entity)
+        {
+            entity.CREATED_AT = DateTime.Now;
             this._entities.Add(entity);
+            _context.SaveChanges();
+            return entity.ID;
         }
 
-        public void Update(T entity)
+        public IQueryable<T> SearchEntities()
         {
-            this._entities.Update(entity);
+            return this._entities.AsQueryable();
         }
+
+        public virtual void Update(T entity)
+        {
+            var target = _context.Set<T>().Find(entity.ID);
+            _context.Entry(target).CurrentValues.SetValues(entity);
+            _context.SaveChanges();
+        }
+
     }
 }

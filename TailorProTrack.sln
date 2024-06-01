@@ -17,13 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TailorProTrack.domain", "Ta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TailorProTrack.infraestructure", "TailorProTrack.infraestructure\TailorProTrack.infraestructure.csproj", "{F06D9532-5C3C-413B-95E8-E55D039E169C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TailorProTrack.Application", "TailorProTrack.Application\TailorProTrack.Application.csproj", "{32C9BA43-DD3D-4451-8144-FA8F802188A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TailorProTrack.Application", "TailorProTrack.Application\TailorProTrack.Application.csproj", "{32C9BA43-DD3D-4451-8144-FA8F802188A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TailorProTrack.Api", "TailorProTrack.Api\TailorProTrack.Api.csproj", "{95008D47-D77C-4F60-802D-26B4CCE4A5F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TailorProTrack.Api", "TailorProTrack.Api\TailorProTrack.Api.csproj", "{95008D47-D77C-4F60-802D-26B4CCE4A5F5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ioc", "Ioc", "{B849F000-C5FF-4548-8F6A-C1DE3F4D910D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TailorProTrack.Ioc", "TailorProTrack.Ioc\TailorProTrack.Ioc.csproj", "{D2D42772-1935-46B1-8B6B-A70AC27D1E6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TailorProTrack.Ioc", "TailorProTrack.Ioc\TailorProTrack.Ioc.csproj", "{D2D42772-1935-46B1-8B6B-A70AC27D1E6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

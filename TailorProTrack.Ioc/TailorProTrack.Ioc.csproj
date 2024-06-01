@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TailorProTrack.Application\TailorProTrack.Application.csproj" />
+    <ProjectReference Include="..\TailorProTrack.infraestructure\TailorProTrack.infraestructure.csproj" />
+  </ItemGroup>
+
 </Project>

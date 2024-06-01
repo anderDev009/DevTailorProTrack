@@ -1,20 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace TailorProTrack.infraestructure.Core
 {
     public interface IBaseRepository<T> where T : class
-    {
+    {       
         void Remove(T entity);
         void Update(T entity);  
-        void Save(T entity);
+        int Save(T entity);
+        int CountEntities();
+        List<T> GetEntities();
+        List<T> GetEntitiesPaginated(int page, int itemsPage);
+        List<T> GetAllWithInclude(int page, int itemsPage,List<string> properties);
+        T GetByIdWithInclude(int id,List<string> properties);
+
         List<T> FindAll(Expression<Func<T, bool>> filter);
         T GetEntity(int id);
-
+        List<T> GetEntityToJoin(int id);
         bool Exists(Expression<Func<T, bool>> filter);
+
+        IQueryable<T> SearchEntities();
     }
 }
