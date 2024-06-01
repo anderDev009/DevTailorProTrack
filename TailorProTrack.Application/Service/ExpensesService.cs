@@ -51,5 +51,22 @@ namespace TailorProTrack.Application.Service
             }
             return result;
         }
+
+        public ServiceResult GetExpensesPending()
+        {
+            ServiceResult result = new();
+            try
+            {
+                var expenses = _expensesRepository.GetExpensesPending();
+                result.Data = _mapper.Map<List<ExpensesDtoGet>>(expenses);
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Message = $"Error {ex.Message}";
+            }
+
+            return result;
+        }
     }
 }

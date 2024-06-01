@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TailorProTrack.Application.Dtos.BankAccount;
 using TailorProTrack.Application.Dtos.BuyInventoryDtos;
 using TailorProTrack.Application.Dtos.Client;
+using TailorProTrack.Application.Dtos.CodeDgi;
 using TailorProTrack.Application.Dtos.Color;
 using TailorProTrack.Application.Dtos.Expenses;
 using TailorProTrack.Application.Dtos.Expenses.PaymentExpense;
@@ -388,6 +389,30 @@ namespace TailorProTrack.Application.Mapper
                 .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
                 .ForMember(b => b.REMOVED, opt => opt.Ignore());
 
+            #endregion
+            #region CodeDgi
+
+            CreateMap<CodesDgi, CodeDgiDtoAdd>()
+                .ReverseMap()
+                .ForMember(x => x.ID, opt => opt.Ignore())
+                .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                .ForMember(b => b.REMOVED, opt => opt.Ignore());
+
+            CreateMap<CodesDgi, CodeDgiDtoUpdate>()
+                .ReverseMap()
+                .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                .ForMember(b => b.REMOVED, opt => opt.Ignore());
+
+            CreateMap<CodesDgi, CodeDgiDtoGet>()
+                .ReverseMap()
+                .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                .ForMember(b => b.REMOVED, opt => opt.Ignore());
             #endregion
         }
     }

@@ -1,11 +1,8 @@
 ﻿
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using TailorProTrack.Application.Contracts;
-using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Sale;
-using TailorProTrack.Application.Extentions;
 using TailorProTrack.Application.Service.BaseServices;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;

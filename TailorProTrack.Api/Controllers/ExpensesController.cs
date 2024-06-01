@@ -53,6 +53,18 @@ namespace TailorProTrack.Api.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet("GetExpensesPending")]
+        public IActionResult GetExpensesPending()
+        {
+            var result = this._expensesService.GetExpensesPending();
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
         [HttpPut("UpdateExpenses")]
         public IActionResult UpdateById([FromBody] ExpensesDtoUpdate dtoUpdate)
         {

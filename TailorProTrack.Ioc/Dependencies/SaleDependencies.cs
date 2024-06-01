@@ -13,6 +13,7 @@ namespace TailorProTrack.Ioc.Dependencies
         {
             //repositorios
             service.AddScoped<ISalesRepository, SalesRepository>();
+            service.AddTransient<ICodesDgiRepository, CodesDgiRepository>();
 
             //servicios
             service.AddTransient<ISaleService, SaleService>();
