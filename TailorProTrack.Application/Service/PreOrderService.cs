@@ -18,8 +18,10 @@ namespace TailorProTrack.Application.Service
         private readonly IPreOrderRepository _preOrderRepository;
 
         private readonly IPaymentRepository _paymentRepository;
-        //mapper
-        private readonly IMapper _mapper;
+
+        private readonly IPreOrderProductsRepository _preOrderProductRepository;
+		//mapper
+		private readonly IMapper _mapper;
 
         //servicios 
         private readonly IPreOrderProductService _preOrderProductService;
@@ -28,14 +30,16 @@ namespace TailorProTrack.Application.Service
         public PreOrderService(IPreOrderRepository preOrderRepository,
                         IPreOrderProductService preOrderProductService,
                         IPaymentRepository paymentRepository ,
-                        IClientService clientService, IMapper mapper)
+                        IPreOrderProductsRepository preOrderProductRepository,
+						IClientService clientService, IMapper mapper)
         {
             _preOrderRepository = preOrderRepository;
             _preOrderProductService = preOrderProductService;
             _clientService = clientService;
             _mapper = mapper;
             _paymentRepository = paymentRepository;
-        }
+            _preOrderProductRepository = preOrderProductRepository;
+		}
 
         public ServiceResult Add(PreOrderDtoAdd dtoAdd)
         {
@@ -79,12 +83,20 @@ namespace TailorProTrack.Application.Service
             {
                 var report = _preOrderRepository.GetAccountsReceivable();
                 List<PreOrderDtoGetMapped> preOrders = _mapper.Map<List<PreOrderDtoGetMapped>>(report);
-                foreach (var item in preOrders)
+                List<PreOrderDtoGetMapped> preOrdersToSend = new();
+				foreach (var item in preOrders)
                 {
                     item.Amount = _paymentRepository.GetAmountPendingByIdPreOrder(item.ID);
+                    if (item.Amount < 0)
+                    {
+	                    item.Amount = Math.Abs((decimal)item.Amount);
+						preOrdersToSend.Add(item);
+					}
+
+                
                 }
 
-                result.Data = preOrders;
+                result.Data = preOrdersToSend;
                 result.Message = "Obtenidos con exito";
             }
             catch (Exception ex)
@@ -145,7 +157,17 @@ namespace TailorProTrack.Application.Service
                                             Items = this._preOrderProductService.GetByPreOrder(data.ID).Data,
                                             DateCreated = data.CREATED_AT,
                                             DateDelivery = data.DATE_DELIVERY,
-                                            IsEditable = isEditable
+                                            IsEditable = isEditable,
+                                            PreOrderInProgress = _preOrderProductRepository.GetByPreOrderId(id).Select(data => new
+                                            {
+                                                id = data.ID,
+                                                Quantity = data.QUANTITY,
+                                                ProductId = data.FK_PRODUCT,
+                                                SizeId = data.FK_SIZE,
+                                                ColorPrimary = data.COLOR_PRIMARY,
+                                                ColorSecondary = data.COLOR_SECONDARY
+
+											})
                                         });
                 result.Data = preOrder;
                 result.Message = "Obtenido con exito";

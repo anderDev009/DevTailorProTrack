@@ -166,5 +166,34 @@ namespace TailorProTrack.infraestructure.Repositories
             }
             return productsCleaned.Where(x => x.QUANTITY < 0).ToList();
         }
+
+        public List<PreOrderProducts> GetPreOrderWithOrders(int IdPreOrder)
+        {
+	        var preOrderProdcucts = _ctx.Set<PreOrderProducts>()
+		        .Where(x => x.FK_PREORDER == IdPreOrder)
+		        .ToList();
+
+            var orderProducts = _ctx.Set<OrderProduct>()
+				.Include(x => x.Order)
+				.Include(x => x.InventoryColor)
+				.ThenInclude(x => x.Inventory)
+				.Where(x => x.Order.FK_PREORDER == IdPreOrder)
+				.ToList();
+			foreach (var orderProduct in orderProducts)
+			{
+				var preOrderProduct = preOrderProdcucts
+					.Where(x => x.FK_PRODUCT == orderProduct.InventoryColor.Inventory.FK_PRODUCT
+											&& x.FK_SIZE == orderProduct.InventoryColor.Inventory.FK_SIZE
+																	&& x.COLOR_PRIMARY == orderProduct.InventoryColor.FK_COLOR_PRIMARY
+																	&& x.COLOR_SECONDARY == orderProduct.InventoryColor.FK_COLOR_SECONDARY)
+					.FirstOrDefault();
+
+				if (preOrderProduct != null)
+				{
+					preOrderProduct.QUANTITY -= orderProduct.QUANTITY;
+				}
+			}
+			return preOrderProdcucts;
+        }
     }
 }

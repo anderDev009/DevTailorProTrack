@@ -5,6 +5,8 @@ using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Expenses;
 using TailorProTrack.Application.Dtos.Sale;
+using TailorProTrack.Application.Exceptions;
+using TailorProTrack.Application.Extentions;
 
 namespace TailorProTrack.Api.Controllers
 {
@@ -22,12 +24,21 @@ namespace TailorProTrack.Api.Controllers
         [HttpPost]
         public IActionResult Save([FromBody] SaleDtoAdd dtoAdd)
         {
-            var result = _SaleService.Add(dtoAdd);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
+	        try
+	        {
+		        var result = _SaleService.Add(dtoAdd);
+
+		        if (!result.Success)
+		        {
+			        return BadRequest(result);
+		        }
+		        return Ok(result);
+			}
+	        catch (SaleServiceException ex)
+	        {
+				return BadRequest(new ServiceResult { Success = false, Message = ex.Message });
+			}
+
 
         }
 

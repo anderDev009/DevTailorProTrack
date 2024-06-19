@@ -19,7 +19,7 @@ namespace TailorProTrack.Application.Service.BaseServices
             _repository = repository;
             _mapper = mapper;
         }
-        public ServiceResult Add(DtoAdd dtoAdd)
+        public virtual ServiceResult Add(DtoAdd dtoAdd)
         {
             ServiceResult result = new();
             try

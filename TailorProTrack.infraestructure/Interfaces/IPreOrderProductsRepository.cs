@@ -13,5 +13,6 @@ namespace TailorProTrack.infraestructure.Interfaces
         decimal GetAmountByIdPreOrder(int preOrderId);
         List<PreOrderProducts> GetMissingColorsByIdPreOrder(int IdPreOrder);
         List<PreOrderProducts> GetMissingProducts();
-    }
+        List<PreOrderProducts> GetPreOrderWithOrders(int IdPreOrder);
+	}
 }

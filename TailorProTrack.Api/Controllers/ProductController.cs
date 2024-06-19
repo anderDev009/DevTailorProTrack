@@ -67,10 +67,10 @@ namespace TailorProTrack.Api.Controllers
         [HttpDelete("RemoveProduct")]
         public IActionResult Delete([FromBody] ProductDtoRemove productDtoRemove)
         {
-            var result = this._Productservice.Remove(productDtoRemove);
+            var result = _Productservice.Remove(productDtoRemove);
             if (!result.Success)
             {
-                return BadRequest(result);
+                return StatusCode(500,result);
             }
             return Ok(result);
         }

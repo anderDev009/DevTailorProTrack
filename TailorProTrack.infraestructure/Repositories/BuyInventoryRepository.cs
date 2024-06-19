@@ -10,12 +10,13 @@ namespace TailorProTrack.infraestructure.Repositories
     {
         private readonly TailorProTrackContext _ctx;
         private readonly IInventoryRepository _inventoryRepository;
-        public BuyInventoryRepository(TailorProTrackContext ctx, IInventoryRepository inventoryRepository) : base(ctx)
+        private readonly IExpensesRepository _expensesRepository;
+        public BuyInventoryRepository(TailorProTrackContext ctx, IInventoryRepository inventoryRepository,IExpensesRepository expensesRepository) : base(ctx)
         {
             _ctx = ctx;
             _inventoryRepository = inventoryRepository;
-
-        }
+            _expensesRepository = expensesRepository;
+		}
 
         public bool AddBuyInventory(BuyInventory buyInventory, List<BuyInventoryDetail> detail)
         {
@@ -25,16 +26,30 @@ namespace TailorProTrack.infraestructure.Repositories
             _ctx.Set<BuyInventory>().Add(buyInventory);
             _ctx.SaveChanges();
            
+
             foreach(var item in detail)
             {
                 item.FK_BUY_INVENTORY = buyInventory.ID;
                 item.USER_CREATED = 1;
                 item.CREATED_AT =DateTime.Now;
-            }
+			}
+            
             _ctx.Set<BuyInventoryDetail>().AddRange(detail);
             int success = _ctx.SaveChanges();
             _inventoryRepository.AddInventoryByBuy(detail);
-            if(success == 0)
+            //creando gasto
+            _expensesRepository.Save(new Expenses()
+            {
+	            AMOUNT = buyInventory.TOTAL_SALE,
+	            COMPLETED = false,
+	            CREATED_AT = DateTime.UtcNow,
+	            DESCR = "Compra de inventario",
+	            NAME = $"Compra de inventario a {buyInventory.COMPANY}",
+	            DOCUMENT_NUMBER = $"{buyInventory.NCF}",
+	            USER_CREATED = 1,
+	            VOUCHER = $"{buyInventory.NCF}"
+            });
+			if (success == 0)
             {
                 return false;
             }
