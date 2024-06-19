@@ -19,7 +19,11 @@ namespace TailorProTrack.Application.Service
 
         private readonly IPaymentRepository _paymentRepository;
 
+        private readonly IProductRepository _productRepository;
+
         private readonly IPreOrderProductsRepository _preOrderProductRepository;
+        private readonly ISizeRepository _sizeRepository;
+        private readonly IColorRepository _colorRepository;
 		//mapper
 		private readonly IMapper _mapper;
 
@@ -31,6 +35,9 @@ namespace TailorProTrack.Application.Service
                         IPreOrderProductService preOrderProductService,
                         IPaymentRepository paymentRepository ,
                         IPreOrderProductsRepository preOrderProductRepository,
+                        IProductRepository productRepository,
+                        ISizeRepository sizeRepository,
+                        IColorRepository colorRepository,
 						IClientService clientService, IMapper mapper)
         {
             _preOrderRepository = preOrderRepository;
@@ -39,7 +46,10 @@ namespace TailorProTrack.Application.Service
             _mapper = mapper;
             _paymentRepository = paymentRepository;
             _preOrderProductRepository = preOrderProductRepository;
-		}
+            _productRepository = productRepository;
+            _sizeRepository = sizeRepository;
+            _colorRepository = colorRepository;
+        }
 
         public ServiceResult Add(PreOrderDtoAdd dtoAdd)
         {
@@ -163,8 +173,11 @@ namespace TailorProTrack.Application.Service
                                                 id = data.ID,
                                                 Quantity = data.QUANTITY,
                                                 ProductId = data.FK_PRODUCT,
-                                                SizeId = data.FK_SIZE,
-                                                ColorPrimary = data.COLOR_PRIMARY,
+                                                ProductName = _productRepository.GetEntity(data.FK_PRODUCT).NAME_PRODUCT,
+                                                Size = _sizeRepository.GetEntity(data.FK_SIZE).SIZE,
+												SizeId = data.FK_SIZE,
+												colorPrimary = _colorRepository.GetEntity(data.COLOR_PRIMARY).COLORNAME,
+												ColorPrimary = data.COLOR_PRIMARY,
                                                 ColorSecondary = data.COLOR_SECONDARY
 
 											})
