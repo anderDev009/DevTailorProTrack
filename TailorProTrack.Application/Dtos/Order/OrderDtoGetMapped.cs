@@ -18,8 +18,8 @@ namespace TailorProTrack.Application.Dtos.Order
         public bool CHECKED {  get; set; }
         public decimal AMOUNT { get; set; }
         public string SEND_TO { get; set; }
-
-        public string DESCRIPTION_JOB { get; set; }
+        public string? OBSERVATION { get; set; }    
+		public string DESCRIPTION_JOB { get; set; }
         public string? STATUS_ORDER { get; set; }
 
         public ClientDtoGet? Client { get; set; }

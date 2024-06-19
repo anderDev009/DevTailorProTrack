@@ -123,7 +123,8 @@ namespace TailorProTrack.Application.Service
                     AMOUNT = amount,
                     DESCRIPTION_JOB = dtoAdd.DescriptionJob,
                     STATUS_ORDER = "pendiente",
-                    SEND_TO = dtoAdd.sendTo
+                    SEND_TO = dtoAdd.sendTo,
+                    OBSERVATION = dtoAdd.Observation
                 };
                 int idOrder = this._repository.Save(orderToAdd);
                 //agregando el detalle de la orden
@@ -248,7 +249,9 @@ namespace TailorProTrack.Application.Service
                                                     FullName = $"{data.client.FIRST_NAME} {data.client.FIRST_SURNAME} {data.client.LAST_SURNAME}",
                                                     Amount = data.orderFK.AMOUNT,
                                                     Checked = data.orderFK.CHECKED,
-                                                    Quantity = this._orderProductService.GetQuantityByOrderId(data.orderFK.ID).Data[0],
+                                                    DescriptionJob = data.orderFK.DESCRIPTION_JOB,
+                                                    Observation = data.orderFK.OBSERVATION,
+													Quantity = this._orderProductService.GetQuantityByOrderId(data.orderFK.ID).Data[0],
                                                     Products = this._orderProductRepository.GetEntities().Where(data => data.FK_ORDER == id)
                                                                                  .Join
                                                                                  (
