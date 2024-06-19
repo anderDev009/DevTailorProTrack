@@ -7,6 +7,7 @@ namespace TailorProTrack.Application.Dtos.Payment
         public int FkOrder { get; set; }
         public int FkTypePayment { get; set; }
         public string? AccountPayment {  get; set; }
+        public string? DocumentNumber { get; set; }
         public int  FkBankAccount {get; set;}
         public decimal Amount { get; set; }
     }

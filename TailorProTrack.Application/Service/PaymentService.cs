@@ -26,10 +26,12 @@ namespace TailorProTrack.Application.Service
         private readonly IBankRepository _bankRepository;
         //repositorio cuenta de bancos
         private readonly IBankAccountRepository _bankAccRepository;
-        public PaymentService(IPaymentRepository repository, ILogger<IPaymentRepository> logger,
+        //repositorio de pre order
+        private readonly IPreOrderProductsRepository _preOrderProdcutRepository;
+		public PaymentService(IPaymentRepository repository, ILogger<IPaymentRepository> logger,
                               IPaymentTypeRepository typeRepository, IOrderService orderService,
                               IConfiguration configuration, IOrderRepository orderRepository,
-                              IBankAccountRepository bankAccRepository, IBankRepository bankRepository)
+                              IBankAccountRepository bankAccRepository, IBankRepository bankRepository, IPreOrderProductsRepository preOrderProductsRepository)
         {
             _repository = repository;
             this.logger = logger;
@@ -39,7 +41,8 @@ namespace TailorProTrack.Application.Service
             _orderRepository = orderRepository;
             _bankAccRepository = bankAccRepository;
             _bankRepository = bankRepository;
-        }
+            _preOrderProdcutRepository = preOrderProductsRepository;
+		}
 
         private IConfiguration Configuration { get; }
         public ServiceResult Add(PaymentDtoAdd dtoAdd)
@@ -57,7 +60,8 @@ namespace TailorProTrack.Application.Service
                     FK_TYPE_PAYMENT = dtoAdd.FkTypePayment,
                     FK_BANK_ACCOUNT = dtoAdd.FkBankAccount,
                     USER_CREATED = dtoAdd.User,
-                    ACCOUNT_PAYMENT = dtoAdd.AccountPayment
+                    ACCOUNT_PAYMENT = dtoAdd.AccountPayment,
+                    ACCOUNT_NUMBER = dtoAdd.DocumentNumber
                 };
 
                 this._repository.Save(payment);
@@ -173,8 +177,10 @@ namespace TailorProTrack.Application.Service
                                                    Amount = d.payment.AMOUNT,
                                                    Type = d.type.TYPE_PAYMENT,
                                                    Bank = d.bankAcc.NAME,
-                                                   Account = d.bankAcc.BANK_ACCOUNT
-                                               });
+                                                   Account = d.bankAcc.BANK_ACCOUNT,
+                                                   DocumentNumber = d.payment.ACCOUNT_NUMBER,
+                                                   AmountPending = _preOrderProdcutRepository.GetAmountByIdPreOrder(d.payment.FK_ORDER)
+											   });
                 if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
                 var orderPayments = new
                 {
@@ -231,7 +237,8 @@ namespace TailorProTrack.Application.Service
                     FK_ORDER = dtoUpdate.FkOrder,
                     FK_TYPE_PAYMENT = dtoUpdate.FkTypePayment,
                     FK_BANK_ACCOUNT = dtoUpdate.FkBankAccount,
-                };
+					ACCOUNT_NUMBER = dtoUpdate.DocumentNumber
+				};
 
                 this._repository.Update(payment);
                 result.Message = "Actualizado con exito.";
