@@ -200,6 +200,11 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public decimal GetAmountByIdOrder(int orderId)
+        {
+	        return _repository.GetAmountPendingByIdPreOrder(orderId);
+        }
+
         public ServiceResult Remove(PaymentDtoRemove dtoRemove)
         {
             ServiceResult result = new ServiceResult();

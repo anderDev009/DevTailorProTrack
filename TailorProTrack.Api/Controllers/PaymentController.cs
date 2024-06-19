@@ -87,5 +87,12 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
-    }
+
+        [HttpGet("GetAmountPendingByIdPreOrder")]
+        public IActionResult GetAmountPendingByIdPreOrder(int id)
+		{
+			var result = this._service.GetAmountByIdOrder(id);
+			return Ok(result);
+		}
+	}
 }

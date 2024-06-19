@@ -76,10 +76,14 @@ namespace TailorProTrack.Api.Controllers
             return NoContent();
         }
 
-        [HttpGet("GetAmountPendingByPreOrderId")]
-        public IActionResult GetAmountPendingByPreOrderId(int id)
+        [HttpGet("GetPreOrdersPending")]
+        public IActionResult GetPreOrdersPending()
 		{
-			var result = _preOrderProductService.GetAmountByIdPreOrder(id);
+			var result = _preOrderService.GetPreOrdersNotCompleted();
+			if (!result.Success)
+			{
+				return StatusCode(500,result);
+			}
 			return Ok(result);
 		}
 	}

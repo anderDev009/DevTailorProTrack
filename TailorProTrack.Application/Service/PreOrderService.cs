@@ -118,39 +118,71 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult GetPreOrdersNotCompleted()
+        {
+			ServiceResult result = new ServiceResult();
+			try
+			{
+
+				var preOrders = this._preOrderRepository.SearchEntities()
+					.Include(x => x.PreOrderProducts)
+					.ThenInclude(x => x.Size)
+					.Include(x => x.PreOrderProducts)
+					.ThenInclude(x => x.Product)
+					.Include(x => x.PreOrderProducts)
+					.ThenInclude(x => x.ColorPrimary)
+					.Include(x => x.PreOrderProducts)
+					.ThenInclude(x => x.ColorSecondary)
+					.Include(x => x.Client)
+					.Where(data => (bool)data.COMPLETED == false && data.REMOVED)
+					.ToList();
+
+
+				result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
+				result.Message = "Obtenidos con exito";
+			}
+			catch (Exception ex)
+			{
+				result.Success = false;
+				result.Message = $"Erro al obtener: {ex.Message}";
+			}
+
+			return result;
+		}
+
         public ServiceResultWithHeader GetAll(PaginationParams @params)
         {
-            ServiceResultWithHeader result = new ServiceResultWithHeader();
-            try
-            {
-                var countRegister = this._preOrderRepository.CountEntities();
-                PaginationMetaData header = new PaginationMetaData(countRegister, @params.Page, @params.ItemsPerPage);
+			ServiceResultWithHeader result = new ServiceResultWithHeader();
+			try
+			{
+				var countRegister = this._preOrderRepository.CountEntities();
+				PaginationMetaData header = new PaginationMetaData(countRegister, @params.Page, @params.ItemsPerPage);
 
-                var preOrders = this._preOrderRepository.SearchEntities()
-                                                        .Include(x => x.PreOrderProducts)
-                                                           .ThenInclude(x => x.Size)
-                                                        .Include(x => x.PreOrderProducts)
-                                                           .ThenInclude(x => x.Product)
-                                                        .Include(x => x.PreOrderProducts)
-                                                           .ThenInclude(x => x.ColorPrimary)
-                                                        .Include(x => x.PreOrderProducts)
-                                                            .ThenInclude(x => x.ColorSecondary)
-                                                        .Include(x => x.Client)
-                                                        .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                                                        .Take(@params.ItemsPerPage).Where(data => !data.REMOVED).ToList();
+				var preOrders = this._preOrderRepository.SearchEntities()
+														.Include(x => x.PreOrderProducts)
+														   .ThenInclude(x => x.Size)
+														.Include(x => x.PreOrderProducts)
+														   .ThenInclude(x => x.Product)
+														.Include(x => x.PreOrderProducts)
+														   .ThenInclude(x => x.ColorPrimary)
+														.Include(x => x.PreOrderProducts)
+															.ThenInclude(x => x.ColorSecondary)
+														.Include(x => x.Client)
+														.Skip((@params.Page - 1) * @params.ItemsPerPage)
+														.Take(@params.ItemsPerPage).Where(data => !data.REMOVED && (bool)data.COMPLETED).ToList();
 
-                result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
-                result.Header = header;
-                result.Message = "Obtenidos con exito";
-            }
-            catch (Exception ex)
-            {
-                result.Success = false;
-                result.Message = $"Erro al obtener: {ex.Message}";
-            }
+				result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
+				result.Header = header;
+				result.Message = "Obtenidos con exito";
+			}
+			catch (Exception ex)
+			{
+				result.Success = false;
+				result.Message = $"Erro al obtener: {ex.Message}";
+			}
 
-            return result;
-        }
+			return result;
+		}
 
         public ServiceResult GetById(int id)
         {

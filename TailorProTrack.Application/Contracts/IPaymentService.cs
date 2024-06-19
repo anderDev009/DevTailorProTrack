@@ -8,5 +8,6 @@ namespace TailorProTrack.Application.Contracts
     public interface IPaymentService : IBaseService<PaymentDtoAdd,PaymentDtoRemove,PaymentDtoUpdate>
     {
         ServiceResult GetPaymentsByOrderId(int orderId);
-    }
+        decimal GetAmountByIdOrder(int orderId);
+	}
 }
