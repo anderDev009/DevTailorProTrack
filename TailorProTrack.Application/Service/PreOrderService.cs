@@ -201,7 +201,7 @@ namespace TailorProTrack.Application.Service
                                             DateCreated = data.CREATED_AT,
                                             DateDelivery = data.DATE_DELIVERY,
                                             IsEditable = isEditable,
-                                            PreOrderInProgress = _preOrderProductRepository.GetByPreOrderId(id).Select(data => new
+                                            PreOrderInProgress = _preOrderProductRepository.GetPreOrderWithOrders(id).Select(data => new
                                             {
                                                 id = data.ID,
                                                 Quantity = data.QUANTITY,

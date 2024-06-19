@@ -12,5 +12,7 @@ namespace TailorProTrack.infraestructure.Interfaces
         void SaveMany(List<OrderProduct> products);
 
         void ValidateMany(List<OrderProduct> products);
+
+    
     }
 }

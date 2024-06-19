@@ -9,6 +9,6 @@ namespace TailorProTrack.infraestructure.Interfaces
 
         void UpdateStatusOrder(Order order);
 
-
+        
     }
 }

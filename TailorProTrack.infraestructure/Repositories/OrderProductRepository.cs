@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -67,5 +68,7 @@ namespace TailorProTrack.infraestructure.Repositories
                 
             }
         }
+
+ 
     }
 }
