@@ -9,5 +9,6 @@ namespace TailorProTrack.Application.Dtos.InventoryColor
 
         public object? Product { get; set; }
         public object? Size { get; set; }
+        public int? QuantityPreOrder { get; set; }
     }
 }

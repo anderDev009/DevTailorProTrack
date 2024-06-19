@@ -29,8 +29,8 @@ namespace TailorProTrack.Application.Service
 
         //servicios 
         private readonly IPreOrderProductService _preOrderProductService;
-        //
-        private readonly IClientService _clientService;
+		//
+		private readonly IClientService _clientService;
         public PreOrderService(IPreOrderRepository preOrderRepository,
                         IPreOrderProductService preOrderProductService,
                         IPaymentRepository paymentRepository ,
@@ -49,6 +49,7 @@ namespace TailorProTrack.Application.Service
             _productRepository = productRepository;
             _sizeRepository = sizeRepository;
             _colorRepository = colorRepository;
+            
         }
 
         public ServiceResult Add(PreOrderDtoAdd dtoAdd)
@@ -177,11 +178,12 @@ namespace TailorProTrack.Application.Service
                                                 Size = _sizeRepository.GetEntity(data.FK_SIZE).SIZE,
 												SizeId = data.FK_SIZE,
 												colorPrimary = _colorRepository.GetEntity(data.COLOR_PRIMARY).COLORNAME,
-												ColorPrimary = data.COLOR_PRIMARY,
+												ColorPrimaryId = data.COLOR_PRIMARY,
                                                 ColorSecondary = data.COLOR_SECONDARY
 
 											})
                                         });
+                
                 result.Data = preOrder;
                 result.Message = "Obtenido con exito";
             }

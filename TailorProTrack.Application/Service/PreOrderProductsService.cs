@@ -1,8 +1,11 @@
 ﻿
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
+using TailorProTrack.Application.Dtos.InventoryColor;
+using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
@@ -18,21 +21,27 @@ namespace TailorProTrack.Application.Service
         private readonly ISizeRepository _sizeRepository;
         //repositorio colores 
         private readonly IColorRepository _colorRepository;
-        //
-        private readonly IMapper _mapper;
+        private readonly IOrderService _orderService;
+
+        private readonly IInventoryColorService _inventoryColorService;
+		//
+		private readonly IMapper _mapper;
         public PreOrderProductsService(IPreOrderProductsRepository preOrderProductsRepository,
                                        IProductRepository productRepository,
                                        ISizeRepository sizeRepository,
                                        IColorRepository colorRepository,
-                                       IMapper mapper)
+                                       IOrderService orderService,
+                                       IInventoryColorService inventoryColorService,
+									   IMapper mapper)
         {
             _preOrderProductRepository = preOrderProductsRepository;
             _productRepository = productRepository;
             _sizeRepository = sizeRepository;
             _colorRepository = colorRepository;
-            _mapper = mapper;
-
-        }
+            _orderService = orderService;
+			_mapper = mapper;
+            _inventoryColorService = inventoryColorService;
+		}
         public ServiceResult Add(PreOrderProductsDtoAdd dtoAdd)
         {
             throw new NotImplementedException();
@@ -98,7 +107,19 @@ namespace TailorProTrack.Application.Service
                                                                           ColorSecondaryId = group.colorSecondary.ID,
                                                                           ColorSecondary = group.colorSecondary.COLORNAME
                                                                       });
-                result.Data = preOrderProducts;
+				List<InventoryColorDtoGetWithId> invColors = new List<InventoryColorDtoGetWithId>();
+				foreach (var item in preOrderProducts)
+				{
+					var invColor = _inventoryColorService.SearchAvailabilityToAddOrder(item.SizeId, item.ProductId
+						, item.ColorPrimaryId, item.ColorSecondaryId);
+                    invColor.QuantityPreOrder = item.Quantity;
+					if (invColor.InventoryColorId != 0)
+					{
+						invColors.Add(invColor);
+					}
+				}
+				var preOrderProductsWithAvailable = preOrderProducts.Select(data => new { data, invColors});
+                result.Data = preOrderProductsWithAvailable;
                 result.Message = "Obtenidos con exito";
             }
             catch (Exception ex)
