@@ -11,11 +11,9 @@ namespace TailorProTrack.Api.Controllers.Report
     public class ReportsBalanceController : Controller
     {
         private readonly IPreOrderService _preOrderService;
-        private readonly IExpensesService _expensesService;
-        public ReportsBalanceController(IPreOrderService preOrderService, IExpensesService expensesService)
+        public ReportsBalanceController(IPreOrderService preOrderService)
         {
             _preOrderService = preOrderService;
-            _expensesService = expensesService;
 
         }
         [HttpGet("GetAccountsReceivable")]

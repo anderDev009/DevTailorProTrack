@@ -9,11 +9,11 @@ namespace TailorProTrack.Application.Extentions
 {
     public static class ValidationSalesExtention
     {
-        public static void IsValid(this SaleDtoBase dtoBase,IConfiguration configuration, IPreOrderRepository preorderRepository)
+        public static void IsValid(this SaleDtoAdd dtoBase, ISalesRepository salesRepository)
         {
-            if (preorderRepository.Exists(preorder => preorder.ID == dtoBase.FkOrder))
+            if (salesRepository.Exists(sale => sale.FK_PREORDER == dtoBase.FkOrder))
             {
-                throw new SaleServiceException(configuration["validations:preorderDoesntExist"]);
+                throw new SaleServiceException("Factura registrada");
             }
         }
     }
