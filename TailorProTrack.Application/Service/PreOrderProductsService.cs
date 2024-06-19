@@ -148,6 +148,11 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public decimal GetAmountByIdPreOrder(int IdPreOrder)
+        {
+	        return _preOrderProductRepository.GetAmountByIdPreOrder(IdPreOrder);
+		}
+
         //metodo para saber si es posible realizarle una orden a un pedido o indicar que dicho pedido esta completo
         //modificar logica
         public bool IsComplete(int IdPreOrder)
