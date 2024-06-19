@@ -169,7 +169,7 @@ namespace TailorProTrack.Application.Service
 															.ThenInclude(x => x.ColorSecondary)
 														.Include(x => x.Client)
 														.Skip((@params.Page - 1) * @params.ItemsPerPage)
-														.Take(@params.ItemsPerPage).Where(data => !data.REMOVED && (bool)data.COMPLETED).ToList();
+														.Take(@params.ItemsPerPage).Where(data => !data.REMOVED && !(bool)data.COMPLETED).ToList();
 
 				result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
 				result.Header = header;
