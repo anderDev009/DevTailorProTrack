@@ -9,6 +9,7 @@ namespace TailorProTrack.Application.Dtos.Sale
     {
         public int Id { get; set; }
         public decimal Amount { get; set; }
+        public decimal? AmountBase { get; set; }
         public string? CodIsc { get; set; } = null;
         public string? B14 { get; set; } = null;
         public int IdPreOrder { get; set; }
