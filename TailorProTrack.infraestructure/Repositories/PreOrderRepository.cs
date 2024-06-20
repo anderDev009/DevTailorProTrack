@@ -41,6 +41,13 @@ namespace TailorProTrack.infraestructure.Repositories
             return _ctx.Set<PreOrder>().OrderBy(x => x.CREATED_AT).Take(10).ToList();
         }
 
+        public void Complete(int id)
+        {
+	        var entity = GetEntity(id);
+	        entity.COMPLETED = true;
+			Update(entity);
+		}
+
         public bool PreOrderIsEditable(int id)
         {
             return !_ctx.Set<Order>().Any(x => x.FK_PREORDER == id);

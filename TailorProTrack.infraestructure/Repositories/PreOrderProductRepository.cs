@@ -20,7 +20,9 @@ namespace TailorProTrack.infraestructure.Repositories
         public decimal GetAmountByIdPreOrder(int preOrderId)
         {
             decimal totalAmount = 0;
-            var preOrder = _ctx.Set<PreOrderProducts>().Where(x => x.FK_PREORDER == preOrderId)
+            var preOrder = _ctx.Set<PreOrderProducts>()
+	            .Include(x => x.PreOrder)
+	            .Where(x => x.FK_PREORDER == preOrderId && x.PreOrder.COMPLETED == false && !x.PreOrder.REMOVED )
                 .Include(x => x.Product)
                 .ToList();
 				foreach (var product in preOrder)

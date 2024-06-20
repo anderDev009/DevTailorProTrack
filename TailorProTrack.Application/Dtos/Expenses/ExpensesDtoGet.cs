@@ -8,6 +8,7 @@ namespace TailorProTrack.Application.Dtos.Expenses
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Amount { get; set; }
+        public decimal? AmountPending { get; set; }
         public string? Voucher {  get; set; }
         public string? DocumentNumber { get; set; }
         public bool? Completed { get; set; }

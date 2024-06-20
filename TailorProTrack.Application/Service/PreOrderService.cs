@@ -138,7 +138,26 @@ namespace TailorProTrack.Application.Service
 					.ToList();
 
 
-				result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
+				var preOrdersMapped = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
+
+				foreach (var item in preOrdersMapped)
+				{
+					
+					item.AmountBase = _paymentRepository.GetAmountPendingByIdPreOrder(item.ID);
+					if (item.AmountBase >= 0)
+					{
+						_preOrderRepository.Complete(item.ID);
+					}
+					if (item.AmountBase < 0)
+					{
+						item.AmountBase = Math.Abs((decimal)item.AmountBase);
+
+					}
+
+				
+				}
+
+				result.Data = preOrdersMapped;
 				result.Message = "Obtenidos con exito";
 			}
 			catch (Exception ex)
