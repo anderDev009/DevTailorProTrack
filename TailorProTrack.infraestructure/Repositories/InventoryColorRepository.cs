@@ -55,7 +55,7 @@ namespace TailorProTrack.infraestructure.Repositories
                 invColor => invColor.FK_INVENTORY,
                 inventory => inventory.ID, (invColor,inventory) => new {invColor,inventory})
                 .Where(data => data.inventory.FK_SIZE == SizeId && data.inventory.FK_PRODUCT ==  OrderId 
-                && data.invColor.FK_COLOR_PRIMARY == colorPrimary && data.invColor.FK_COLOR_SECONDARY == colorSecondary)
+                && data.invColor.FK_COLOR_PRIMARY == colorPrimary)
                 .Select(data => data.invColor).First();
         }
 

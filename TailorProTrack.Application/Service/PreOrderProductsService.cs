@@ -98,7 +98,7 @@ namespace TailorProTrack.Application.Service
                                                                           Id = group.preOrderProducts.ID,
                                                                           ProductId = group.product.ID,
                                                                           ProductName = group.product.NAME_PRODUCT,
-                                                                          Price = group.product.SALE_PRICE,
+                                                                          Price =  (group.preOrderProducts.CUSTOM_PRICE == 0 ? group.product.SALE_PRICE:group.preOrderProducts.CUSTOM_PRICE),
                                                                           SizeId = group.size.ID,
                                                                           Size = group.size.SIZE,
                                                                           Quantity = group.preOrderProducts.QUANTITY,
@@ -118,7 +118,8 @@ namespace TailorProTrack.Application.Service
 						invColors.Add(invColor);
 					}
 				}
-				var preOrderProductsWithAvailable = preOrderProducts.Select(data => new { data, invColors});
+
+				var preOrderProductsWithAvailable = new { preOrderProducts, invColors };
                 result.Data = preOrderProductsWithAvailable;
                 result.Message = "Obtenidos con exito";
             }

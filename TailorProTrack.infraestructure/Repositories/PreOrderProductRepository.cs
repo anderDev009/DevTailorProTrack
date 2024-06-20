@@ -23,7 +23,7 @@ namespace TailorProTrack.infraestructure.Repositories
             var preOrder = _ctx.Set<PreOrderProducts>().Where(x => x.FK_PREORDER == preOrderId)
                 .Include(x => x.Product)
                 .ToList();
-            foreach (var product in preOrder)
+				foreach (var product in preOrder)
             {
                 if (product.CUSTOM_PRICE != null && product.CUSTOM_PRICE != 0)
                 {
