@@ -53,6 +53,13 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public void SaveMany(List<PreOrderProducts> preOrderProducts)
         {
+	        foreach (var product in preOrderProducts)
+	        {
+		        if (product.CUSTOM_PRICE == null || product.CUSTOM_PRICE == 0)
+		        {
+					product.CUSTOM_PRICE = _ctx.Set<Product>().Find(product.FK_PRODUCT).SALE_PRICE;
+				}
+	        }
             _entities.AddRange(preOrderProducts);
             this._ctx.SaveChanges();
         }
