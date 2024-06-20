@@ -15,17 +15,40 @@ namespace TailorProTrack.Application.Service
     {
         private readonly ISalesRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IPreOrderProductService _preOrderProducts;
 
-		public SaleService(ISalesRepository saleRepository,IMapper mapper) : base(mapper,saleRepository)
+		public SaleService(ISalesRepository saleRepository,IMapper mapper, IPreOrderProductService preOrderProduct) : base(mapper,saleRepository)
         {
             _repository = saleRepository;
 			_mapper = mapper;
-        }
+			_preOrderProducts = preOrderProduct;
+		}
 
         public override ServiceResult Add(SaleDtoAdd dtoAdd)
         {
 	        dtoAdd.IsValid(_repository);
             return base.Add(dtoAdd);
-		}   
+		}
+
+        public override ServiceResult GetById(int id)
+        {
+			ServiceResult result = new();
+			try
+			{
+				Sales entity = _repository.GetEntity(id);
+				var saleMapped = _mapper.Map<SaleDtoGet>(entity);
+				saleMapped.AmountBase = _preOrderProducts.GetAmountByIdPreOrder(saleMapped.PreOrder.ID);
+				result.Data = saleMapped;
+				result.Message = "Obtenido con exito";
+			}
+			catch (Exception ex)
+			{
+				result.Success = false;
+				result.Message = $"Error al intentar obtener la data: {ex.Message}";
+			}
+
+			return result;
+
+        }
     }
 }

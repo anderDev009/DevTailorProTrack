@@ -1,10 +1,12 @@
 ﻿
 
+using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
+using TailorProTrack.Application.Dtos.Client;
 using TailorProTrack.Application.Dtos.Payment;
 using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
@@ -26,10 +28,14 @@ namespace TailorProTrack.Application.Service
         private readonly IBankRepository _bankRepository;
         //repositorio cuenta de bancos
         private readonly IBankAccountRepository _bankAccRepository;
-        public PaymentService(IPaymentRepository repository, ILogger<IPaymentRepository> logger,
+
+        private IMapper _mapper;
+        //repositorio de pre order
+        private readonly IPreOrderProductsRepository _preOrderProdcutRepository;
+		public PaymentService(IPaymentRepository repository, ILogger<IPaymentRepository> logger,
                               IPaymentTypeRepository typeRepository, IOrderService orderService,
                               IConfiguration configuration, IOrderRepository orderRepository,
-                              IBankAccountRepository bankAccRepository, IBankRepository bankRepository)
+                              IBankAccountRepository bankAccRepository, IBankRepository bankRepository, IPreOrderProductsRepository preOrderProductsRepository, IMapper mapper)
         {
             _repository = repository;
             this.logger = logger;
@@ -39,7 +45,9 @@ namespace TailorProTrack.Application.Service
             _orderRepository = orderRepository;
             _bankAccRepository = bankAccRepository;
             _bankRepository = bankRepository;
-        }
+            _preOrderProdcutRepository = preOrderProductsRepository; 
+            _mapper = mapper;
+		}
 
         private IConfiguration Configuration { get; }
         public ServiceResult Add(PaymentDtoAdd dtoAdd)
@@ -57,7 +65,8 @@ namespace TailorProTrack.Application.Service
                     FK_TYPE_PAYMENT = dtoAdd.FkTypePayment,
                     FK_BANK_ACCOUNT = dtoAdd.FkBankAccount,
                     USER_CREATED = dtoAdd.User,
-                    ACCOUNT_PAYMENT = dtoAdd.AccountPayment
+                    ACCOUNT_PAYMENT = dtoAdd.AccountPayment,
+                    ACCOUNT_NUMBER = dtoAdd.DocumentNumber
                 };
 
                 this._repository.Save(payment);
@@ -173,8 +182,11 @@ namespace TailorProTrack.Application.Service
                                                    Amount = d.payment.AMOUNT,
                                                    Type = d.type.TYPE_PAYMENT,
                                                    Bank = d.bankAcc.NAME,
-                                                   Account = d.bankAcc.BANK_ACCOUNT
-                                               });
+                                                   Account = d.bankAcc.BANK_ACCOUNT,
+                                                   DocumentNumber = d.payment.ACCOUNT_NUMBER,
+                                                   AmountPending = _preOrderProdcutRepository.GetAmountByIdPreOrder(d.payment.FK_ORDER),
+                                                   Client =  _mapper.Map<ClientDtoGetMapped>( _orderRepository.GetByIdWithInclude(d.payment.FK_ORDER, new List<string>{"Client"}).Client)
+											   });
                 if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
                 var orderPayments = new
                 {
@@ -192,6 +204,11 @@ namespace TailorProTrack.Application.Service
             }
 
             return result;
+        }
+
+        public decimal GetAmountByIdOrder(int orderId)
+        {
+	        return _repository.GetAmountPendingByIdPreOrder(orderId);
         }
 
         public ServiceResult Remove(PaymentDtoRemove dtoRemove)
@@ -231,7 +248,8 @@ namespace TailorProTrack.Application.Service
                     FK_ORDER = dtoUpdate.FkOrder,
                     FK_TYPE_PAYMENT = dtoUpdate.FkTypePayment,
                     FK_BANK_ACCOUNT = dtoUpdate.FkBankAccount,
-                };
+					ACCOUNT_NUMBER = dtoUpdate.DocumentNumber
+				};
 
                 this._repository.Update(payment);
                 result.Message = "Actualizado con exito.";

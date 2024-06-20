@@ -10,5 +10,6 @@ namespace TailorProTrack.Application.Dtos.Order
         public bool Checked { get; set; }
         public int FkPreOrder { get; set; }
         public string DescriptionJob { get; set; }
+        public string? Observation { get; set; }
     }
 }

@@ -11,5 +11,7 @@ namespace TailorProTrack.domain.Entities
         public int? FK_BANK_ACCOUNT { get; set; }
         public decimal AMOUNT { get; set; }
         
-    }
+        public string? ACCOUNT_NUMBER { get; set; }
+
+	}
 }

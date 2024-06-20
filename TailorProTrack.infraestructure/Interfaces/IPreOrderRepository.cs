@@ -10,7 +10,7 @@ namespace TailorProTrack.infraestructure.Interfaces
         bool PreOrderIsEditable(int id);
         List<PreOrder> GetAccountsReceivable();
         List<PreOrder> GetPreOrdersByRecentDate();
-
+        void Complete(int id);
 
     }
 }

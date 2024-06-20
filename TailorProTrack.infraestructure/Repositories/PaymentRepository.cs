@@ -36,6 +36,7 @@ namespace TailorProTrack.infraestructure.Repositories
 				_context.Set<BankAccount>().Update(account);
 			}
 
+			ConfirmPayment(entity.FK_ORDER);
 			this._context.Add(entity);
 			this._context.SaveChanges();
 			return entity.ID;
@@ -67,6 +68,11 @@ namespace TailorProTrack.infraestructure.Repositories
 			{
 				return false;
 			}
+
+			var preOrder = _context.Set<PreOrder>().Find(idPreOrder);
+			preOrder.COMPLETED = true;
+			_context.Set<PreOrder>().Update(preOrder);
+			_context.SaveChanges();
 			return true;
 		}
 

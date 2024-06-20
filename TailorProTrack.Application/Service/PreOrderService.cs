@@ -19,18 +19,25 @@ namespace TailorProTrack.Application.Service
 
         private readonly IPaymentRepository _paymentRepository;
 
+        private readonly IProductRepository _productRepository;
+
         private readonly IPreOrderProductsRepository _preOrderProductRepository;
+        private readonly ISizeRepository _sizeRepository;
+        private readonly IColorRepository _colorRepository;
 		//mapper
 		private readonly IMapper _mapper;
 
         //servicios 
         private readonly IPreOrderProductService _preOrderProductService;
-        //
-        private readonly IClientService _clientService;
+		//
+		private readonly IClientService _clientService;
         public PreOrderService(IPreOrderRepository preOrderRepository,
                         IPreOrderProductService preOrderProductService,
                         IPaymentRepository paymentRepository ,
                         IPreOrderProductsRepository preOrderProductRepository,
+                        IProductRepository productRepository,
+                        ISizeRepository sizeRepository,
+                        IColorRepository colorRepository,
 						IClientService clientService, IMapper mapper)
         {
             _preOrderRepository = preOrderRepository;
@@ -39,7 +46,11 @@ namespace TailorProTrack.Application.Service
             _mapper = mapper;
             _paymentRepository = paymentRepository;
             _preOrderProductRepository = preOrderProductRepository;
-		}
+            _productRepository = productRepository;
+            _sizeRepository = sizeRepository;
+            _colorRepository = colorRepository;
+            
+        }
 
         public ServiceResult Add(PreOrderDtoAdd dtoAdd)
         {
@@ -107,39 +118,90 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult GetPreOrdersNotCompleted()
+        {
+			ServiceResult result = new ServiceResult();
+			try
+			{
+
+				var preOrders = this._preOrderRepository.SearchEntities()
+					.Include(x => x.PreOrderProducts)
+					.ThenInclude(x => x.Size)
+					.Include(x => x.PreOrderProducts)
+					.ThenInclude(x => x.Product)
+					.Include(x => x.PreOrderProducts)
+					.ThenInclude(x => x.ColorPrimary)
+					.Include(x => x.PreOrderProducts)
+					.ThenInclude(x => x.ColorSecondary)
+					.Include(x => x.Client)
+					.Where(data => (bool)data.COMPLETED == false && !data.REMOVED)
+					.ToList();
+
+
+				var preOrdersMapped = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
+
+				foreach (var item in preOrdersMapped)
+				{
+					
+					item.AmountBase = _paymentRepository.GetAmountPendingByIdPreOrder(item.ID);
+					if (item.AmountBase >= 0)
+					{
+						_preOrderRepository.Complete(item.ID);
+					}
+					if (item.AmountBase < 0)
+					{
+						item.AmountBase = Math.Abs((decimal)item.AmountBase);
+
+					}
+
+				
+				}
+
+				result.Data = preOrdersMapped;
+				result.Message = "Obtenidos con exito";
+			}
+			catch (Exception ex)
+			{
+				result.Success = false;
+				result.Message = $"Erro al obtener: {ex.Message}";
+			}
+
+			return result;
+		}
+
         public ServiceResultWithHeader GetAll(PaginationParams @params)
         {
-            ServiceResultWithHeader result = new ServiceResultWithHeader();
-            try
-            {
-                var countRegister = this._preOrderRepository.CountEntities();
-                PaginationMetaData header = new PaginationMetaData(countRegister, @params.Page, @params.ItemsPerPage);
+			ServiceResultWithHeader result = new ServiceResultWithHeader();
+			try
+			{
+				var countRegister = this._preOrderRepository.CountEntities();
+				PaginationMetaData header = new PaginationMetaData(countRegister, @params.Page, @params.ItemsPerPage);
 
-                var preOrders = this._preOrderRepository.SearchEntities()
-                                                        .Include(x => x.PreOrderProducts)
-                                                           .ThenInclude(x => x.Size)
-                                                        .Include(x => x.PreOrderProducts)
-                                                           .ThenInclude(x => x.Product)
-                                                        .Include(x => x.PreOrderProducts)
-                                                           .ThenInclude(x => x.ColorPrimary)
-                                                        .Include(x => x.PreOrderProducts)
-                                                            .ThenInclude(x => x.ColorSecondary)
-                                                        .Include(x => x.Client)
-                                                        .Skip((@params.Page - 1) * @params.ItemsPerPage)
-                                                        .Take(@params.ItemsPerPage).Where(data => !data.REMOVED).ToList();
+				var preOrders = this._preOrderRepository.SearchEntities()
+														.Include(x => x.PreOrderProducts)
+														   .ThenInclude(x => x.Size)
+														.Include(x => x.PreOrderProducts)
+														   .ThenInclude(x => x.Product)
+														.Include(x => x.PreOrderProducts)
+														   .ThenInclude(x => x.ColorPrimary)
+														.Include(x => x.PreOrderProducts)
+															.ThenInclude(x => x.ColorSecondary)
+														.Include(x => x.Client)
+														.Skip((@params.Page - 1) * @params.ItemsPerPage)
+														.Take(@params.ItemsPerPage).Where(data => !data.REMOVED && !(bool)data.COMPLETED).ToList();
 
-                result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
-                result.Header = header;
-                result.Message = "Obtenidos con exito";
-            }
-            catch (Exception ex)
-            {
-                result.Success = false;
-                result.Message = $"Erro al obtener: {ex.Message}";
-            }
+				result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
+				result.Header = header;
+				result.Message = "Obtenidos con exito";
+			}
+			catch (Exception ex)
+			{
+				result.Success = false;
+				result.Message = $"Erro al obtener: {ex.Message}";
+			}
 
-            return result;
-        }
+			return result;
+		}
 
         public ServiceResult GetById(int id)
         {
@@ -158,17 +220,21 @@ namespace TailorProTrack.Application.Service
                                             DateCreated = data.CREATED_AT,
                                             DateDelivery = data.DATE_DELIVERY,
                                             IsEditable = isEditable,
-                                            PreOrderInProgress = _preOrderProductRepository.GetByPreOrderId(id).Select(data => new
+                                            PreOrderInProgress = _preOrderProductRepository.GetPreOrderWithOrders(id).Select(data => new
                                             {
                                                 id = data.ID,
                                                 Quantity = data.QUANTITY,
                                                 ProductId = data.FK_PRODUCT,
-                                                SizeId = data.FK_SIZE,
-                                                ColorPrimary = data.COLOR_PRIMARY,
+                                                ProductName = _productRepository.GetEntity(data.FK_PRODUCT).NAME_PRODUCT,
+                                                Size = _sizeRepository.GetEntity(data.FK_SIZE).SIZE,
+												SizeId = data.FK_SIZE,
+												colorPrimary = _colorRepository.GetEntity(data.COLOR_PRIMARY).COLORNAME,
+												ColorPrimaryId = data.COLOR_PRIMARY,
                                                 ColorSecondary = data.COLOR_SECONDARY
 
 											})
                                         });
+                
                 result.Data = preOrder;
                 result.Message = "Obtenido con exito";
             }

@@ -58,7 +58,13 @@ namespace TailorProTrack.Application.Service
             try
             {
                 var expenses = _expensesRepository.GetExpensesPending();
-                result.Data = _mapper.Map<List<ExpensesDtoGet>>(expenses);
+                var expensesMapped = _mapper.Map<List<ExpensesDtoGet>>(expenses);
+                foreach (var item in expensesMapped)
+                {
+					item.AmountPending = _expensesRepository.GetAmountPending(item.Id);
+				}
+
+                result.Data = expensesMapped;
                 result.Message = "Obtenidos con exito";
             }
             catch (Exception ex)

@@ -20,10 +20,12 @@ namespace TailorProTrack.infraestructure.Repositories
         public decimal GetAmountByIdPreOrder(int preOrderId)
         {
             decimal totalAmount = 0;
-            var preOrder = _ctx.Set<PreOrderProducts>().Where(x => x.FK_PREORDER == preOrderId)
+            var preOrder = _ctx.Set<PreOrderProducts>()
+	            .Include(x => x.PreOrder)
+	            .Where(x => x.FK_PREORDER == preOrderId && x.PreOrder.COMPLETED == false && !x.PreOrder.REMOVED )
                 .Include(x => x.Product)
                 .ToList();
-            foreach (var product in preOrder)
+				foreach (var product in preOrder)
             {
                 if (product.CUSTOM_PRICE != null && product.CUSTOM_PRICE != 0)
                 {
@@ -53,6 +55,13 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public void SaveMany(List<PreOrderProducts> preOrderProducts)
         {
+	        foreach (var product in preOrderProducts)
+	        {
+		        if (product.CUSTOM_PRICE == null || product.CUSTOM_PRICE == 0)
+		        {
+					product.CUSTOM_PRICE = _ctx.Set<Product>().Find(product.FK_PRODUCT).SALE_PRICE;
+				}
+	        }
             _entities.AddRange(preOrderProducts);
             this._ctx.SaveChanges();
         }

@@ -71,5 +71,19 @@ namespace TailorProTrack.infraestructure.Repositories
             }
             return expensesPending;
         }
+
+        public decimal GetAmountPending(int idExpense)
+        {
+			var expense = _context.Set<Expenses>().Find(idExpense);
+			if (expense != null)
+			{
+				var paymentsExpenses = _context.Set<Expenses>()
+					.Include(x => x.PaymentsExpenses)
+					.Where(x => x.ID == idExpense)
+					.Select(x => x.PaymentsExpenses.Sum(x => x.AMOUNT)).Single();
+				return expense.AMOUNT - paymentsExpenses;
+			}
+			return 0;
+        }
     }
 }
