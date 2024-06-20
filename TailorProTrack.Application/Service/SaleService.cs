@@ -37,7 +37,7 @@ namespace TailorProTrack.Application.Service
 			{
 				Sales entity = _repository.GetEntity(id);
 				var saleMapped = _mapper.Map<SaleDtoGet>(entity);
-				saleMapped.AmountBase = _preOrderProducts.GetAmountByIdPreOrder(saleMapped.IdPreOrder);
+				saleMapped.AmountBase = _preOrderProducts.GetAmountByIdPreOrder(saleMapped.PreOrder.ID);
 				result.Data = saleMapped;
 				result.Message = "Obtenido con exito";
 			}

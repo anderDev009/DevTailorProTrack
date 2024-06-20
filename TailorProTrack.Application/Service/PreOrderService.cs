@@ -134,7 +134,7 @@ namespace TailorProTrack.Application.Service
 					.Include(x => x.PreOrderProducts)
 					.ThenInclude(x => x.ColorSecondary)
 					.Include(x => x.Client)
-					.Where(data => (bool)data.COMPLETED == false && data.REMOVED)
+					.Where(data => (bool)data.COMPLETED == false && !data.REMOVED)
 					.ToList();
 
 
