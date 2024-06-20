@@ -21,8 +21,13 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             return this._context.Set<Sales>().Where(data => !data.REMOVED).Skip((page - 1) * itemsPage).Include(x => x.PreOrder).ThenInclude(x => x.Client).Take(itemsPage).ToList();
         }
-
-        public override int Save(Sales entity)
+		public override void Remove(Sales entity)
+		{
+			var entityToRemove = GetEntity(entity.ID);
+			_context.Set<Sales>().Remove(entityToRemove);
+			_context.SaveChanges();
+		}
+		public override int Save(Sales entity)
         {
             if (IsConfirmed(entity.FK_PREORDER))
             {
@@ -73,14 +78,6 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context.SaveChanges();
         }
 
-        public override void Remove(Sales entity)
-        {
-            Sales sale = this.GetEntity(entity.ID);
-
-            sale.USER_MOD = entity.USER_MOD;
-            sale.MODIFIED_AT = DateTime.Now;
-            sale.REMOVED = true;
-        }
 
         public void ConfirmSale(int idSales)
         {
@@ -95,5 +92,6 @@ namespace TailorProTrack.infraestructure.Repositories
             bool isConfirmed = _context.Set<Sales>().Any(x => x.INVOICED == true && x.FK_PREORDER == idPreOrder);
             return isConfirmed;
         }
+
     }
 }
