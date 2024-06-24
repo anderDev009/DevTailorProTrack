@@ -16,6 +16,7 @@ namespace TailorProTrack.Application.Dtos.PreOrder
         public decimal? Amount { get; set; }
         public decimal? AmountBase { get; set; }
         public bool? Finished { get; set; }
+        public bool? IsCompleted { get; set; }
 		public List<PreOrderProductDtoGetMapped>? PreOrderProducts { get; set; }
         public List<OrderDtoGetMapped>? Order { get; set; }
         public ClientDtoGet? Client { get; set; }

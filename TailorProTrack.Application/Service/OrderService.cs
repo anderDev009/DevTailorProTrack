@@ -352,6 +352,12 @@ namespace TailorProTrack.Application.Service
 	        _repository.CheckCompleteOrder(id);
         }
 
+        public bool ConfirmOrdersIsComplete(int idPreOrder)
+        {
+	        var completed = _repository.ConfirmOrdersIsComplete(idPreOrder);
+	        return completed;
+        }
+
         public ServiceResult GetOrder(int Id)
         {
             ServiceResult result = new ServiceResult();

@@ -113,6 +113,8 @@ namespace TailorProTrack.infraestructure.Repositories
 		public bool ConfirmOrdersIsComplete(int idPreOrder)
 		{
 			var orders = _context.Set<Order>().Where(x => x.FK_PREORDER == idPreOrder).ToList();
+			//en caso de que no hayan ordenes se marca como falso
+			if(orders.Count == 0) return false;
 			bool isCompleted = true;
 			foreach (var order in orders)
 			{
