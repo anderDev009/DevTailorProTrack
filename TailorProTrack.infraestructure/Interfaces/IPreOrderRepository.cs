@@ -11,6 +11,6 @@ namespace TailorProTrack.infraestructure.Interfaces
         List<PreOrder> GetAccountsReceivable();
         List<PreOrder> GetPreOrdersByRecentDate();
         void Complete(int id);
-
+        bool ChangeStatusPreOrder(int idPreOrder, bool status);
     }
 }

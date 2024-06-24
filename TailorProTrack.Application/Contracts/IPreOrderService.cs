@@ -10,5 +10,6 @@ namespace TailorProTrack.Application.Contracts
         ServiceResult GetAccountsReceivable();
         ServiceResult GetPreOrdersNotCompleted();
         ServiceResult GetPreOrdersByRecentDate();
-    }
+        bool ChangeStatusPreOrder(int idPreOrder, bool status);
+	}
 }

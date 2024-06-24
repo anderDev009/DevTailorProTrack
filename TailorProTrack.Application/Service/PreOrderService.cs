@@ -61,8 +61,8 @@ namespace TailorProTrack.Application.Service
                 {
                     FK_CLIENT = dtoAdd.FkClient,
                     DATE_DELIVERY = dtoAdd.DateDelivery,
-                    COMPLETED = false
-
+                    COMPLETED = false,
+                    FINISHED = null, 
                 };
 
                 int id = this._preOrderRepository.Save(preOrder);
@@ -230,7 +230,7 @@ namespace TailorProTrack.Application.Service
 												SizeId = data.FK_SIZE,
 												colorPrimary = _colorRepository.GetEntity(data.COLOR_PRIMARY).COLORNAME,
 												ColorPrimaryId = data.COLOR_PRIMARY,
-                                                ColorSecondary = data.COLOR_SECONDARY
+                                                ColorSecondary = data.COLOR_SECONDARY,
 
 											})
                                         });
@@ -262,6 +262,12 @@ namespace TailorProTrack.Application.Service
                 result.Message = $"Error: {ex.Message}";
             }
             return result;
+        }
+
+        public bool ChangeStatusPreOrder(int idPreOrder, bool status)
+        {
+	        var change = _preOrderRepository.ChangeStatusPreOrder(idPreOrder, status);
+	        return change;
         }
 
         public ServiceResult Remove(PreOrderDtoRemove dtoRemove)

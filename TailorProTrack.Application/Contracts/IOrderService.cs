@@ -13,5 +13,6 @@ namespace TailorProTrack.Application.Contracts
         ServiceResult GetOrder(int Id);
         ServiceResult GetAmountTotalById(int Id);
         ServiceResult GetInvColorAvailableToAddOrder(List<PreOrderDtoFkSizeFkProduct> keys);
-    }
+		void CheckOrder(int id);
+	}
 }

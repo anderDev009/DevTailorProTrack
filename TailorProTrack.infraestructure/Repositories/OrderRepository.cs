@@ -91,5 +91,23 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context.Update(orderToUpdate);
             this._context.SaveChanges();
         }
+
+        public void CheckCompleteOrder(int id)
+        {
+	        var entity = _context.Set<Order>().Find(id);
+	        if (!entity.CHECKED)
+	        {
+		        entity.CHECKED = true;
+		        entity.STATUS_ORDER = "completada";
+			}
+	        else
+	        {
+		        entity.CHECKED = false;
+		        entity.STATUS_ORDER = "pendiente";
+			}
+
+			_context.Set<Order>().Update(entity);
+			_context.SaveChanges();
+		}
     }
 }

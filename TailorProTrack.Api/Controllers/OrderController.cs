@@ -113,5 +113,13 @@ namespace TailorProTrack.Api.Controllers
             }
             return NoContent();
         }
-    }
+
+        [HttpPatch("CompleteOrder")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public IActionResult CompleteOrder(int id)
+		{
+			orderService.CheckOrder(id);
+			return StatusCode(204);
+		}
+	}
 }
