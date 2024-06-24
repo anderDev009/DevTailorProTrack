@@ -198,7 +198,10 @@ namespace TailorProTrack.Application.Service
                 //recorriendo las ordenes y confirmando si estan completas
 				foreach (var preOrder in preOrdersMapped)
 				{
-					preOrder.IsCompleted = _orderService.ConfirmOrdersIsComplete(preOrder.ID);
+					if (preOrder.Finished == null || preOrder.Finished == false)
+					{
+						preOrder.IsCompleted = _orderService.ConfirmOrdersIsComplete(preOrder.ID);
+					}
 				}
                 //enviando data
 				result.Data = preOrdersMapped;
