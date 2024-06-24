@@ -23,7 +23,7 @@ namespace TailorProTrack.infraestructure.Repositories
 			entity.CREATED_AT = DateTime.Now;
 			entity.USER_CREATED = 1;
 			//logica para sumarle el monto a la cuenta
-			if (entity.FK_BANK_ACCOUNT != null)
+			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT != 0)
 			{
 				BankAccount account = _context.Set<BankAccount>().Find((int)entity.FK_BANK_ACCOUNT);
 				if (account == null)
