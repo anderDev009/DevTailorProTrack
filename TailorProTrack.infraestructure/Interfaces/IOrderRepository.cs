@@ -9,6 +9,7 @@ namespace TailorProTrack.infraestructure.Interfaces
 
         void UpdateStatusOrder(Order order);
 
-        
+        void CheckCompleteOrder(int id);
+        bool ConfirmOrdersIsComplete(int idPreOrder);
     }
 }

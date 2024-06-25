@@ -118,6 +118,7 @@ namespace TailorProTrack.Application.Mapper
                 .ForMember(b => b.IsEditable, opt => opt.Ignore())
                 .ForMember(b => b.DateCreated, opt => opt.MapFrom(src => src.CREATED_AT))
                 .ForMember(b => b.DateDelivery, opt => opt.MapFrom(src => src.DATE_DELIVERY))
+                .ForMember(x => x.Finished, src => src.MapFrom(x => x.FINISHED) )
                 .ReverseMap()
                     .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
                     .ForMember(b => b.USER_MOD, opt => opt.Ignore())

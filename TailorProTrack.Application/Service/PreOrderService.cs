@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Xml.XPath;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 using TailorProTrack.Application.Contracts;
@@ -26,7 +27,8 @@ namespace TailorProTrack.Application.Service
         private readonly IColorRepository _colorRepository;
 		//mapper
 		private readonly IMapper _mapper;
-
+        //orderService
+        private readonly IOrderService _orderService;
         //servicios 
         private readonly IPreOrderProductService _preOrderProductService;
 		//
@@ -38,7 +40,8 @@ namespace TailorProTrack.Application.Service
                         IProductRepository productRepository,
                         ISizeRepository sizeRepository,
                         IColorRepository colorRepository,
-						IClientService clientService, IMapper mapper)
+						IClientService clientService,
+                        IOrderService orderService, IMapper mapper)
         {
             _preOrderRepository = preOrderRepository;
             _preOrderProductService = preOrderProductService;
@@ -49,7 +52,7 @@ namespace TailorProTrack.Application.Service
             _productRepository = productRepository;
             _sizeRepository = sizeRepository;
             _colorRepository = colorRepository;
-            
+            _orderService = orderService;
         }
 
         public ServiceResult Add(PreOrderDtoAdd dtoAdd)
@@ -61,8 +64,8 @@ namespace TailorProTrack.Application.Service
                 {
                     FK_CLIENT = dtoAdd.FkClient,
                     DATE_DELIVERY = dtoAdd.DateDelivery,
-                    COMPLETED = false
-
+                    COMPLETED = false,
+                    FINISHED = null, 
                 };
 
                 int id = this._preOrderRepository.Save(preOrder);
@@ -139,7 +142,6 @@ namespace TailorProTrack.Application.Service
 
 
 				var preOrdersMapped = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
-
 				foreach (var item in preOrdersMapped)
 				{
 					
@@ -154,7 +156,7 @@ namespace TailorProTrack.Application.Service
 
 					}
 
-				
+					item.IsCompleted = _orderService.ConfirmOrdersIsComplete(item.ID);
 				}
 
 				result.Data = preOrdersMapped;
@@ -188,9 +190,21 @@ namespace TailorProTrack.Application.Service
 															.ThenInclude(x => x.ColorSecondary)
 														.Include(x => x.Client)
 														.Skip((@params.Page - 1) * @params.ItemsPerPage)
+														.OrderBy(x => x.FINISHED == null)
 														.Take(@params.ItemsPerPage).Where(data => !data.REMOVED && !(bool)data.COMPLETED).ToList();
 
-				result.Data = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
+				
+				var preOrdersMapped = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
+                //recorriendo las ordenes y confirmando si estan completas
+				foreach (var preOrder in preOrdersMapped)
+				{
+					if (preOrder.Finished == null || preOrder.Finished == false)
+					{
+						preOrder.IsCompleted = _orderService.ConfirmOrdersIsComplete(preOrder.ID);
+					}
+				}
+                //enviando data
+				result.Data = preOrdersMapped;
 				result.Header = header;
 				result.Message = "Obtenidos con exito";
 			}
@@ -230,8 +244,8 @@ namespace TailorProTrack.Application.Service
 												SizeId = data.FK_SIZE,
 												colorPrimary = _colorRepository.GetEntity(data.COLOR_PRIMARY).COLORNAME,
 												ColorPrimaryId = data.COLOR_PRIMARY,
-                                                ColorSecondary = data.COLOR_SECONDARY
-
+                                                ColorSecondary = data.COLOR_SECONDARY,
+                                                IsCompleted = _orderService.ConfirmOrdersIsComplete(data.ID)
 											})
                                         });
                 
@@ -262,6 +276,12 @@ namespace TailorProTrack.Application.Service
                 result.Message = $"Error: {ex.Message}";
             }
             return result;
+        }
+
+        public bool ChangeStatusPreOrder(int idPreOrder, bool status)
+        {
+	        var change = _preOrderRepository.ChangeStatusPreOrder(idPreOrder, status);
+	        return change;
         }
 
         public ServiceResult Remove(PreOrderDtoRemove dtoRemove)

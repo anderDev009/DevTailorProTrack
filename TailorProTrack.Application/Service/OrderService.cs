@@ -127,6 +127,7 @@ namespace TailorProTrack.Application.Service
                     OBSERVATION = dtoAdd.Observation
                 };
                 int idOrder = this._repository.Save(orderToAdd);
+                _preOrderRepository.ChangeStatusPreOrder(dtoAdd.FkPreOrder, false);
                 //agregando el detalle de la orden
                 var resultOrderProd = this._orderProductService.AddMany(dtoAdd.products, idOrder);
                 if (!resultOrderProd.Success)
@@ -344,6 +345,17 @@ namespace TailorProTrack.Application.Service
                 throw;
             }
             return result;
+        }
+
+        public void CheckOrder(int id)
+        {
+	        _repository.CheckCompleteOrder(id);
+        }
+
+        public bool ConfirmOrdersIsComplete(int idPreOrder)
+        {
+	        var completed = _repository.ConfirmOrdersIsComplete(idPreOrder);
+	        return completed;
         }
 
         public ServiceResult GetOrder(int Id)

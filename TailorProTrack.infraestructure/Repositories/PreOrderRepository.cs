@@ -48,6 +48,20 @@ namespace TailorProTrack.infraestructure.Repositories
 			Update(entity);
 		}
 
+        public bool ChangeStatusPreOrder(int idPreOrder, bool status)
+        {
+	        var entity = GetEntity(idPreOrder);
+			//comprobando si la entidad devuelta es nula
+			if (entity == null)
+			{
+				return false;
+			}
+            //actualizando en caso de que si haya devuelto la entidad correcta
+			entity.FINISHED = status;
+            Update(entity);
+            return true;
+        }
+
         public bool PreOrderIsEditable(int id)
         {
             return !_ctx.Set<Order>().Any(x => x.FK_PREORDER == id);

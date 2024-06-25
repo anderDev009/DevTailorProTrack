@@ -86,5 +86,16 @@ namespace TailorProTrack.Api.Controllers
 			}
 			return Ok(result);
 		}
+
+		[HttpPatch("MarkCompletePreOrder")]
+		public IActionResult MarkCompletePreOrder(int id)
+		{
+			var result = _preOrderService.ChangeStatusPreOrder(id,true);
+			if (!result)
+			{
+				return StatusCode(500, result);
+			}
+			return Ok(result);
+		}
 	}
 }
