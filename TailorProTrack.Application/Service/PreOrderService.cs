@@ -234,18 +234,18 @@ namespace TailorProTrack.Application.Service
                                             DateCreated = data.CREATED_AT,
                                             DateDelivery = data.DATE_DELIVERY,
                                             IsEditable = isEditable,
-                                            PreOrderInProgress = _preOrderProductRepository.GetPreOrderWithOrders(id).Select(data => new
+                                            PreOrderInProgress = _preOrderProductRepository.GetPreOrderWithOrders(id).Select(preOrderProducts => new
                                             {
-                                                id = data.ID,
-                                                Quantity = data.QUANTITY,
-                                                ProductId = data.FK_PRODUCT,
-                                                ProductName = _productRepository.GetEntity(data.FK_PRODUCT).NAME_PRODUCT,
-                                                Size = _sizeRepository.GetEntity(data.FK_SIZE).SIZE,
-												SizeId = data.FK_SIZE,
-												colorPrimary = _colorRepository.GetEntity(data.COLOR_PRIMARY).COLORNAME,
-												ColorPrimaryId = data.COLOR_PRIMARY,
-                                                ColorSecondary = data.COLOR_SECONDARY,
-                                                IsCompleted = _orderService.ConfirmOrdersIsComplete(data.ID)
+                                                id = preOrderProducts.ID,
+                                                Quantity = preOrderProducts.QUANTITY,
+                                                ProductId = preOrderProducts.FK_PRODUCT,
+                                                ProductName = _productRepository.GetEntity(preOrderProducts.FK_PRODUCT).NAME_PRODUCT,
+                                                Size = _sizeRepository.GetEntity(preOrderProducts.FK_SIZE).SIZE,
+												SizeId = preOrderProducts.FK_SIZE,
+												colorPrimary = _colorRepository.GetEntity(preOrderProducts.COLOR_PRIMARY).COLORNAME,
+												ColorPrimaryId = preOrderProducts.COLOR_PRIMARY,
+                                                ColorSecondary = preOrderProducts.COLOR_SECONDARY,
+                                                IsCompleted = _orderService.ConfirmOrdersIsComplete(preOrderProducts.ID)
 											})
                                         });
                 

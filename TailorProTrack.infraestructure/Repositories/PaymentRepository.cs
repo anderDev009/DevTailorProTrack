@@ -47,10 +47,10 @@ namespace TailorProTrack.infraestructure.Repositories
 		public override void Remove(Payment entity)
 		{
 			//logica para restarle el saldo en caso de que un pago sea cancelado
-			if (entity.FK_BANK_ACCOUNT != 0)
+			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
 			{
 				BankAccount account = _context.Set<BankAccount>().Find(entity.FK_BANK_ACCOUNT);
-				account.BALANCE += entity.AMOUNT;
+				account.BALANCE -= entity.AMOUNT;
 				_context.Set<BankAccount>().Update(account);
 				_context.SaveChanges();
 			}

@@ -112,7 +112,8 @@ namespace TailorProTrack.Application.Service
 				{
 					var invColor = _inventoryColorService.SearchAvailabilityToAddOrder(item.SizeId, item.ProductId
 						, item.ColorPrimaryId, item.ColorSecondaryId);
-                    invColor.QuantityPreOrder = item.Quantity;
+					int quantity = item.Quantity;
+                    invColor.QuantityPreOrder = quantity;
 					if (invColor.InventoryColorId != 0)
 					{
 						invColors.Add(invColor);
