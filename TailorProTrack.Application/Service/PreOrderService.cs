@@ -284,7 +284,6 @@ namespace TailorProTrack.Application.Service
 					colorPrimary = _colorRepository.GetEntity(preOrderProducts.COLOR_PRIMARY).COLORNAME,
 					ColorPrimaryId = preOrderProducts.COLOR_PRIMARY,
 					ColorSecondary = preOrderProducts.COLOR_SECONDARY,
-					IsCompleted = _orderService.ConfirmOrdersIsComplete(preOrderProducts.ID)
 				});
 				result.Data = preOrder;
 			}

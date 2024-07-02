@@ -97,5 +97,16 @@ namespace TailorProTrack.Api.Controllers
 			}
 			return Ok(result);
 		}
+
+		[HttpGet("GetPreOrderInprogressById")]
+		public IActionResult GetPreOrderInProgress([FromQuery] int id)
+		{
+            var result = _preOrderService.GetPreOrderInProgress(id);
+			if (!result.Success)
+			{
+				return StatusCode(500, result);
+			}
+			return Ok(result);
+		}
 	}
 }
