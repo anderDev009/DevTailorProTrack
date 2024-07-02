@@ -94,5 +94,6 @@ namespace TailorProTrack.Api.Controllers
 			var result = this._service.GetAmountByIdOrder(id);
 			return Ok(result);
 		}
+
 	}
 }
