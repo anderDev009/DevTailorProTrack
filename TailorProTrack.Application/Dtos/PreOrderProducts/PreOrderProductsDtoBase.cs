@@ -10,5 +10,6 @@ namespace TailorProTrack.Application.Dtos.PreOrderProducts
         public int FkColorPrimary { get; set; }
         public int FkColorSecondary { get; set; }
         public int FkPreOrder { get; set; } 
+
     }
 }

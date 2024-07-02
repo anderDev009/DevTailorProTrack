@@ -1,6 +1,5 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -16,6 +15,7 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             _ctx = ctx;
         }
+
 
         public decimal GetAmountByIdPreOrder(int preOrderId)
         {
@@ -68,6 +68,8 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public override void Update(PreOrderProducts entity)
         {
+
+
             PreOrderProducts products = this.GetEntity(entity.ID);
 
             products.QUANTITY = entity.QUANTITY;
