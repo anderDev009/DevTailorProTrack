@@ -234,7 +234,6 @@ namespace TailorProTrack.Application.Service
 											DateCreated = data.CREATED_AT,
 											DateDelivery = data.DATE_DELIVERY,
 											IsEditable = isEditable,
-											preOrderInPogress = GetPreOrderInProgress(id).Data
 										});
 
 				result.Data = preOrder;
