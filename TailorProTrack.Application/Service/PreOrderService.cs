@@ -237,16 +237,17 @@ namespace TailorProTrack.Application.Service
                                             PreOrderInProgress = _preOrderProductRepository.GetPreOrderWithOrders(id).Select(preOrderProducts => new
                                             {
                                                 id = preOrderProducts.ID,
-                                                Quantity = preOrderProducts.QUANTITY,
+                                                //QuantityPreOrder
+                                                QuantityPreOrder = preOrderProducts.QUANTITY,
                                                 ProductId = preOrderProducts.FK_PRODUCT,
                                                 ProductName = _productRepository.GetEntity(preOrderProducts.FK_PRODUCT).NAME_PRODUCT,
                                                 Size = _sizeRepository.GetEntity(preOrderProducts.FK_SIZE).SIZE,
-												SizeId = preOrderProducts.FK_SIZE,
-												colorPrimary = _colorRepository.GetEntity(preOrderProducts.COLOR_PRIMARY).COLORNAME,
-												ColorPrimaryId = preOrderProducts.COLOR_PRIMARY,
+                                                SizeId = preOrderProducts.FK_SIZE,
+                                                colorPrimary = _colorRepository.GetEntity(preOrderProducts.COLOR_PRIMARY).COLORNAME,
+                                                ColorPrimaryId = preOrderProducts.COLOR_PRIMARY,
                                                 ColorSecondary = preOrderProducts.COLOR_SECONDARY,
                                                 IsCompleted = _orderService.ConfirmOrdersIsComplete(preOrderProducts.ID)
-											})
+                                            })
                                         });
                 
                 result.Data = preOrder;
