@@ -28,14 +28,18 @@ namespace TailorProTrack.Application.Service
         private readonly IBankRepository _bankRepository;
         //repositorio cuenta de bancos
         private readonly IBankAccountRepository _bankAccRepository;
+		//repositorio de clientes
+		private readonly IClientRepository _clientRepository;
+		private readonly IPreOrderRepository _preOrderRepository;
 
-        private IMapper _mapper;
+		private IMapper _mapper;
         //repositorio de pre order
         private readonly IPreOrderProductsRepository _preOrderProdcutRepository;
 		public PaymentService(IPaymentRepository repository, ILogger<IPaymentRepository> logger,
                               IPaymentTypeRepository typeRepository, IOrderService orderService,
                               IConfiguration configuration, IOrderRepository orderRepository,
-                              IBankAccountRepository bankAccRepository, IBankRepository bankRepository, IPreOrderProductsRepository preOrderProductsRepository, IMapper mapper)
+                              IClientRepository clientRepository, IPreOrderRepository preOrderRepository,
+							  IBankAccountRepository bankAccRepository, IBankRepository bankRepository, IPreOrderProductsRepository preOrderProductsRepository, IMapper mapper)
         {
             _repository = repository;
             this.logger = logger;
@@ -47,6 +51,8 @@ namespace TailorProTrack.Application.Service
             _bankRepository = bankRepository;
             _preOrderProdcutRepository = preOrderProductsRepository; 
             _mapper = mapper;
+            _clientRepository = clientRepository;
+            _preOrderRepository = preOrderRepository;
 		}
 
         private IConfiguration Configuration { get; }
@@ -185,8 +191,8 @@ namespace TailorProTrack.Application.Service
                                                    Account = d.bankAcc.BANK_ACCOUNT,
                                                    DocumentNumber = d.payment.ACCOUNT_NUMBER,
                                                    AmountPending = _preOrderProdcutRepository.GetAmountByIdPreOrder(d.payment.FK_ORDER),
-                                                   Client =  _mapper.Map<ClientDtoGetMapped>( _orderRepository.GetByIdWithInclude(d.payment.FK_ORDER, new List<string>{"Client"}).Client)
-											   });
+                                                   Client =  _mapper.Map<ClientDtoGet>( _clientRepository.GetEntity(_preOrderRepository.GetEntity(d.payment.FK_ORDER).FK_CLIENT))
+											   }).ToList();
                 if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
                 var orderPayments = new
                 {

@@ -228,7 +228,6 @@ namespace TailorProTrack.Application.Service
 										.Select(data => new
 										{
 											Id = data.ID,
-											//Quantity = data.QUANTITY,
 											Client = this._clientService.GetById(data.FK_CLIENT).Data,
 											Items = this._preOrderProductService.GetByPreOrder(data.ID).Data,
 											DateCreated = data.CREATED_AT,
