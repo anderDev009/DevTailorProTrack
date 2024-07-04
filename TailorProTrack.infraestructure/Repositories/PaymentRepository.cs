@@ -56,6 +56,15 @@ namespace TailorProTrack.infraestructure.Repositories
 				_context.Set<BankAccount>().Update(account);
 				_context.SaveChanges();
 			}
+
+			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
+			if (amountPending < 0)
+			{
+				PreOrder preOrder = _context.Set<PreOrder>().Find(entity.FK_ORDER);
+				preOrder.COMPLETED = false;
+				_context.Set<PreOrder>().Update(preOrder);
+				_context.SaveChanges();
+			}
 			base.Remove(entity);
 		}
 
