@@ -64,5 +64,19 @@ namespace TailorProTrack.Api.Controllers
 
 		}
 
+		[HttpDelete("RemovePreOrderProduct")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		public IActionResult Remove([FromBody] PreOrderProductsDtoRemove dtoRemove)
+		{
+			try
+			{
+				_preOrderProductService.Remove(dtoRemove);
+				return StatusCode(204);
+			}
+			catch (Exception e)
+			{
+				return StatusCode(500,e.Message);
+			}
+		}
 	}
 }

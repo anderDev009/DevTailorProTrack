@@ -226,7 +226,7 @@ namespace TailorProTrack.Application.Service
 	          
 				PreOrderProducts preOrderProduct = new PreOrderProducts
                 {
-                    USER_MOD = dtoRemove.User,
+                    USER_MOD = 1,
                     ID = dtoRemove.Id
                 };
                 this._preOrderProductRepository.Remove(preOrderProduct);
