@@ -22,8 +22,11 @@ namespace TailorProTrack.infraestructure.Repositories
             {
 	            throw new Exception("No se puede eliminar. Tiene ordenes registradas");
             };
-	        base.Remove(entity);
-        }
+            
+            var preOrderProduct = this.GetEntity(entity.ID);
+            _ctx.Set<PreOrderProducts>().Remove(preOrderProduct);
+			_ctx.SaveChanges();
+		}
 
         public decimal GetAmountByIdPreOrder(int preOrderId)
         {
