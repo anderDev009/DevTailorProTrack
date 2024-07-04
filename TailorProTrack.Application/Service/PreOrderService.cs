@@ -7,6 +7,7 @@ using TailorProTrack.Application.Contracts.Client;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Dtos.PreOrderProducts;
+using TailorProTrack.Application.Exceptions;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
 
@@ -306,6 +307,12 @@ namespace TailorProTrack.Application.Service
 
 			try
 			{
+
+				bool isEditable = _preOrderRepository.PreOrderIsEditable(dtoRemove.Id);
+				if (!isEditable)
+				{
+					throw new PreOrderException("El pedido no se puede eliminar");
+				}
 				PreOrder preOrder = new PreOrder
 				{
 					ID = dtoRemove.Id,

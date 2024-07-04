@@ -16,6 +16,14 @@ namespace TailorProTrack.infraestructure.Repositories
             _ctx = ctx;
         }
 
+        public override void Remove(PreOrderProducts entity)
+        {
+            if(IsPreOrderProductInOrder(entity.ID))
+            {
+	            throw new Exception("No se puede eliminar. Tiene ordenes registradas");
+            };
+	        base.Remove(entity);
+        }
 
         public decimal GetAmountByIdPreOrder(int preOrderId)
         {
@@ -72,6 +80,12 @@ namespace TailorProTrack.infraestructure.Repositories
 
             PreOrderProducts products = this.GetEntity(entity.ID);
 
+            //validando
+            if (IsPreOrderProductInOrder(products.ID) && products.QUANTITY < entity.QUANTITY)
+            {
+	            throw new Exception("No puedes asignar menos si hay ordenes registradas");
+            }
+
             products.QUANTITY = entity.QUANTITY;
             products.COLOR_PRIMARY = entity.COLOR_PRIMARY;
             products.COLOR_SECONDARY = entity.COLOR_SECONDARY;
@@ -112,7 +126,25 @@ namespace TailorProTrack.infraestructure.Repositories
             return itemsMissing;
         }
 
-        public List<PreOrderProducts> GetMissingProducts()
+        public bool IsPreOrderProductInOrder(int id)
+        {
+	        var preOrderProduct = _ctx.Set<PreOrderProducts>().Find(id);
+	        //validando de que haya traido un preOrderProduct
+	        if (preOrderProduct == null)
+	        {
+		        throw new Exception("Producto no encontrado");
+	        }
+
+	        var invColor = _ctx.Set<InventoryColor>()
+		        .Include(x => x.Inventory).First(x => x.FK_COLOR_PRIMARY == preOrderProduct.COLOR_PRIMARY &&
+		                                              x.FK_COLOR_SECONDARY == preOrderProduct.COLOR_SECONDARY
+		                                              && x.Inventory.FK_SIZE == preOrderProduct.FK_SIZE &&
+		                                              x.Inventory.FK_PRODUCT == preOrderProduct.FK_PRODUCT);
+	        //comprobando que este en una orden
+	        return _ctx.Set<OrderProduct>().Any(x => x.FK_INVENTORYCOLOR == invColor.ID);
+        }
+
+		public List<PreOrderProducts> GetMissingProducts()
         {
             List<PreOrderProducts> products = _ctx.Set<PreOrderProducts>()
                                                   .Include(x => x.Size)
