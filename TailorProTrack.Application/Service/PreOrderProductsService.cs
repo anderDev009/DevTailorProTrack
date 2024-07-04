@@ -71,7 +71,19 @@ namespace TailorProTrack.Application.Service
 
         public ServiceResult GetById(int id)
         {
-            throw new NotImplementedException();
+			ServiceResult result = new ServiceResult();
+			try
+			{
+				var preOrder = _preOrderProductRepository.GetEntity(id);
+				result.Data = _mapper.Map<PreOrderProductDtoGetMapped>(preOrder);
+				result.Message = "Obtenido con exito";
+			}
+			catch (Exception e)
+			{
+				result.Success = false;
+                result.Message = $"Error al obtener: {e.Message}";
+			}
+			return result;
         }
 
         public ServiceResult GetByPreOrder(int orderId)

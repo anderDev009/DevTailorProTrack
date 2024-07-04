@@ -18,6 +18,24 @@ namespace TailorProTrack.Api.Controllers
 		}
 
 
+		[HttpGet("GetById")]
+		public IActionResult GetById(int id)
+		{
+			try
+			{
+				var result = _preOrderProductService.GetById(id);
+				if (!result.Success)
+				{
+					return StatusCode(404, "not found");
+				}
+				return Ok(result);
+			}
+			catch (Exception e)
+			{
+				return StatusCode(500, e.Message);
+			}
+		}
+
 		[HttpPost("SavePreOrderProduct")]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
