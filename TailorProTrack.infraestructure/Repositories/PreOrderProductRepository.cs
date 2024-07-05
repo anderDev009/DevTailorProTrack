@@ -84,7 +84,7 @@ namespace TailorProTrack.infraestructure.Repositories
             PreOrderProducts products = this.GetEntity(entity.ID);
 
             //validando
-            if (IsPreOrderProductInOrder(products.ID) && products.QUANTITY < entity.QUANTITY)
+            if (IsPreOrderProductInOrder(products.ID) && products.QUANTITY > entity.QUANTITY)
             {
 	            throw new Exception("No puedes asignar menos si hay ordenes registradas");
             }
