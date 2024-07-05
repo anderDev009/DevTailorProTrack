@@ -306,6 +306,8 @@ namespace TailorProTrack.Application.Service
                     ID = dtoUpdate.Id,
                     QUANTITY = dtoUpdate.Quantity,
                     USER_CREATED = dtoUpdate.User,
+                    FK_PRODUCT = dtoUpdate.FkProduct,
+                    FK_PREORDER = dtoUpdate.FkPreOrder
 
                 }); 
                 result.Message= "Modificado con exito";
