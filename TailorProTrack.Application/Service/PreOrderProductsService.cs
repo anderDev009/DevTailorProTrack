@@ -22,9 +22,11 @@ namespace TailorProTrack.Application.Service
         //repositorio colores 
         private readonly IColorRepository _colorRepository;
         private readonly IOrderService _orderService;
-
-        private readonly IInventoryColorService _inventoryColorService;
+        //repositorio de pedido
+        private readonly IPreOrderRepository _preOrderRepository;
+		private readonly IInventoryColorService _inventoryColorService;
 		//
+		//Mapper
 		private readonly IMapper _mapper;
         public PreOrderProductsService(IPreOrderProductsRepository preOrderProductsRepository,
                                        IProductRepository productRepository,
@@ -32,7 +34,8 @@ namespace TailorProTrack.Application.Service
                                        IColorRepository colorRepository,
                                        IOrderService orderService,
                                        IInventoryColorService inventoryColorService,
-									   IMapper mapper)
+									   IMapper mapper,
+                                       IPreOrderRepository preOrderRepository)
         {
             _preOrderProductRepository = preOrderProductsRepository;
             _productRepository = productRepository;
@@ -41,10 +44,24 @@ namespace TailorProTrack.Application.Service
             _orderService = orderService;
 			_mapper = mapper;
             _inventoryColorService = inventoryColorService;
+            _preOrderRepository= preOrderRepository;
 		}
         public ServiceResult Add(PreOrderProductsDtoAdd dtoAdd)
         {
-            throw new NotImplementedException();
+            ServiceResult result = new ServiceResult();
+            try
+            {
+	            PreOrderProducts preOrderProducts = _mapper.Map<PreOrderProducts>(dtoAdd);
+                _preOrderProductRepository.Save(preOrderProducts);
+			}
+            catch (Exception e)
+            {
+
+	            result.Success = false;
+                result.Message = $"Error al agregar: {e.Message}";
+			}
+
+            return result;
         }
 
         public ServiceResultWithHeader GetAll(PaginationParams @params)
@@ -54,7 +71,19 @@ namespace TailorProTrack.Application.Service
 
         public ServiceResult GetById(int id)
         {
-            throw new NotImplementedException();
+			ServiceResult result = new ServiceResult();
+			try
+			{
+				var preOrder = _preOrderProductRepository.GetEntity(id);
+				result.Data = _mapper.Map<PreOrderProductDtoGetMapped>(preOrder);
+				result.Message = "Obtenido con exito";
+			}
+			catch (Exception e)
+			{
+				result.Success = false;
+                result.Message = $"Error al obtener: {e.Message}";
+			}
+			return result;
         }
 
         public ServiceResult GetByPreOrder(int orderId)
@@ -112,7 +141,8 @@ namespace TailorProTrack.Application.Service
 				{
 					var invColor = _inventoryColorService.SearchAvailabilityToAddOrder(item.SizeId, item.ProductId
 						, item.ColorPrimaryId, item.ColorSecondaryId);
-                    invColor.QuantityPreOrder = item.Quantity;
+					int quantity = item.Quantity;
+                    invColor.QuantityPreOrder = quantity;
 					if (invColor.InventoryColorId != 0)
 					{
 						invColors.Add(invColor);
@@ -149,6 +179,32 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult AddWithFkPreOrder(PreOrderProductsDtoAdd dtoAdd, int id)
+        {
+			ServiceResult result = new ServiceResult();
+			try
+			{
+				if (!PreOrderProductsDtoAdd.IsValidToAdd(id, _preOrderRepository))
+				{
+					throw new Exception("No se puede modificar un pedido donde hayan ordenes registradas.");
+				}
+				PreOrderProducts preOrderProducts = _mapper.Map<PreOrderProducts>(dtoAdd);
+               
+				preOrderProducts.FK_PREORDER = id;
+				_preOrderProductRepository.Save(preOrderProducts);
+			}
+			catch (Exception e)
+			{
+
+				result.Success = false;
+				result.Message = $"Error al agregar: {e.Message}";
+			}
+
+			return result;
+		}
+
+     
+
         public decimal GetAmountByIdPreOrder(int IdPreOrder)
         {
 	        return _preOrderProductRepository.GetAmountByIdPreOrder(IdPreOrder);
@@ -179,9 +235,10 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                PreOrderProducts preOrderProduct = new PreOrderProducts
+	          
+				PreOrderProducts preOrderProduct = new PreOrderProducts
                 {
-                    USER_MOD = dtoRemove.User,
+                    USER_MOD = 1,
                     ID = dtoRemove.Id
                 };
                 this._preOrderProductRepository.Remove(preOrderProduct);
@@ -237,6 +294,10 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new();
             try
             {
+                if(!PreOrderProductsDtoAdd.IsValidToAdd(dtoUpdate.FkPreOrder,_preOrderRepository))
+                {
+                    throw new Exception("No se puede modificar un pedido donde hayan ordenes registradas.");
+				}
                 _preOrderProductRepository.Update(new PreOrderProducts
                 {
                     COLOR_PRIMARY = dtoUpdate.FkColorPrimary,
@@ -245,6 +306,8 @@ namespace TailorProTrack.Application.Service
                     ID = dtoUpdate.Id,
                     QUANTITY = dtoUpdate.Quantity,
                     USER_CREATED = dtoUpdate.User,
+                    FK_PRODUCT = dtoUpdate.FkProduct,
+                    FK_PREORDER = dtoUpdate.FkPreOrder
 
                 }); 
                 result.Message= "Modificado con exito";

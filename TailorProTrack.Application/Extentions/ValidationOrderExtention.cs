@@ -42,8 +42,26 @@ namespace TailorProTrack.Application.Extentions
             {
                 throw new OrderServiceException(configuration["validations:preOrderDoesntExist"]);
             }
-            //mensaje para enviar en caso de que se hayan insertado varios
-            string message = "";
+
+			//en caso de que intente enviar mas de la cantidad solicitada
+			var preOrderProducts = preOrderProductsRepository.GetPreOrderWithOrders(dtoAdd.FkPreOrder);
+			foreach (var dto in dtoAdd.products)
+			{
+                var invColor = inventoryColorRepository.GetEntity(dto.FkInventoryColor);
+                var inventory = inventoryRepository.GetEntity(invColor.FK_INVENTORY);
+				var preOrderProduct = preOrderProducts.Find(pr => pr.FK_PRODUCT == inventory.FK_PRODUCT && pr.FK_SIZE == inventory.FK_SIZE && pr.COLOR_PRIMARY == invColor.FK_COLOR_PRIMARY);
+				
+				if (preOrderProduct != null)
+				{
+					var quantity = preOrderProduct.QUANTITY - preOrderProduct.QUANTITY;
+					if (dto.Quantity > quantity)
+					{
+						throw new OrderProductServiceException("No puedes poner mas de lo solicitado en el pedido.");
+					}
+				}
+			}
+			//mensaje para enviar en caso de que se hayan insertado varios
+			string message = "";
             //----
             //dtoAdd.products = new List<OrderProductDtoAdd>();
             //var preOrderProducts = preOrderProductsRepository.GetByPreOrderId(dtoAdd.FkPreOrder);
@@ -83,6 +101,7 @@ namespace TailorProTrack.Application.Extentions
             {
                 throw new OrderProductServiceException(configuration["validations:DoesntHaveInventoryToAddOrder"]);
             }
+
             return message;
         }
 

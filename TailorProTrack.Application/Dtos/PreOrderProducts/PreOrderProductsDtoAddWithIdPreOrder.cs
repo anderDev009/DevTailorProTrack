@@ -1,11 +1,11 @@
-﻿using TailorProTrack.infraestructure.Interfaces;
-using TailorProTrack.infraestructure.Repositories;
+﻿using TailorProTrack.infraestructure.Repositories;
 
 namespace TailorProTrack.Application.Dtos.PreOrderProducts
 {
-    public class PreOrderProductsDtoAdd
+    public class PreOrderProductsDtoAddWithIdPreOrder
     {
-        public int FkProduct { get; set; }
+        public int FkPreOrder { get; set; }
+		public int FkProduct { get; set; }
         public int FkSize { get; set; }
         public int Quantity { get; set; }
         public int FkColorPrimary { get; set; }
@@ -14,16 +14,14 @@ namespace TailorProTrack.Application.Dtos.PreOrderProducts
 
         public int User {  get; set; }
 
-
-
-        public static bool IsValidToAdd(int id, IPreOrderRepository preOrderRepository)
+        public static bool IsValid(PreOrderProductsDtoAddWithIdPreOrder dto, PreOrderRepository preOrderRepository)
         {
-	        if (!preOrderRepository.PreOrderIsEditable(id))
+	        if (!preOrderRepository.PreOrderIsEditable(dto.FkPreOrder))
 	        {
 		        return false;
 	        }
 
 	        return true;
         }
-    }
+	}
 }

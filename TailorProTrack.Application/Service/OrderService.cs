@@ -105,6 +105,9 @@ namespace TailorProTrack.Application.Service
                 //validaciones
                 string message = dtoAdd.IsValidToAdd(this.Configuration, this._clientRepository, this._userRepository, _preOrderRepository
                     , _preOrderProductsRepository, _inventoryRepository, _inventoryColorRepository, _orderProductRepository);
+
+
+                
                 //logica para agregarele la cantidad
                 decimal amount = 0;
                 foreach (var item in dtoAdd.products)

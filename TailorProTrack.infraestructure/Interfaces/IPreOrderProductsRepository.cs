@@ -11,7 +11,9 @@ namespace TailorProTrack.infraestructure.Interfaces
         List<PreOrderProducts> GetByPreOrderId(int PreOrderId);
 
         decimal GetAmountByIdPreOrder(int preOrderId);
-        List<PreOrderProducts> GetMissingColorsByIdPreOrder(int IdPreOrder);
+        bool IsPreOrderProductInOrder(int id);
+
+		List<PreOrderProducts> GetMissingColorsByIdPreOrder(int IdPreOrder);
         List<PreOrderProducts> GetMissingProducts();
         List<PreOrderProducts> GetPreOrderWithOrders(int IdPreOrder);
 	}

@@ -18,6 +18,8 @@ namespace TailorProTrack.infraestructure.Repositories
 			_preOrderProductRepository = preOrderProductRepository;
 		}
 
+		
+
 		public override int Save(Payment entity)
 		{
 			entity.CREATED_AT = DateTime.Now;
@@ -47,11 +49,21 @@ namespace TailorProTrack.infraestructure.Repositories
 		public override void Remove(Payment entity)
 		{
 			//logica para restarle el saldo en caso de que un pago sea cancelado
-			if (entity.FK_BANK_ACCOUNT != 0)
+			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
 			{
 				BankAccount account = _context.Set<BankAccount>().Find(entity.FK_BANK_ACCOUNT);
-				account.BALANCE += entity.AMOUNT;
+				account.BALANCE -= entity.AMOUNT;
 				_context.Set<BankAccount>().Update(account);
+				_context.SaveChanges();
+			}
+
+			//validacion para  saber si el pedido ha sido pagado por completo
+			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
+			if (amountPending < 0)
+			{
+				PreOrder preOrder = _context.Set<PreOrder>().Find(entity.FK_ORDER);
+				preOrder.COMPLETED = false;
+				_context.Set<PreOrder>().Update(preOrder);
 				_context.SaveChanges();
 			}
 			base.Remove(entity);

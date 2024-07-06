@@ -1,6 +1,7 @@
 ﻿namespace TailorProTrack.Application.Dtos.PreOrderProducts
 {
-    public class PreOrderProductsDtoRemove : BaseDto
+    public class PreOrderProductsDtoRemove 
     {
-    }
+	    public int Id { get; set; }
+	}
 }
