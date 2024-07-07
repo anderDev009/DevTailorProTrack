@@ -59,7 +59,7 @@ namespace TailorProTrack.infraestructure.Repositories
 
 			//validacion para  saber si el pedido ha sido pagado por completo
 			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
-			if (amountPending < 0)
+			if (amountPending > 0)
 			{
 				PreOrder preOrder = _context.Set<PreOrder>().Find(entity.FK_ORDER);
 				preOrder.COMPLETED = false;

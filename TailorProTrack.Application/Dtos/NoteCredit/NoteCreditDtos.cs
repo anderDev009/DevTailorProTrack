@@ -10,13 +10,16 @@ namespace TailorProTrack.Application.Dtos.NoteCredit
 	public record NoteCreditDtoAdd
 	{
 		public int FkClient { get; set; }
+		public int FkPayment { get; set; }
 		public decimal Amount { get; set; }
+
 	}
 
 	public record NoteCreditDtoUpdate
 	{
 		public int Id { get; set; }
 		public int FkClient { get; set; }
+		public int FkPayment { get; set; }
 		public decimal Amount { get; set; }
 	}
 
@@ -24,6 +27,7 @@ namespace TailorProTrack.Application.Dtos.NoteCredit
 	{
 		public int Id { get; set; }
 		public decimal Amount { get; set; }
+		public int FkPayment { get; set; }
 
 		public ClientDtoGet? Client { get; set; }
 	}
