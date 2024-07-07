@@ -116,9 +116,13 @@ namespace TailorProTrack.infraestructure.Repositories
 
 		public decimal GetAmountPendingByIdPreOrder(int idPreOrder)
 		{
+			var preOrder = _context.Set<PreOrder>().Find(idPreOrder);
 			var amount = _preOrderProductRepository.GetAmountByIdPreOrder(idPreOrder);
-			var extra = (decimal)((double)amount * 18) / 100;
-			amount += (decimal)extra;
+			if ((bool)preOrder.ITBIS)
+			{
+				var extra = (decimal)((double)amount * 18) / 100;
+				amount += (decimal)extra;
+			}
 			return _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT) - amount;
 		}	
 	}

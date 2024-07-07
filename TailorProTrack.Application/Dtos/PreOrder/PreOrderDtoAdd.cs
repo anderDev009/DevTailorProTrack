@@ -7,6 +7,7 @@ namespace TailorProTrack.Application.Dtos.PreOrder
     {
         public int User {  get; set; }
         public DateTime DateDelivery {  get; set; }
-        public List<PreOrderProductsDtoAdd> productsDtoAdds { get; set; }
+        public bool? Itbis { get; set; }
+		public List<PreOrderProductsDtoAdd> productsDtoAdds { get; set; }
     }
 }

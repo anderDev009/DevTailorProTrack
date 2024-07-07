@@ -67,6 +67,7 @@ namespace TailorProTrack.Application.Service
 					DATE_DELIVERY = dtoAdd.DateDelivery,
 					COMPLETED = false,
 					FINISHED = null,
+					ITBIS = dtoAdd.Itbis,
 				};
 
 				int id = this._preOrderRepository.Save(preOrder);

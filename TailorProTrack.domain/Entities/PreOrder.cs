@@ -10,6 +10,7 @@ namespace TailorProTrack.domain.Entities
         public DateTime DATE_DELIVERY {  get; set; }
         public bool? COMPLETED {  get; set; }
         public bool? FINISHED { get; set; }
+        public bool? ITBIS { get; set; }
 
 		public List<Order>? Order { get; set; }
         public Client? Client { get; set; }
