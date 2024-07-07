@@ -294,7 +294,7 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new();
             try
             {
-                if(!PreOrderProductsDtoAdd.IsValidToAdd(dtoUpdate.FkPreOrder,_preOrderRepository))
+                if(PreOrderProductsDtoAdd.IsValidToAdd(dtoUpdate.FkPreOrder,_preOrderRepository) == false)
                 {
                     throw new Exception("No se puede modificar un pedido donde hayan ordenes registradas.");
 				}
