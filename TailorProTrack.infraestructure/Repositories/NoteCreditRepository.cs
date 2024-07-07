@@ -17,5 +17,11 @@ namespace TailorProTrack.infraestructure.Repositories
 
 			return notes;
 		}
+
+		public List<NoteCredit> SearchNoteCreditByPaymentId(int idPayment)
+		{
+			var notes = context.Set<NoteCredit>().Where(x => x.FK_PAYMENT == idPayment).ToList();
+			return notes;
+		}
 	}
 }

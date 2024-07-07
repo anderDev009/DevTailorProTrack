@@ -10,11 +10,13 @@ namespace TailorProTrack.infraestructure.Repositories
 	{
 		private readonly TailorProTrackContext _context;
 		private readonly IPreOrderProductsRepository _preOrderProductRepository;
+		private readonly INoteCreditRepository _noteCreditRepository;
 
-
-		public PaymentRepository(TailorProTrackContext context, IPreOrderProductsRepository preOrderProductRepository) : base(context)
+		public PaymentRepository(TailorProTrackContext context, IPreOrderProductsRepository preOrderProductRepository,
+			INoteCreditRepository noteCreditRepository) : base(context)
 		{
 			_context = context;
+			_noteCreditRepository = noteCreditRepository;
 			_preOrderProductRepository = preOrderProductRepository;
 		}
 
@@ -41,6 +43,19 @@ namespace TailorProTrack.infraestructure.Repositories
 			ConfirmPayment(entity.FK_ORDER);
 			this._context.Add(entity);
 			this._context.SaveChanges();
+			//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
+			//en caso de que sea negativo se toma en cuenta una nota de credito
+			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
+			if (amountPending < 0)
+			{
+				_noteCreditRepository.Save(new NoteCredit
+				{
+					AMOUNT = Math.Abs(amountPending),
+					FK_CLIENT = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT,
+					FK_PAYMENT = entity.ID
+				});
+			}
+
 			return entity.ID;
 		}
 
@@ -66,7 +81,18 @@ namespace TailorProTrack.infraestructure.Repositories
 				_context.Set<PreOrder>().Update(preOrder);
 				_context.SaveChanges();
 			}
-			base.Remove(entity);
+			//revisar si tiene notas de credito disponibles
+			var noteCredits = _noteCreditRepository.SearchNoteCreditByPaymentId(entity.ID);
+			if (noteCredits.Count > 0)
+			{
+				foreach (var note in noteCredits)
+				{
+					_noteCreditRepository.Remove(note);
+				}
+			}
+			var entityToRemove = GetEntity(entity.ID);
+
+			_context.Remove(entityToRemove);
 		}
 
 		public bool ConfirmPayment(int idPreOrder)
