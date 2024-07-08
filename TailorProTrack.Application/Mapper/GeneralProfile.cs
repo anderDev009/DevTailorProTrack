@@ -108,6 +108,7 @@ namespace TailorProTrack.Application.Mapper
 			#endregion
 			#endregion
 			#region PreOrder
+
 			CreateMap<PreOrderProducts, PreOrderProductDtoGetMapped>()
 				.ReverseMap()
 				.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
@@ -143,7 +144,8 @@ namespace TailorProTrack.Application.Mapper
 					.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
 					.ForMember(b => b.USER_MOD, opt => opt.Ignore())
 					.ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
-					.ForMember(b => b.REMOVED, opt => opt.Ignore());
+					.ForMember(b => b.REMOVED, opt => opt.Ignore())
+					.ForMember(b => b.ITBIS, opt => opt.Ignore());
 
 			#endregion
 			#region Size

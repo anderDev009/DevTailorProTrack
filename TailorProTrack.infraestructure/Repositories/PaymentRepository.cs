@@ -118,7 +118,7 @@ namespace TailorProTrack.infraestructure.Repositories
 		{
 			var preOrder = _context.Set<PreOrder>().Find(idPreOrder);
 			var amount = _preOrderProductRepository.GetAmountByIdPreOrder(idPreOrder);
-			if ((bool)preOrder.ITBIS)
+			if (preOrder.ITBIS != null && preOrder.ITBIS != false)
 			{
 				var extra = (decimal)((double)amount * 18) / 100;
 				amount += (decimal)extra;
