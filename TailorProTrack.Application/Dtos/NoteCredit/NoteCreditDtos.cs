@@ -28,6 +28,7 @@ namespace TailorProTrack.Application.Dtos.NoteCredit
 		public int Id { get; set; }
 		public decimal Amount { get; set; }
 		public int FkPayment { get; set; }
+		public DateTime DateCreated { get; set; }
 
 		public ClientDtoGet? Client { get; set; }
 	}

@@ -8,6 +8,7 @@ using TailorProTrack.Application.Dtos.CodeDgi;
 using TailorProTrack.Application.Dtos.Color;
 using TailorProTrack.Application.Dtos.Expenses;
 using TailorProTrack.Application.Dtos.Expenses.PaymentExpense;
+using TailorProTrack.Application.Dtos.NoteCredit;
 using TailorProTrack.Application.Dtos.Order;
 using TailorProTrack.Application.Dtos.OrderProduct;
 using TailorProTrack.Application.Dtos.PaymentType;
@@ -428,6 +429,40 @@ namespace TailorProTrack.Application.Mapper
 				.ForMember(b => b.REMOVED, opt => opt.Ignore());
 
 			CreateMap<CodesDgi, CodeDgiDtoGet>()
+				.ReverseMap()
+				.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+				.ForMember(b => b.USER_MOD, opt => opt.Ignore())
+				.ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+				.ForMember(b => b.REMOVED, opt => opt.Ignore());
+			#endregion
+			#region
+			CreateMap<NoteCredit,NoteCreditDtoGet>()
+				.ForMember(x => x.Id, src => src.MapFrom(x => x.ID))
+				.ForMember(x => x.FkPayment, src => src.MapFrom(x => x.FK_PAYMENT))
+				.ForMember(x => x.Amount, src => src.MapFrom(x => x.AMOUNT))
+				.ForMember(x => x.DateCreated, src => src.MapFrom(x => x.CREATED_AT))
+				.ForMember(x => x.Client, src => src.MapFrom(x => x.Client))
+				.ReverseMap()
+				.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+				.ForMember(b => b.USER_MOD, opt => opt.Ignore())
+				.ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+				.ForMember(b => b.REMOVED, opt => opt.Ignore());
+
+			CreateMap<NoteCredit,NoteCreditDtoAdd>()
+				.ForMember(x => x.Amount, opt => opt.MapFrom(x => x.AMOUNT))
+				.ForMember(x => x.FkPayment, opt => opt.MapFrom(x => x.FK_PAYMENT))
+				.ForMember(x => x.FkClient, opt => opt.MapFrom( x => x.FK_CLIENT))
+				.ReverseMap()
+				.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+				.ForMember(b => b.USER_MOD, opt => opt.Ignore())
+				.ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+				.ForMember(b => b.REMOVED, opt => opt.Ignore());
+
+			CreateMap<NoteCredit,NoteCreditDtoUpdate>()
+				.ForMember(x => x.Id, opt => opt.MapFrom(x => x.ID))
+				.ForMember(x => x.Amount, opt => opt.MapFrom(x => x.AMOUNT))
+				.ForMember(x => x.FkPayment, opt => opt.MapFrom(x => x.FK_PAYMENT))
+				.ForMember(x => x.FkClient, opt => opt.MapFrom(x => x.FK_CLIENT))
 				.ReverseMap()
 				.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
 				.ForMember(b => b.USER_MOD, opt => opt.Ignore())

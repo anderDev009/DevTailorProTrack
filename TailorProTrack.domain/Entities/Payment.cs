@@ -13,5 +13,6 @@ namespace TailorProTrack.domain.Entities
         
         public string? ACCOUNT_NUMBER { get; set; }
 
+        public List<NoteCredit>? NoteCredit { get; set; }
 	}
 }

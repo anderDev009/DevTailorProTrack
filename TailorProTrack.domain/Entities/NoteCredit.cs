@@ -11,5 +11,6 @@ namespace TailorProTrack.domain.Entities
 
 		//navigation props
 		public Client? Client { get; set; }
+		public Payment? Payment { get; set; }
 	}
 }

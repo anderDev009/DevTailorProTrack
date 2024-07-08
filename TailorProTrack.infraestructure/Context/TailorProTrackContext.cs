@@ -166,6 +166,19 @@ namespace TailorProTrack.infraestructure.Context
                 .HasForeignKey(x => x.FK_INVENTORY);
 
             #endregion
+            #region NoteCredit
+            modelBuilder.Entity<NoteCredit>()
+				.HasOne(x => x.Client)
+				.WithMany(x => x.NoteCredit)
+				.HasForeignKey(x => x.FK_CLIENT);
+
+            modelBuilder.Entity<NoteCredit>()
+	            .HasOne(x => x.Payment)
+	            .WithMany(x => x.NoteCredit)
+	            .HasForeignKey(x => x.FK_PAYMENT);
+
+            #endregion
+
             #endregion
 
         }
