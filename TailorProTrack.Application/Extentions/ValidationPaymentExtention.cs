@@ -28,7 +28,7 @@ namespace TailorProTrack.Application.Extentions
             }
          
             //---
-            if(preOrderRepository.Exists(order => order.ID == dtoBase.FkOrder))
+            if(!preOrderRepository.Exists(order => order.ID == dtoBase.FkOrder))
             {
                 throw new PaymentServiceException(configuration["validations:typeDoesntExist"]);
             }
