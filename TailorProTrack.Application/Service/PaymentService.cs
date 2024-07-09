@@ -62,7 +62,7 @@ namespace TailorProTrack.Application.Service
 			try
 			{
 				//Validaciones
-				dtoAdd.IsValid(this.Configuration, this._typeRepository, this._orderRepository);
+				dtoAdd.IsValid(this.Configuration, this._typeRepository, _preOrderRepository);
 				//construccion obj Payment
 				Payment payment = new Payment
 				{
