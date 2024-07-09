@@ -139,6 +139,7 @@ namespace TailorProTrack.Application.Service
 					.Include(x => x.PreOrderProducts)
 					.ThenInclude(x => x.ColorSecondary)
 					.Include(x => x.Client)
+					.OrderBy(x => x.FINISHED == null)
 					.Where(data => (bool)data.COMPLETED == false && !data.REMOVED)
 					.ToList();
 
@@ -192,6 +193,7 @@ namespace TailorProTrack.Application.Service
 															.ThenInclude(x => x.ColorSecondary)
 														.Include(x => x.Client)
 														.Skip((@params.Page - 1) * @params.ItemsPerPage)
+														.OrderBy(x => x.FINISHED == null)
 														.Take(@params.ItemsPerPage).Where(data => !data.REMOVED && !(bool)data.COMPLETED).ToList();
 
 
