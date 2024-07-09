@@ -192,8 +192,7 @@ namespace TailorProTrack.Application.Service
 															.ThenInclude(x => x.ColorSecondary)
 														.Include(x => x.Client)
 														.Skip((@params.Page - 1) * @params.ItemsPerPage)
-														.OrderBy(x => x.FINISHED == null)
-														.Take(@params.ItemsPerPage).Where(data => !data.REMOVED && !(bool)data.COMPLETED).ToList();
+														.Take(@params.ItemsPerPage).Where(data => !data.REMOVED && !(bool)data.FINISHED).ToList();
 
 
 				var preOrdersMapped = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);

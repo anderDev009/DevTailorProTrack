@@ -192,10 +192,11 @@ namespace TailorProTrack.Application.Service
 												   Client = _mapper.Map<ClientDtoGet>(_clientRepository.GetEntity(_preOrderRepository.GetEntity(d.payment.FK_ORDER).FK_CLIENT))
 											   }).ToList();
 				if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
+				decimal amountPending = _repository.GetAmountPendingByIdPreOrder(orderId);
 				var orderPayments = new
 				{
 					payments,
-					AmountPending = decimal.Abs(_repository.GetAmountPendingByIdPreOrder(orderId)),
+					AmountPending = amountPending > 0 ? amountPending : 0
 
 				};
 
