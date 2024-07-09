@@ -63,6 +63,8 @@ namespace TailorProTrack.infraestructure.Repositories
 
 		public override void Remove(Payment entity)
 		{
+			entity = GetEntity(entity.ID);
+
 			//logica para restarle el saldo en caso de que un pago sea cancelado
 			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
 			{
@@ -90,9 +92,8 @@ namespace TailorProTrack.infraestructure.Repositories
 					_noteCreditRepository.Remove(note);
 				}
 			}
-			var entityToRemove = GetEntity(entity.ID);
 
-			_context.Remove(entityToRemove);
+			_context.Remove(entity);
 		}
 
 		public bool ConfirmPayment(int idPreOrder)
