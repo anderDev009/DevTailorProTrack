@@ -123,7 +123,7 @@ namespace TailorProTrack.infraestructure.Repositories
 				var extra = (decimal)((double)amount * 18) / 100;
 				amount += (decimal)extra;
 			}
-			return _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT) - amount;
+			return  amount - _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT);
 		}	
 	}
 }
