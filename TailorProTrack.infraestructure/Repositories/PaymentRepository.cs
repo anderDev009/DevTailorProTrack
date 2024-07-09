@@ -94,6 +94,7 @@ namespace TailorProTrack.infraestructure.Repositories
 			}
 
 			_context.Remove(entity);
+			_context.SaveChanges();
 		}
 
 		public bool ConfirmPayment(int idPreOrder)
