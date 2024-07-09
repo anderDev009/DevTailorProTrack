@@ -242,7 +242,7 @@ namespace TailorProTrack.Application.Service
 			try
 			{
 				//validaciones 
-				dtoUpdate.IsValid(this.Configuration, this._typeRepository, this._orderRepository);
+				dtoUpdate.IsValid(this.Configuration, this._typeRepository, _preOrderRepository);
 				//creacion de obj
 				Payment payment = new Payment
 				{
