@@ -11,17 +11,33 @@ namespace TailorProTrack.infraestructure.Repositories
 	public class NoteCreditRepository(TailorProTrackContext context)
 		: BaseRepository<NoteCredit>(context), INoteCreditRepository
 	{
-		public List<NoteCredit> SearchNoteCreditByClientId(int idClient)
+		public override int Save(NoteCredit entity)
 		{
-			var notes = context.Set<NoteCredit>().Where(x => x.FK_CLIENT == idClient).Include(x => x.Client).ToList();
+			// verificar si existe una nota de credito para el cliente
+			bool exist = context.Set<NoteCredit>().Any(x => x.FK_CLIENT == entity.FK_CLIENT);
+			if (exist)
+			{
+				var noteCredit = context.Set<NoteCredit>().First(x => x.FK_CLIENT == entity.FK_CLIENT);
+				noteCredit.AMOUNT += entity.AMOUNT;
+				Update(entity);
+				return noteCredit.ID;
+			}
+
+			return base.Save(entity);
+		}
+
+		public NoteCredit SearchNoteCreditByClientId(int idClient)
+		{
+			var notes = context.Set<NoteCredit>().Where(x => x.FK_CLIENT == idClient).Include(x => x.Client).FirstOrDefault();
 
 			return notes;
 		}
 
-		public List<NoteCredit> SearchNoteCreditByPaymentId(int idPayment)
+		public void ExtractAmount(int idNoteCredit, decimal amount)
 		{
-			var notes = context.Set<NoteCredit>().Where(x => x.FK_PAYMENT == idPayment).ToList();
-			return notes;
+			var note = GetEntity(idNoteCredit);
+			note.AMOUNT -= amount;
+		
 		}
 	}
 }

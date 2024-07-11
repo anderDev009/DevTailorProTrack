@@ -217,6 +217,36 @@ namespace TailorProTrack.Application.Service
 			return _repository.GetAmountPendingByIdPreOrder(orderId);
 		}
 
+		public ServiceResult AddPaymentUsingNoteCredits(PaymentDtoAddWithNoteCredit dtoAdd)
+		{
+			ServiceResult result = new();
+			try
+			{
+				//Validaciones
+				dtoAdd.IsValid(this.Configuration, this._typeRepository, _preOrderRepository);
+				//construccion obj Payment
+				Payment payment = new Payment
+				{
+					AMOUNT = dtoAdd.Amount,
+					FK_ORDER = dtoAdd.FkOrder,
+					FK_TYPE_PAYMENT = dtoAdd.FkTypePayment,
+					FK_BANK_ACCOUNT = dtoAdd.FkBankAccount,
+					USER_CREATED = dtoAdd.User,
+					ACCOUNT_PAYMENT = dtoAdd.AccountPayment,
+					ACCOUNT_NUMBER = dtoAdd.DocumentNumber
+				};
+
+				this._repository.SaveWithNoteCredit(payment);
+				result.Message = "Agregado con exito.";
+			}
+			catch (Exception e)
+			{
+				result.Success = false;
+				result.Message = $"Error: {e.Message}";
+			}
+			return result;
+		}
+
 		public ServiceResult Remove(PaymentDtoRemove dtoRemove)
 		{
 			ServiceResult result = new ServiceResult();

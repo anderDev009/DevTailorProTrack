@@ -66,7 +66,18 @@ namespace TailorProTrack.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPut("UpdatePayment")]
+        [HttpPost("AddPaymentWithCredit")]
+        public IActionResult AddPaymentWithCredit([FromBody] PaymentDtoAddWithNoteCredit dtoAdd)
+		{
+			var result = _service.AddPaymentUsingNoteCredits(dtoAdd);
+			if (!result.Success)
+			{
+				return BadRequest(result);
+			}
+			return Ok(result);
+		}
+
+		[HttpPut("UpdatePayment")]
         public IActionResult UpdatePayment([FromBody] PaymentDtoUpdate dtoUpdate)
         {
             var result = this._service.Update(dtoUpdate);

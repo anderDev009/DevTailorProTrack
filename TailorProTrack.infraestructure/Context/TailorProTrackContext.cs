@@ -173,11 +173,7 @@ namespace TailorProTrack.infraestructure.Context
 				.WithMany(x => x.NoteCredit)
 				.HasForeignKey(x => x.FK_CLIENT);
 
-            modelBuilder.Entity<NoteCredit>()
-	            .HasOne(x => x.Payment)
-	            .WithMany(x => x.NoteCredit)
-	            .HasForeignKey(x => x.FK_PAYMENT);
-
+     
             #endregion
 
             #endregion

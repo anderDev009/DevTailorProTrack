@@ -12,7 +12,7 @@ namespace TailorProTrack.domain.Entities
         public decimal AMOUNT { get; set; }
         
         public string? ACCOUNT_NUMBER { get; set; }
+        public bool? NOTE_CREDIT { get; set; }
 
-        public List<NoteCredit>? NoteCredit { get; set; }
 	}
 }

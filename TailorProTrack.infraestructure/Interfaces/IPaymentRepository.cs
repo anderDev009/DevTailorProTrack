@@ -9,5 +9,7 @@ namespace TailorProTrack.infraestructure.Interfaces
     {
         bool ConfirmPayment(int idPreOrder);
         decimal GetAmountPendingByIdPreOrder(int idPreOrder);
+
+        bool SaveWithNoteCredit(Payment payment);
     }
 }

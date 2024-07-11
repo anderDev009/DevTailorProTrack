@@ -5,7 +5,8 @@ namespace TailorProTrack.infraestructure.Interfaces;
 
 public interface INoteCreditRepository : IBaseRepository<NoteCredit>
 {
-	List<NoteCredit> SearchNoteCreditByClientId(int idClient);
-	List<NoteCredit> SearchNoteCreditByPaymentId(int idPayment);
+	NoteCredit SearchNoteCreditByClientId(int idClient);
+	void ExtractAmount(int idNoteCredit, decimal amount);
+	
 
 }

@@ -17,7 +17,7 @@ namespace TailorProTrack.Api.Controllers
 		[HttpGet("GetAll")]
 		public IActionResult Index([FromQuery] PaginationParams @params)
 		{
-			ServiceResultWithHeader result = noteCreditService.GetAll(@params);
+			ServiceResultWithHeader result = noteCreditService.GetAllWithInclude(@params,new List<string>{"Client"});
 
 			ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
 
@@ -32,7 +32,7 @@ namespace TailorProTrack.Api.Controllers
 		[HttpGet("GetById")]
 		public IActionResult GetById(int id)
 		{
-			var result = noteCreditService.GetById(id);
+			var result = noteCreditService.GetByIdWithInclude(id,new List<string>{"Client"});
 			if (!result.Success)
 			{
 				return StatusCode(500,result);

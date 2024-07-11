@@ -437,13 +437,12 @@ namespace TailorProTrack.Application.Mapper
 				.ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
 				.ForMember(b => b.REMOVED, opt => opt.Ignore());
 			#endregion
-			#region
+			#region NoteCredit
 			CreateMap<NoteCredit,NoteCreditDtoGet>()
 				.ForMember(x => x.Id, src => src.MapFrom(x => x.ID))
-				.ForMember(x => x.FkPayment, src => src.MapFrom(x => x.FK_PAYMENT))
 				.ForMember(x => x.Amount, src => src.MapFrom(x => x.AMOUNT))
 				.ForMember(x => x.DateCreated, src => src.MapFrom(x => x.CREATED_AT))
-				.ForMember(x => x.Client, src => src.MapFrom(x => x.Client))
+				.ForMember(x => x.Client, src => src.MapFrom(x => x.Client ))
 				.ReverseMap()
 				.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
 				.ForMember(b => b.USER_MOD, opt => opt.Ignore())
@@ -452,7 +451,6 @@ namespace TailorProTrack.Application.Mapper
 
 			CreateMap<NoteCredit,NoteCreditDtoAdd>()
 				.ForMember(x => x.Amount, opt => opt.MapFrom(x => x.AMOUNT))
-				.ForMember(x => x.FkPayment, opt => opt.MapFrom(x => x.FK_PAYMENT))
 				.ForMember(x => x.FkClient, opt => opt.MapFrom( x => x.FK_CLIENT))
 				.ReverseMap()
 				.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
@@ -463,7 +461,6 @@ namespace TailorProTrack.Application.Mapper
 			CreateMap<NoteCredit,NoteCreditDtoUpdate>()
 				.ForMember(x => x.Id, opt => opt.MapFrom(x => x.ID))
 				.ForMember(x => x.Amount, opt => opt.MapFrom(x => x.AMOUNT))
-				.ForMember(x => x.FkPayment, opt => opt.MapFrom(x => x.FK_PAYMENT))
 				.ForMember(x => x.FkClient, opt => opt.MapFrom(x => x.FK_CLIENT))
 				.ReverseMap()
 				.ForMember(b => b.USER_CREATED, opt => opt.Ignore())

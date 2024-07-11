@@ -52,7 +52,6 @@ namespace TailorProTrack.infraestructure.Repositories
 				{
 					AMOUNT = Math.Abs(amountPending),
 					FK_CLIENT = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT,
-					FK_PAYMENT = entity.ID
 				});
 			}
 
@@ -83,15 +82,7 @@ namespace TailorProTrack.infraestructure.Repositories
 				_context.Set<PreOrder>().Update(preOrder);
 				_context.SaveChanges();
 			}
-			//revisar si tiene notas de credito disponibles
-			var noteCredits = _noteCreditRepository.SearchNoteCreditByPaymentId(entity.ID);
-			if (noteCredits.Count > 0)
-			{
-				foreach (var note in noteCredits)
-				{
-					_noteCreditRepository.Remove(note);
-				}
-			}
+		
 
 			_context.Remove(entity);
 			_context.SaveChanges();
@@ -126,6 +117,54 @@ namespace TailorProTrack.infraestructure.Repositories
 				amount += (decimal)extra;
 			}
 			return  amount - _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT);
-		}	
+		}
+
+		public bool SaveWithNoteCredit(Payment entity)
+		{
+
+			var note = _noteCreditRepository.SearchNoteCreditByClientId(_context.Set<PreOrder>()
+				.First(x => x.ID == entity.FK_ORDER).FK_CLIENT);
+
+			var entityToSend = new Payment();
+			entityToSend = entity;
+
+			if (note is not { AMOUNT: > 0 }) throw new Exception("No se puede realizar el pago con nota de credito.");
+
+			
+			var amountToUse = note.AMOUNT;
+			//obteniendo el monto pendiente para compararlo con la nota de credito
+			var amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
+			//---
+			//realizar un pago con nota de credito
+			if (amountPending < note.AMOUNT)
+			{
+				amountToUse = amountPending;
+			}
+
+			entity.AMOUNT = amountToUse;
+			entity.FK_BANK_ACCOUNT = null;
+			entity.CREATED_AT = DateTime.Now;
+			entity.USER_CREATED = 1;
+			ConfirmPayment(entity.FK_ORDER);
+			this._context.Add(entity);
+			this._context.SaveChanges();
+			//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
+			//en caso de que sea negativo se toma en cuenta una nota de credito
+			amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
+			if (amountPending < 0)
+			{
+				_noteCreditRepository.Save(new NoteCredit
+				{
+					AMOUNT = Math.Abs(amountPending),
+					FK_CLIENT = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT,
+				});
+			}
+	
+			entityToSend.ID = 0;
+			Save(entityToSend);
+			_noteCreditRepository.ExtractAmount(note.ID, amountToUse);
+			return true;
+
+		}
 	}
 }
