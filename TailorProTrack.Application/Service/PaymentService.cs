@@ -107,6 +107,7 @@ namespace TailorProTrack.Application.Service
 																		   .Select(d => new PaymentDtoGet
 																		   {
 																			   IdOrder = d.Key,
+																			   //Client = d
 																			   AccountPayment = d
 																			   .Select(x => x.payment.ACCOUNT_PAYMENT).First(),
 																			   Amount = d.Sum(d => d.payment.AMOUNT),
@@ -170,24 +171,13 @@ namespace TailorProTrack.Application.Service
 																			type => type.ID,
 																			(payment, type) => new { payment, type }
 																		   )
-															.Join
-															 (this._bankAccRepository.GetEntities()
-																					 .Join(this._bankRepository.GetEntities(),
-																						   bankAcc => bankAcc.FK_BANK,
-																						   bank => bank.ID,
-																						   (bankAcc, bank) => new { bankAcc, bank }
-																					 ).Select(data => new { data.bankAcc.ID, data.bankAcc.BANK_ACCOUNT, data.bank.NAME }),
-															group => group.payment.FK_BANK_ACCOUNT,
-															bankAcc => bankAcc.ID,
-															(group, bankAcc) => new { group.payment, group.type, bankAcc }
-															)
 											   .Select(d => new
 											   {
 												   Id = d.payment.ID,
 												   Amount = d.payment.AMOUNT,
 												   Type = d.type.TYPE_PAYMENT,
-												   Bank = d.bankAcc.NAME,
-												   Account = d.bankAcc.BANK_ACCOUNT,
+												   Bank = d.payment.FK_BANK_ACCOUNT != null ? _bankRepository.GetEntity(_bankAccRepository.GetEntity((int)d.payment.FK_BANK_ACCOUNT).FK_BANK).NAME:"NA",
+												   Account = d.payment.FK_BANK_ACCOUNT != null ? _bankAccRepository.GetEntity((int)d.payment.FK_BANK_ACCOUNT).BANK_ACCOUNT : "Caja",
 												   DocumentNumber = d.payment.ACCOUNT_NUMBER,
 												   Client = _mapper.Map<ClientDtoGet>(_clientRepository.GetEntity(_preOrderRepository.GetEntity(d.payment.FK_ORDER).FK_CLIENT))
 											   }).ToList();
