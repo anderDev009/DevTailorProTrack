@@ -139,12 +139,14 @@ namespace TailorProTrack.Application.Service
 					.Include(x => x.PreOrderProducts)
 					.ThenInclude(x => x.ColorSecondary)
 					.Include(x => x.Client)
+					.ThenInclude(x => x.NoteCredit)
 					.OrderBy(x => x.FINISHED == null)
 					.Where(data => (bool)data.COMPLETED == false && !data.REMOVED)
 					.ToList();
 
 
 				var preOrdersMapped = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
+				var preOrdersToReturn = new List<PreOrderDtoGetMapped>();
 				foreach (var item in preOrdersMapped)
 				{
 
@@ -156,13 +158,17 @@ namespace TailorProTrack.Application.Service
 						_preOrderRepository.Complete(item.ID);
 						item.IsCompleted = _orderService.ConfirmOrdersIsComplete(item.ID);
 					}
+					else
+					{
+						preOrdersToReturn.Add(item);
+					}
 					
 					
 
 					
 				}
 
-				result.Data = preOrdersMapped;
+				result.Data = preOrdersToReturn;
 				result.Message = "Obtenidos con exito";
 			}
 			catch (Exception ex)

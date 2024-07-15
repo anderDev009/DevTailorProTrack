@@ -167,6 +167,8 @@ namespace TailorProTrack.Application.Mapper
 				.ForMember(x => x.L_surname, opt => opt.MapFrom(m => m.LAST_NAME))
 				.ForMember(x => x.Dni, opt => opt.MapFrom(m => m.DNI))
 				.ForMember(x => x.RNC, opt => opt.MapFrom(m => m.RNC))
+				.ForMember(x => x.HasNoteCredit, opt => opt.MapFrom(x => x.NoteCredit.First().AMOUNT > 0))
+				.ForMember(x => x.AmountNoteCredit, opt => opt.MapFrom(x => x.NoteCredit.First().AMOUNT))
 				 .ReverseMap()
 					.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
 					.ForMember(b => b.USER_MOD, opt => opt.Ignore())
