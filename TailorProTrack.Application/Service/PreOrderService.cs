@@ -67,6 +67,7 @@ namespace TailorProTrack.Application.Service
 					DATE_DELIVERY = dtoAdd.DateDelivery,
 					COMPLETED = false,
 					FINISHED = null,
+					ITBIS = dtoAdd.Itbis,
 				};
 
 				int id = this._preOrderRepository.Save(preOrder);
@@ -138,29 +139,36 @@ namespace TailorProTrack.Application.Service
 					.Include(x => x.PreOrderProducts)
 					.ThenInclude(x => x.ColorSecondary)
 					.Include(x => x.Client)
+					.ThenInclude(x => x.NoteCredit)
+					.OrderBy(x => x.FINISHED == null)
 					.Where(data => (bool)data.COMPLETED == false && !data.REMOVED)
 					.ToList();
 
 
 				var preOrdersMapped = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
+				var preOrdersToReturn = new List<PreOrderDtoGetMapped>();
 				foreach (var item in preOrdersMapped)
 				{
 
 					item.AmountBase = _paymentRepository.GetAmountPendingByIdPreOrder(item.ID);
-					if (item.AmountBase >= 0)
-					{
-						_preOrderRepository.Complete(item.ID);
-					}
-					if (item.AmountBase < 0)
+					if (item.AmountBase <= 0)
 					{
 						item.AmountBase = Math.Abs((decimal)item.AmountBase);
 
+						_preOrderRepository.Complete(item.ID);
+						item.IsCompleted = _orderService.ConfirmOrdersIsComplete(item.ID);
 					}
+					else
+					{
+						preOrdersToReturn.Add(item);
+					}
+					
+					
 
-					item.IsCompleted = _orderService.ConfirmOrdersIsComplete(item.ID);
+					
 				}
 
-				result.Data = preOrdersMapped;
+				result.Data = preOrdersToReturn;
 				result.Message = "Obtenidos con exito";
 			}
 			catch (Exception ex)
@@ -192,7 +200,8 @@ namespace TailorProTrack.Application.Service
 														.Include(x => x.Client)
 														.Skip((@params.Page - 1) * @params.ItemsPerPage)
 														.OrderBy(x => x.FINISHED == null)
-														.Take(@params.ItemsPerPage).Where(data => !data.REMOVED && !(bool)data.COMPLETED).ToList();
+														.Where(data => !data.REMOVED && !(bool)data.COMPLETED)
+														.Take(@params.ItemsPerPage).ToList();
 
 
 				var preOrdersMapped = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);

@@ -14,5 +14,6 @@ namespace TailorProTrack.domain.Entities
 
         public List<Order>? Order {  get; set; }
         public List<PreOrder>? PreOrder { get; set; }
-    }
+        public List<NoteCredit>? NoteCredit { get; set; }
+	}
 }

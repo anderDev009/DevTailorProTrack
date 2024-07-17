@@ -18,12 +18,13 @@ namespace TailorProTrack.Ioc.Dependencies
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IPaymentTypeRepository, PaymentTypeRepository>();
             services.AddTransient<IPaymentExpensesRepository, PaymentExpensesRepositoryRepository>();
+            services.AddTransient<INoteCreditRepository, NoteCreditRepository>();
 
             //servicios
             services.AddTransient<IPaymentService,PaymentService>();
             services.AddTransient<IPaymentTypeService,PaymentTypeService>();
             services.AddTransient<IPaymentExpensesService, PaymentExpenseService>();
-
+            services.AddTransient<INoteCreditService, NoteCreditService>();
         }
     }
 }

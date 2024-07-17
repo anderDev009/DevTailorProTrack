@@ -62,7 +62,7 @@ namespace TailorProTrack.Application.Service
 			try
 			{
 				//Validaciones
-				dtoAdd.IsValid(this.Configuration, this._typeRepository, this._orderRepository);
+				dtoAdd.IsValid(this.Configuration, this._typeRepository, _preOrderRepository);
 				//construccion obj Payment
 				Payment payment = new Payment
 				{
@@ -107,6 +107,7 @@ namespace TailorProTrack.Application.Service
 																		   .Select(d => new PaymentDtoGet
 																		   {
 																			   IdOrder = d.Key,
+																			   //Client = d
 																			   AccountPayment = d
 																			   .Select(x => x.payment.ACCOUNT_PAYMENT).First(),
 																			   Amount = d.Sum(d => d.payment.AMOUNT),
@@ -170,32 +171,22 @@ namespace TailorProTrack.Application.Service
 																			type => type.ID,
 																			(payment, type) => new { payment, type }
 																		   )
-															.Join
-															 (this._bankAccRepository.GetEntities()
-																					 .Join(this._bankRepository.GetEntities(),
-																						   bankAcc => bankAcc.FK_BANK,
-																						   bank => bank.ID,
-																						   (bankAcc, bank) => new { bankAcc, bank }
-																					 ).Select(data => new { data.bankAcc.ID, data.bankAcc.BANK_ACCOUNT, data.bank.NAME }),
-															group => group.payment.FK_BANK_ACCOUNT,
-															bankAcc => bankAcc.ID,
-															(group, bankAcc) => new { group.payment, group.type, bankAcc }
-															)
 											   .Select(d => new
 											   {
 												   Id = d.payment.ID,
 												   Amount = d.payment.AMOUNT,
 												   Type = d.type.TYPE_PAYMENT,
-												   Bank = d.bankAcc.NAME,
-												   Account = d.bankAcc.BANK_ACCOUNT,
+												   Bank = d.payment.FK_BANK_ACCOUNT != null ? _bankRepository.GetEntity(_bankAccRepository.GetEntity((int)d.payment.FK_BANK_ACCOUNT).FK_BANK).NAME : "NA",
+												   Account = d.payment.FK_BANK_ACCOUNT != null ? _bankAccRepository.GetEntity((int)d.payment.FK_BANK_ACCOUNT).BANK_ACCOUNT : "Caja",
 												   DocumentNumber = d.payment.ACCOUNT_NUMBER,
 												   Client = _mapper.Map<ClientDtoGet>(_clientRepository.GetEntity(_preOrderRepository.GetEntity(d.payment.FK_ORDER).FK_CLIENT))
 											   }).ToList();
 				if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
+				decimal amountPending = _repository.GetAmountPendingByIdPreOrder(orderId);
 				var orderPayments = new
 				{
 					payments,
-					AmountPending = decimal.Abs(_repository.GetAmountPendingByIdPreOrder(orderId)),
+					AmountPending = amountPending > 0 ? amountPending : 0
 
 				};
 
@@ -214,6 +205,36 @@ namespace TailorProTrack.Application.Service
 		public decimal GetAmountByIdOrder(int orderId)
 		{
 			return _repository.GetAmountPendingByIdPreOrder(orderId);
+		}
+
+		public ServiceResult AddPaymentUsingNoteCredits(PaymentDtoAddWithNoteCredit dtoAdd)
+		{
+			ServiceResult result = new();
+			try
+			{
+				//Validaciones
+				dtoAdd.IsValid(this.Configuration, this._typeRepository, _preOrderRepository);
+				//construccion obj Payment
+				Payment payment = new Payment
+				{
+					AMOUNT = dtoAdd.Amount,
+					FK_ORDER = dtoAdd.FkOrder,
+					FK_TYPE_PAYMENT = dtoAdd.FkTypePayment,
+					FK_BANK_ACCOUNT = dtoAdd.FkBankAccount,
+					USER_CREATED = dtoAdd.User,
+					ACCOUNT_PAYMENT = dtoAdd.AccountPayment,
+					ACCOUNT_NUMBER = dtoAdd.DocumentNumber
+				};
+
+				this._repository.SaveWithNoteCredit(payment);
+				result.Message = "Agregado con exito.";
+			}
+			catch (Exception e)
+			{
+				result.Success = false;
+				result.Message = $"Error: {e.Message}";
+			}
+			return result;
 		}
 
 		public ServiceResult Remove(PaymentDtoRemove dtoRemove)
@@ -242,7 +263,7 @@ namespace TailorProTrack.Application.Service
 			try
 			{
 				//validaciones 
-				dtoUpdate.IsValid(this.Configuration, this._typeRepository, this._orderRepository);
+				dtoUpdate.IsValid(this.Configuration, this._typeRepository, _preOrderRepository);
 				//creacion de obj
 				Payment payment = new Payment
 				{

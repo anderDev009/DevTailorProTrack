@@ -11,7 +11,7 @@ namespace TailorProTrack.Application.Extentions
         public static ServiceResult IsValid(this PaymentDtoBase dtoBase,
                                             IConfiguration configuration,
                                             IPaymentTypeRepository typePaymentRepository,
-                                            IOrderRepository orderRepository) 
+                                            IPreOrderRepository preOrderRepository) 
         {
             ServiceResult result = new ServiceResult();
             result.Success = false;
@@ -28,7 +28,7 @@ namespace TailorProTrack.Application.Extentions
             }
          
             //---
-            if(orderRepository.Exists(order => order.ID == dtoBase.FkOrder))
+            if(!preOrderRepository.Exists(order => order.ID == dtoBase.FkOrder))
             {
                 throw new PaymentServiceException(configuration["validations:typeDoesntExist"]);
             }

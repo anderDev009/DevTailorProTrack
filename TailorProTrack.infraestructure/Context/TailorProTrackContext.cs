@@ -35,8 +35,9 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<BuyInventoryDetail> BUY_INVENTORY_DETAIL { get; set; }
         public DbSet<ProductColor> PRODUCTS_COLOR { get; set; }
         public DbSet<ProductSize> PRODUCTS_SIZE { get; set; }
+        public DbSet<NoteCredit> NOTE_CREDIT { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             #region Foreign Keys
@@ -166,6 +167,15 @@ namespace TailorProTrack.infraestructure.Context
                 .HasForeignKey(x => x.FK_INVENTORY);
 
             #endregion
+            #region NoteCredit
+            modelBuilder.Entity<NoteCredit>()
+				.HasOne(x => x.Client)
+				.WithMany(x => x.NoteCredit)
+				.HasForeignKey(x => x.FK_CLIENT);
+
+     
+            #endregion
+
             #endregion
 
         }

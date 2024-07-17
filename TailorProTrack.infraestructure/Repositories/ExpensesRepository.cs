@@ -19,8 +19,29 @@ namespace TailorProTrack.infraestructure.Repositories
             _bankAccountRepository = bankAccountRepository;
         }
 
-  
-     
+
+        public override void Remove(Expenses entity)
+        {
+			var paymentsInThisExpense = _context.Set<PaymentExpenses>().Where(x => x.FK_EXPENSE == entity.ID).ToList();
+			//borrar los pagos de este gasto
+			foreach (var payment in paymentsInThisExpense)
+			{
+				//asignarle el monto a la cuenta correspondiente
+				if (payment.FK_BANK_ACCOUNT != null || payment.FK_BANK_ACCOUNT > 0)
+				{
+					var bankAccount = _context.Set<BankAccount>().Find(payment.FK_BANK_ACCOUNT);
+					bankAccount.BALANCE += payment.AMOUNT;
+					_bankAccountRepository.Update(bankAccount);
+				}
+				_context.Set<PaymentExpenses>().Remove(payment);
+				_context.SaveChanges();
+			}
+			var entityToRemove = GetEntity(entity.ID);
+			entityToRemove.REMOVED = true;
+			_context.Set<Expenses>().Update(entityToRemove);
+			_context.SaveChanges();
+        }
+
         public void ConfirmExpenses(int idExpense)
         {
             Expenses expense = this.GetEntity(idExpense);

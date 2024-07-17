@@ -13,5 +13,12 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             _ctx = ctx;
         }
+
+        public override void Remove(ProductSize entity)
+        {
+			var productSize = GetEntity(entity.ID);
+			_ctx.Remove(productSize);
+			_ctx.SaveChanges();
+		}
     }
 }
