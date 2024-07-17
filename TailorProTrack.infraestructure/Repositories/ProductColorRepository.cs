@@ -16,6 +16,12 @@ namespace TailorProTrack.infraestructure.Repositories
             _ctx = ctx;
         }
 
+        public override void Remove(ProductColor entity)
+        {
+	        var productColor = GetEntity(entity.ID);
+	        _ctx.Remove(productColor);
+	        _ctx.SaveChanges();
+        }
         //public Task<Product> GetProductByProductIdAsync(int productId)
         //{
         //    ProductColor product = _ctx.Set<ProductColor>()

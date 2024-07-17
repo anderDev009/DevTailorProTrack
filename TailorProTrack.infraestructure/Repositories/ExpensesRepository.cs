@@ -19,8 +19,9 @@ namespace TailorProTrack.infraestructure.Repositories
             _bankAccountRepository = bankAccountRepository;
         }
 
-  
-     
+		
+
+
         public void ConfirmExpenses(int idExpense)
         {
             Expenses expense = this.GetEntity(idExpense);

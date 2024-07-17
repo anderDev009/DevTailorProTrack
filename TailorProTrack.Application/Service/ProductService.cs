@@ -164,7 +164,9 @@ namespace TailorProTrack.Application.Service
             {
                 Product product = new Product()
                 {
-                    REMOVED = dtoRemove.Removed,
+
+                    ID = dtoRemove.Id,
+					REMOVED = dtoRemove.Removed,
                     USER_MOD = dtoRemove.User,
                     MODIFIED_AT = dtoRemove.Date
                 };

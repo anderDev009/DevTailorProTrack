@@ -23,13 +23,7 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             return this._entities.Where(data => data.ID == id).ToList();
         }
-        public override void Remove(Product entity)
-        {
-            entity.REMOVED = false;
-            entity.USER_MOD = entity.USER_MOD;
-            this._context.Update(entity);
-            this._context.SaveChanges();
-        }
+
         public override void Update(Product entity)
         {
             var productToUpdate = base.GetEntity(entity.ID);
