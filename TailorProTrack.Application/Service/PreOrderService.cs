@@ -160,6 +160,7 @@ namespace TailorProTrack.Application.Service
 					}
 					else
 					{
+						item.Amount = _preOrderProductRepository.GetAmountByIdPreOrder(item.ID);
 						preOrdersToReturn.Add(item);
 					}
 					

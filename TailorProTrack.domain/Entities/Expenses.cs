@@ -15,5 +15,6 @@ namespace TailorProTrack.domain.Entities
         public bool? COMPLETED {  get; set; }
 
         public List<PaymentExpenses>? PaymentsExpenses { get; set; }
-    }
+        public List<AccountCredit>? AccountCredit { get; set; }
+	}
 }

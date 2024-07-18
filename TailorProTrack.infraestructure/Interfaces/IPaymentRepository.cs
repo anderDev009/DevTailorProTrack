@@ -11,5 +11,7 @@ namespace TailorProTrack.infraestructure.Interfaces
         decimal GetAmountPendingByIdPreOrder(int idPreOrder);
 
         bool SaveWithNoteCredit(Payment payment);
-    }
+        decimal GetDebitAmount(int idAccount);
+		decimal GetDebitAmountThisMonth(int idAccount);    
+	}
 }

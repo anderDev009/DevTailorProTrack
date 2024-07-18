@@ -11,13 +11,15 @@ namespace TailorProTrack.infraestructure.Repositories
 		private readonly TailorProTrackContext _context;
 		private readonly IPreOrderProductsRepository _preOrderProductRepository;
 		private readonly INoteCreditRepository _noteCreditRepository;
+		private readonly IBankAccountRepository _bankAccountRepository;
 
 		public PaymentRepository(TailorProTrackContext context, IPreOrderProductsRepository preOrderProductRepository,
-			INoteCreditRepository noteCreditRepository) : base(context)
+			INoteCreditRepository noteCreditRepository, IBankAccountRepository bankaAccountRepository) : base(context)
 		{
 			_context = context;
 			_noteCreditRepository = noteCreditRepository;
 			_preOrderProductRepository = preOrderProductRepository;
+			_bankAccountRepository = bankaAccountRepository;
 		}
 
 		
@@ -29,14 +31,15 @@ namespace TailorProTrack.infraestructure.Repositories
 			//logica para sumarle el monto a la cuenta
 			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT != 0)
 			{
-				BankAccount account = _context.Set<BankAccount>().Find((int)entity.FK_BANK_ACCOUNT);
+				var account = _bankAccountRepository.GetEntity((int)entity.FK_BANK_ACCOUNT);
 				if (account == null)
 				{
 					throw new Exception("Cuenta de banco invalida.");
 				}
 				//sumandole el monto a la cuenta
-				account.BALANCE += entity.AMOUNT;
-				//actualizando el monto
+				account.DEBIT_AMOUNT = GetDebitAmount((int)entity.FK_BANK_ACCOUNT);
+                account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
+                //actualizando el monto
 				_context.Set<BankAccount>().Update(account);
 			}
 
@@ -64,15 +67,7 @@ namespace TailorProTrack.infraestructure.Repositories
 		{
 			entity = GetEntity(entity.ID);
 
-			//logica para restarle el saldo en caso de que un pago sea cancelado
-			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
-			{
-				BankAccount account = _context.Set<BankAccount>().Find(entity.FK_BANK_ACCOUNT);
-				account.BALANCE -= entity.AMOUNT;
-				_context.Set<BankAccount>().Update(account);
-				_context.SaveChanges();
-			}
-
+			
 			//validacion para  saber si el pedido ha sido pagado por completo
 			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
 			if (amountPending > 0)
@@ -86,6 +81,16 @@ namespace TailorProTrack.infraestructure.Repositories
 
 			_context.Remove(entity);
 			_context.SaveChanges();
+			//logica para restarle el saldo en caso de que un pago sea cancelado
+			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
+			{
+				BankAccount account = _context.Set<BankAccount>().Find(entity.FK_BANK_ACCOUNT);
+				account.DEBIT_AMOUNT = this.GetDebitAmount((int)entity.FK_BANK_ACCOUNT);
+				account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
+				_context.Set<BankAccount>().Update(account);
+				_context.SaveChanges();
+			}
+
 		}
 
 		public bool ConfirmPayment(int idPreOrder)
@@ -119,6 +124,17 @@ namespace TailorProTrack.infraestructure.Repositories
 			return  amount - _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT);
 		}
 
+		public decimal GetDebitAmount(int idAccount)
+		{
+			return _context.Set<Payment>().Where(x => x.FK_BANK_ACCOUNT == idAccount).Sum(x => x.AMOUNT);
+		}
+
+		public decimal GetDebitAmountThisMonth(int idAccount)
+		{
+			var now = DateTime.Now;
+			var firstDayMonth = new DateTime(now.Year, now.Month, 1);
+			return _context.Set<Payment>().Where(x => x.CREATED_AT >= firstDayMonth && x.FK_BANK_ACCOUNT == idAccount).Sum(x => x.AMOUNT);
+		}
 		public bool SaveWithNoteCredit(Payment entity)
 		{
 
