@@ -60,7 +60,9 @@ namespace TailorProTrack.Application.Service
                                                                     Account = data.bankAcc.BANK_ACCOUNT,
                                                                     BankType = data.bank.NAME,
                                                                     Balance = data.bankAcc.BALANCE,
-                                                                }).ToList();
+                                                                    CreditAmount = data.bankAcc.CREDIT_AMOUNT,
+																	DebitAmount = data.bankAcc.DEBIT_AMOUNT
+																}).ToList();
 
                 result.Header = header;
                 result.Data = banksAccount;
@@ -92,7 +94,9 @@ namespace TailorProTrack.Application.Service
                                                                     Account = data.bankAcc.BANK_ACCOUNT,
                                                                     BankType = data.bank.NAME, 
                                                                     Balance = data.bankAcc.BALANCE,
-                                                                });
+																	CreditAmount = data.bankAcc.CREDIT_AMOUNT,
+                                                                    DebitAmount = data.bankAcc.DEBIT_AMOUNT
+																});
 
                 result.Data = bankAccount;
                 result.Message = "Agregado con exito";
