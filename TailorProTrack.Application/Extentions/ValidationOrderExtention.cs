@@ -53,8 +53,8 @@ namespace TailorProTrack.Application.Extentions
 				
 				if (preOrderProduct != null)
 				{
-					var quantity = preOrderProduct.QUANTITY - preOrderProduct.QUANTITY;
-					if (dto.Quantity > quantity)
+					//var quantity = preOrderProduct.QUANTITY - preOrderProduct.QUANTITY;
+					if (dto.Quantity > preOrderProduct.QUANTITY)
 					{
 						throw new OrderProductServiceException("No puedes poner mas de lo solicitado en el pedido.");
 					}
