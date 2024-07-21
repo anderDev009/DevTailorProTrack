@@ -415,6 +415,7 @@ namespace TailorProTrack.Application.Mapper
 				.ForMember(b => b.REMOVED, opt => opt.Ignore());
 
 			#endregion
+
 			#region CodeDgi
 
 			CreateMap<CodesDgi, CodeDgiDtoAdd>()
