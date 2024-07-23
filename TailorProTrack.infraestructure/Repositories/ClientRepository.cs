@@ -20,11 +20,10 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             entity.CREATED_AT = DateTime.Now;
 
+            _noteCreditRepository.Save(new NoteCredit { AMOUNT = 0, FK_CLIENT = entity.ID });
             this._context.Add(entity);
             this._context.SaveChanges();
-			_noteCreditRepository.Save(new NoteCredit { AMOUNT = 0, FK_CLIENT = entity.ID });
-
-			return entity.ID;
+            return entity.ID;
         }
         public override void Update(Client entity)
         {
