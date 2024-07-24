@@ -111,7 +111,8 @@ namespace TailorProTrack.Application.Service
 																			   AccountPayment = d
 																			   .Select(x => x.payment.ACCOUNT_PAYMENT).First(),
 																			   Amount = d.Sum(d => d.payment.AMOUNT),
-																			   PaymentNumbers = d.Select(d => d.type.ID).Count()
+																			   PaymentNumbers = d.Select(d => d.type.ID).Count(),
+																			   Client = _mapper.Map<ClientDtoGet>(_clientRepository.GetEntity(_preOrderRepository.GetEntity(d.Key).FK_CLIENT))
 																		   }).Skip((@params.Page - 1) * @params.ItemsPerPage)
 																		   .Take(@params.ItemsPerPage).ToList();
 				result.Data = payments;
