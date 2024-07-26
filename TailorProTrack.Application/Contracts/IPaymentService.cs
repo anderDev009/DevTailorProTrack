@@ -10,5 +10,6 @@ namespace TailorProTrack.Application.Contracts
         ServiceResult GetPaymentsByOrderId(int orderId);
         decimal GetAmountByIdOrder(int orderId);
         ServiceResult AddPaymentUsingNoteCredits(PaymentDtoAddWithNoteCredit dtoAdd);
+        ServiceResult DetailBankAccount(int id);
     }
 }

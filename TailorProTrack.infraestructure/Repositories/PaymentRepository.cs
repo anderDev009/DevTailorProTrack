@@ -22,7 +22,7 @@ namespace TailorProTrack.infraestructure.Repositories
 			_bankAccountRepository = bankaAccountRepository;
 		}
 
-		
+
 
 		public override int Save(Payment entity)
 		{
@@ -38,8 +38,8 @@ namespace TailorProTrack.infraestructure.Repositories
 				}
 				//sumandole el monto a la cuenta
 				account.DEBIT_AMOUNT = entity.AMOUNT + GetDebitAmount((int)entity.FK_BANK_ACCOUNT);
-                account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
-                //actualizando el monto
+				account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
+				//actualizando el monto
 				_context.Set<BankAccount>().Update(account);
 			}
 
@@ -49,7 +49,7 @@ namespace TailorProTrack.infraestructure.Repositories
 			//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
 			//en caso de que sea negativo se toma en cuenta una nota de credito
 			decimal amountPending = GetAmountPendingNegativeByIdPreOrder(entity.FK_ORDER);
-			if (amountPending <  0)
+			if (amountPending < 0)
 			{
 				_noteCreditRepository.Save(new NoteCredit
 				{
@@ -67,7 +67,7 @@ namespace TailorProTrack.infraestructure.Repositories
 		{
 			entity = GetEntity(entity.ID);
 
-			
+
 			//validacion para  saber si el pedido ha sido pagado por completo
 			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
 			if (amountPending > 0)
@@ -75,23 +75,21 @@ namespace TailorProTrack.infraestructure.Repositories
 				PreOrder preOrder = _context.Set<PreOrder>().Find(entity.FK_ORDER);
 				preOrder.COMPLETED = false;
 				_context.Set<PreOrder>().Update(preOrder);
-				var notecredit = _noteCreditRepository.SearchNoteCreditByClientId(preOrder.FK_CLIENT);
-				_noteCreditRepository.ExtractAmount(notecredit.ID, entity.AMOUNT);
 				_context.SaveChanges();
 			}
-			
-
-			_context.Remove(entity);
-			_context.SaveChanges();
 			//logica para restarle el saldo en caso de que un pago sea cancelado
 			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
 			{
 				BankAccount account = _context.Set<BankAccount>().Find(entity.FK_BANK_ACCOUNT);
-				account.DEBIT_AMOUNT =entity.AMOUNT - this.GetDebitAmount((int)entity.FK_BANK_ACCOUNT);
+				account.DEBIT_AMOUNT = this.GetDebitAmount((int)entity.FK_BANK_ACCOUNT) - entity.AMOUNT;
 				account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
 				_context.Set<BankAccount>().Update(account);
 				_context.SaveChanges();
 			}
+
+			_context.Remove(entity);
+			_context.SaveChanges();
+
 
 		}
 
@@ -123,7 +121,7 @@ namespace TailorProTrack.infraestructure.Repositories
 				var extra = (decimal)((double)amount * 18) / 100;
 				amount += (decimal)extra;
 			}
-			return   _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT) - amount;
+			return _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT) - amount;
 		}
 
 		public decimal GetDebitAmount(int idAccount)
@@ -148,7 +146,7 @@ namespace TailorProTrack.infraestructure.Repositories
 
 			if (note is not { AMOUNT: > 0 }) throw new Exception("No se puede realizar el pago con nota de credito.");
 
-			
+
 			var amountToUse = note.AMOUNT;
 			//obteniendo el monto pendiente para compararlo con la nota de credito
 			var amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
@@ -177,7 +175,7 @@ namespace TailorProTrack.infraestructure.Repositories
 					FK_CLIENT = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT,
 				});
 			}
-	
+
 			entityToSend.ID = 0;
 			Save(entityToSend);
 			_noteCreditRepository.ExtractAmount(note.ID, amountToUse);
@@ -194,7 +192,12 @@ namespace TailorProTrack.infraestructure.Repositories
 				var extra = (decimal)((double)amount * 18) / 100;
 				amount += (decimal)extra;
 			}
-			return amount - _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT) ;
+			return amount - _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT);
+		}
+
+		public List<Payment> DetailBankAccount(int idBankAccount)
+		{
+			return _context.Set<Payment>().Where(x => x.FK_BANK_ACCOUNT == idBankAccount).ToList();
 		}
 	}
 }

@@ -55,7 +55,17 @@ namespace TailorProTrack.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPost("AddPayment")]
+        [HttpGet("GetDetailBankAccount")]
+		public IActionResult GetDetailBankAccount(int id)
+		{
+			var result = this._service.DetailBankAccount(id);
+			if (!result.Success)
+			{
+				return BadRequest(result);
+			}
+			return Ok(result);
+		}
+		[HttpPost("AddPayment")]
         public IActionResult Add([FromBody] PaymentDtoAdd dtoAdd)
         {
             var result = this._service.Add(dtoAdd);

@@ -145,6 +145,7 @@ namespace TailorProTrack.Application.Service
 																		   {
 																			   IdOrder = d.Key,
 																			   AccountPayment = d.Select(x => x.payment.ACCOUNT_PAYMENT).First(),
+																			   Client = _mapper.Map<ClientDtoGet>(_clientRepository.GetEntity(_preOrderRepository.GetEntity(d.Select(data => data.payment.FK_ORDER).First()).FK_CLIENT)),
 																			   Amount = d.Select(data => data.payment.AMOUNT).First(),
 																		   }); ;
 				if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
@@ -286,6 +287,48 @@ namespace TailorProTrack.Application.Service
 				result.Success = false;
 				result.Message = $"Error al agregar el pago {ex.Message}";
 			}
+			return result;
+		}
+
+		public ServiceResult DetailBankAccount(int id)
+		{
+			ServiceResult result = new ServiceResult();
+			try
+			{
+				var payments = this._repository.DetailBankAccount(id)
+															 .Join
+																		   (
+																			 this._typeRepository.GetEntities().Select(d => new { d.ID, d.TYPE_PAYMENT }),
+																			payment => payment.FK_TYPE_PAYMENT,
+																			type => type.ID,
+																			(payment, type) => new { payment, type }
+																		   )
+											   .Select(d => new
+											   {
+												   Id = d.payment.ID,
+												   Amount = d.payment.AMOUNT,
+												   Type = d.type.TYPE_PAYMENT,
+												   Bank = d.payment.FK_BANK_ACCOUNT != null ? _bankRepository.GetEntity(_bankAccRepository.GetEntity((int)d.payment.FK_BANK_ACCOUNT).FK_BANK).NAME : "NA",
+												   Account = d.payment.FK_BANK_ACCOUNT != null ? _bankAccRepository.GetEntity((int)d.payment.FK_BANK_ACCOUNT).BANK_ACCOUNT : "Caja",
+												   DocumentNumber = d.payment.ACCOUNT_NUMBER,
+												   Client = _mapper.Map<ClientDtoGet>(_clientRepository.GetEntity(_preOrderRepository.GetEntity(d.payment.FK_ORDER).FK_CLIENT))
+											   }).ToList();
+				if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
+				var orderPayments = new
+				{
+					payments,
+
+				};
+
+				result.Data = orderPayments;
+				result.Message = "Obtenidos con exito";
+			}
+			catch (Exception ex)
+			{
+				result.Success = false;
+				result.Message = $"Error al obtener el registro: {ex.Message}";
+			}
+
 			return result;
 		}
 	}
