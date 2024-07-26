@@ -49,7 +49,7 @@ namespace TailorProTrack.infraestructure.Repositories
 			//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
 			//en caso de que sea negativo se toma en cuenta una nota de credito
 			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
-			if (amountPending < 0)
+			if (amountPending > 0)
 			{
 				_noteCreditRepository.Save(new NoteCredit
 				{
