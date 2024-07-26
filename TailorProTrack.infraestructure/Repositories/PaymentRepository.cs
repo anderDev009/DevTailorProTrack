@@ -37,7 +37,7 @@ namespace TailorProTrack.infraestructure.Repositories
 					throw new Exception("Cuenta de banco invalida.");
 				}
 				//sumandole el monto a la cuenta
-				account.DEBIT_AMOUNT = GetDebitAmount((int)entity.FK_BANK_ACCOUNT);
+				account.DEBIT_AMOUNT = entity.AMOUNT + GetDebitAmount((int)entity.FK_BANK_ACCOUNT);
                 account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
                 //actualizando el monto
 				_context.Set<BankAccount>().Update(account);
