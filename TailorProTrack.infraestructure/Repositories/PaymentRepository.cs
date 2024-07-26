@@ -48,8 +48,8 @@ namespace TailorProTrack.infraestructure.Repositories
 			this._context.SaveChanges();
 			//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
 			//en caso de que sea negativo se toma en cuenta una nota de credito
-			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
-			if (amountPending > 0)
+			decimal amountPending = GetAmountPendingNegativeByIdPreOrder(entity.FK_ORDER);
+			if (amountPending <  0)
 			{
 				_noteCreditRepository.Save(new NoteCredit
 				{
@@ -183,6 +183,16 @@ namespace TailorProTrack.infraestructure.Repositories
 
 		}
 
-	
+		public decimal GetAmountPendingNegativeByIdPreOrder(int idPreOrder)
+		{
+			var preOrder = _context.Set<PreOrder>().Find(idPreOrder);
+			var amount = _preOrderProductRepository.GetAmountByIdPreOrder(idPreOrder);
+			if (preOrder.ITBIS != null && preOrder.ITBIS != false)
+			{
+				var extra = (decimal)((double)amount * 18) / 100;
+				amount += (decimal)extra;
+			}
+			return amount - _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT) ;
+		}
 	}
 }
