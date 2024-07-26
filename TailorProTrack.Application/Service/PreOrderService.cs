@@ -152,7 +152,7 @@ namespace TailorProTrack.Application.Service
 				{
 
 					item.AmountBase = _paymentRepository.GetAmountPendingByIdPreOrder(item.ID);
-					if (item.AmountBase <= 0)
+					if (item.AmountBase >= 0)
 					{
 						item.AmountBase = Math.Abs((decimal)item.AmountBase);
 
