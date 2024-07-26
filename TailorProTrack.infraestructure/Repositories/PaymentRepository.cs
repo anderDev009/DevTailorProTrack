@@ -75,9 +75,11 @@ namespace TailorProTrack.infraestructure.Repositories
 				PreOrder preOrder = _context.Set<PreOrder>().Find(entity.FK_ORDER);
 				preOrder.COMPLETED = false;
 				_context.Set<PreOrder>().Update(preOrder);
+				var notecredit = _noteCreditRepository.SearchNoteCreditByClientId(preOrder.FK_CLIENT);
+				_noteCreditRepository.ExtractAmount(notecredit.ID, entity.AMOUNT);
 				_context.SaveChanges();
 			}
-		
+			
 
 			_context.Remove(entity);
 			_context.SaveChanges();
@@ -85,7 +87,7 @@ namespace TailorProTrack.infraestructure.Repositories
 			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
 			{
 				BankAccount account = _context.Set<BankAccount>().Find(entity.FK_BANK_ACCOUNT);
-				account.DEBIT_AMOUNT = this.GetDebitAmount((int)entity.FK_BANK_ACCOUNT);
+				account.DEBIT_AMOUNT =entity.AMOUNT - this.GetDebitAmount((int)entity.FK_BANK_ACCOUNT);
 				account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
 				_context.Set<BankAccount>().Update(account);
 				_context.SaveChanges();
