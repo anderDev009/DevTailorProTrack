@@ -36,7 +36,8 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<ProductColor> PRODUCTS_COLOR { get; set; }
         public DbSet<ProductSize> PRODUCTS_SIZE { get; set; }
         public DbSet<NoteCredit> NOTE_CREDIT { get; set; }
-        public DbSet<AccountDebit> ACCOUNT_DEBIT { get; set; }
+        public DbSet<NoteCreditPayment> PAYMENT_CREDIT_NOTE { get; set; }
+		public DbSet<AccountDebit> ACCOUNT_DEBIT { get; set; }
         public DbSet<AccountCredit> ACCOUNT_CREDIT { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

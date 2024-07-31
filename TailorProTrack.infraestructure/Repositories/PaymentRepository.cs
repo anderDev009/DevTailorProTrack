@@ -12,14 +12,16 @@ namespace TailorProTrack.infraestructure.Repositories
 		private readonly IPreOrderProductsRepository _preOrderProductRepository;
 		private readonly INoteCreditRepository _noteCreditRepository;
 		private readonly IBankAccountRepository _bankAccountRepository;
+		private readonly INoteCreditPaymentRepository _noteCreditPaymentRepository;
 
 		public PaymentRepository(TailorProTrackContext context, IPreOrderProductsRepository preOrderProductRepository,
-			INoteCreditRepository noteCreditRepository, IBankAccountRepository bankaAccountRepository) : base(context)
+			INoteCreditRepository noteCreditRepository, IBankAccountRepository bankaAccountRepository, INoteCreditPaymentRepository noteCreditPaymentRepository) : base(context)
 		{
 			_context = context;
 			_noteCreditRepository = noteCreditRepository;
 			_preOrderProductRepository = preOrderProductRepository;
 			_bankAccountRepository = bankaAccountRepository;
+			_noteCreditPaymentRepository = noteCreditPaymentRepository;
 		}
 
 
@@ -51,11 +53,19 @@ namespace TailorProTrack.infraestructure.Repositories
 			decimal amountPending = GetAmountPendingNegativeByIdPreOrder(entity.FK_ORDER);
 			if (amountPending < 0)
 			{
-				_noteCreditRepository.Save(new NoteCredit
-				{
+				int idClient = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT;
+				_noteCreditPaymentRepository.Save(new NoteCreditPayment
+				{ 
 					AMOUNT = Math.Abs(amountPending),
-					FK_CLIENT = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT,
+					FK_CREDIT = _noteCreditRepository.Save(new NoteCredit
+					{
+						FK_CLIENT = idClient,
+						AMOUNT = 0,
+					}),
+					FK_PAYMENT = entity.ID
+					
 				});
+				_noteCreditRepository.UpdateAmount(idClient);
 			}
 
 			return entity.ID;
@@ -67,7 +77,7 @@ namespace TailorProTrack.infraestructure.Repositories
 		{
 			entity = GetEntity(entity.ID);
 
-
+			_noteCreditPaymentRepository.RemoveNoteCreditPaymentByPaymentId(entity.ID);
 			//validacion para  saber si el pedido ha sido pagado por completo
 			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
 			if (amountPending > 0)

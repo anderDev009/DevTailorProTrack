@@ -68,7 +68,7 @@ namespace TailorProTrack.Api.Controllers
 		[HttpPost("AddPayment")]
         public IActionResult Add([FromBody] PaymentDtoAdd dtoAdd)
         {
-            var result = this._service.Add(dtoAdd);
+                var result = this._service.Add(dtoAdd);
             if (!result.Success)
             {
                 return BadRequest(result);

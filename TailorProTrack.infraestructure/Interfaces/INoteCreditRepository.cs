@@ -7,6 +7,7 @@ public interface INoteCreditRepository : IBaseRepository<NoteCredit>
 {
 	NoteCredit SearchNoteCreditByClientId(int idClient);
 	void ExtractAmount(int idNoteCredit, decimal amount);
+	void UpdateAmount(int FK_CLIENT);
 	
 
 }
