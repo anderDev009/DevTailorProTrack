@@ -159,7 +159,7 @@ namespace TailorProTrack.infraestructure.Repositories
 
 			var amountToUse = note.AMOUNT;
 			//obteniendo el monto pendiente para compararlo con la nota de credito
-			var amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
+			var amountPending = Math.Abs(GetAmountPendingByIdPreOrder(entity.FK_ORDER));
 			//---
 			//realizar un pago con nota de credito
 			if (amountPending < note.AMOUNT)
@@ -178,18 +178,24 @@ namespace TailorProTrack.infraestructure.Repositories
 
 			//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
 			//en caso de que sea negativo se toma en cuenta una nota de credito
-			amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
 			if (amountPending < 0)
 			{
-				_noteCreditRepository.Save(new NoteCredit
+				int idClient = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT;
+				_noteCreditPaymentRepository.Save(new NoteCreditPayment
 				{
 					AMOUNT = Math.Abs(amountPending),
-					FK_CLIENT = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT,
+					FK_CREDIT = _noteCreditRepository.Save(new NoteCredit
+					{
+						FK_CLIENT = idClient,
+						AMOUNT = 0,
+					}),
+					FK_PAYMENT = entity.ID
+
 				});
+				_noteCreditRepository.UpdateAmount(idClient);
 			}
 
-			entityToSend.ID = 0;
-			Save(entity);
+			
 
 			_noteCreditPaymentRepository.Save(new NoteCreditPayment
 			{
