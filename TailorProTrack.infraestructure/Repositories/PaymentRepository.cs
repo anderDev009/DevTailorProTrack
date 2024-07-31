@@ -167,13 +167,15 @@ namespace TailorProTrack.infraestructure.Repositories
 				amountToUse = amountPending;
 			}
 
-			entity.AMOUNT = amountToUse;
+			entity.AMOUNT = amountToUse + entity.AMOUNT;
 			entity.FK_BANK_ACCOUNT = null;
 			entity.CREATED_AT = DateTime.Now;
 			entity.USER_CREATED = 1;
 			ConfirmPayment(entity.FK_ORDER);
 			this._context.Add(entity);
 			this._context.SaveChanges();
+
+
 			//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
 			//en caso de que sea negativo se toma en cuenta una nota de credito
 			amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
@@ -187,8 +189,15 @@ namespace TailorProTrack.infraestructure.Repositories
 			}
 
 			entityToSend.ID = 0;
-			Save(entityToSend);
-			_noteCreditRepository.ExtractAmount(note.ID, amountToUse);
+			Save(entity);
+
+			_noteCreditPaymentRepository.Save(new NoteCreditPayment
+			{
+				AMOUNT = -amountToUse,
+				FK_CREDIT = note.ID,
+				FK_PAYMENT = entity.ID
+			});
+			_noteCreditRepository.UpdateAmount(note.FK_CLIENT);
 			return true;
 
 		}
