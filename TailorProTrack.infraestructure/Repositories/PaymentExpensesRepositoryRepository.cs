@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices.JavaScript;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -28,11 +30,39 @@ namespace TailorProTrack.infraestructure.Repositories
                 {
                     throw new Exception("No cuenta con el balance suficiente");
                 }
-                account.BALANCE -= entity.AMOUNT;
-                _bankAccountRepository.Update(account);
 
+                account.CREDIT_AMOUNT += entity.AMOUNT;
+                account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
+				_bankAccountRepository.Update(account);
             }
             return base.Save(entity);
         }
-    }
+
+        public override void Remove(PaymentExpenses entity)
+        {
+	        var entityToRemove = this.GetEntity(entity.ID);
+	        _ctx.Remove(entityToRemove);
+			_ctx.SaveChanges();
+			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
+			{
+				BankAccount account = _ctx.Set<BankAccount>().Find(entity.FK_BANK_ACCOUNT);
+				account.CREDIT_AMOUNT = this.GetCreditAmountTotal((int)entity.FK_BANK_ACCOUNT);
+				account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
+				_ctx.Set<BankAccount>().Update(account);
+				_ctx.SaveChanges();
+			}
+		}
+
+        public decimal GetCreditAmountTotal(int idAccount)
+        {
+	        return _ctx.Set<PaymentExpenses>().Where(x => x.FK_BANK_ACCOUNT == idAccount).Sum(x => x.AMOUNT);
+        }
+
+        public decimal GetCreditThisMonth(int idAccount)
+        {
+	        var now = DateTime.Now;
+	        var firstDayMonth = new DateTime(now.Year, now.Month, 1);
+	        return _ctx.Set<PaymentExpenses>().Where(x => x.CREATED_AT >= firstDayMonth && x.FK_BANK_ACCOUNT == idAccount).Sum(x => x.AMOUNT);
+		}
+	}
 }

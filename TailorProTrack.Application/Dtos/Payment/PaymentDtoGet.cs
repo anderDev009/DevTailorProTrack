@@ -1,5 +1,7 @@
 ﻿
 
+using TailorProTrack.Application.Dtos.Client;
+
 namespace TailorProTrack.Application.Dtos.Payment
 {
     public class PaymentDtoGet
@@ -9,5 +11,6 @@ namespace TailorProTrack.Application.Dtos.Payment
         public string? AccountPayment { get; set; }
 
         public int PaymentNumbers { get; set; }
+        public ClientDtoGet? Client { get; set; }
     }   
 }

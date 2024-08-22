@@ -16,18 +16,32 @@ namespace TailorProTrack.Application.Service
         private readonly ISalesRepository _repository;
         private readonly IMapper _mapper;
         private readonly IPreOrderProductService _preOrderProducts;
+		private readonly IPreOrderRepository _preOrderRepository;
 
-		public SaleService(ISalesRepository saleRepository,IMapper mapper, IPreOrderProductService preOrderProduct) : base(mapper,saleRepository)
+		public SaleService(ISalesRepository saleRepository,IMapper mapper, IPreOrderProductService preOrderProduct,IPreOrderRepository preOrderRepository) : base(mapper,saleRepository)
         {
             _repository = saleRepository;
 			_mapper = mapper;
 			_preOrderProducts = preOrderProduct;
-		}
+			_preOrderRepository = preOrderRepository;
+        }
 
         public override ServiceResult Add(SaleDtoAdd dtoAdd)
         {
-	        dtoAdd.IsValid(_repository);
-            return base.Add(dtoAdd);
+	        var preOrder = _preOrderRepository.GetEntity(dtoAdd.FkOrder);
+
+			dtoAdd.IsValid(_repository);
+	        if (dtoAdd.B14 != null)
+	        {
+				preOrder.ITBIS = false;
+			}
+	        else
+	        {
+		        preOrder.ITBIS = false;
+	        }
+	        _preOrderRepository.Update(preOrder);
+
+			return base.Add(dtoAdd);
 		}
 
         public override ServiceResult GetById(int id)

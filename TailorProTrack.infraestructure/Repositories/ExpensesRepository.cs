@@ -26,15 +26,18 @@ namespace TailorProTrack.infraestructure.Repositories
 			//borrar los pagos de este gasto
 			foreach (var payment in paymentsInThisExpense)
 			{
-				//asignarle el monto a la cuenta correspondiente
-				if (payment.FK_BANK_ACCOUNT != null || payment.FK_BANK_ACCOUNT > 0)
-				{
-					var bankAccount = _context.Set<BankAccount>().Find(payment.FK_BANK_ACCOUNT);
-					bankAccount.BALANCE += payment.AMOUNT;
-					_bankAccountRepository.Update(bankAccount);
-				}
 				_context.Set<PaymentExpenses>().Remove(payment);
 				_context.SaveChanges();
+                if(payment.FK_BANK_ACCOUNT == null && payment.FK_BANK_ACCOUNT > 0)
+                {
+					BankAccount account = _context.Set<BankAccount>().Find(payment.FK_BANK_ACCOUNT);
+					account.CREDIT_AMOUNT = _context.Set<PaymentExpenses>().Where(x => x.FK_BANK_ACCOUNT == payment.FK_BANK_ACCOUNT).Sum(x => x.AMOUNT);
+					account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
+					_context.Set<BankAccount>().Update(account);
+					_context.SaveChanges();
+				}
+
+                
 			}
 			var entityToRemove = GetEntity(entity.ID);
 			entityToRemove.REMOVED = true;
@@ -106,5 +109,6 @@ namespace TailorProTrack.infraestructure.Repositories
 			}
 			return 0;
         }
+        
     }
 }

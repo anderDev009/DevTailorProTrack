@@ -10,6 +10,7 @@ namespace TailorProTrack.infraestructure.Repositories
     public class ClientRepository : BaseRepository<Client>, IClientRepository
     {
         private readonly TailorProTrackContext _context;
+        private readonly INoteCreditRepository _noteCreditRepository;
         public ClientRepository(TailorProTrackContext context) : base(context)
         {
             this._context = context;
@@ -18,10 +19,12 @@ namespace TailorProTrack.infraestructure.Repositories
         public override int Save(Client entity)
         {
             entity.CREATED_AT = DateTime.Now;
-            
+ 
             this._context.Add(entity);
             this._context.SaveChanges();
-            return entity.ID;
+
+
+			return entity.ID;
         }
         public override void Update(Client entity)
         {

@@ -145,13 +145,14 @@ namespace TailorProTrack.Application.Service
 					.ToList();
 
 
+
 				var preOrdersMapped = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
 				var preOrdersToReturn = new List<PreOrderDtoGetMapped>();
 				foreach (var item in preOrdersMapped)
 				{
 
 					item.AmountBase = _paymentRepository.GetAmountPendingByIdPreOrder(item.ID);
-					if (item.AmountBase <= 0)
+					if (item.AmountBase >= 0)
 					{
 						item.AmountBase = Math.Abs((decimal)item.AmountBase);
 
@@ -160,6 +161,7 @@ namespace TailorProTrack.Application.Service
 					}
 					else
 					{
+						item.Amount = _preOrderProductRepository.GetAmountByIdPreOrder(item.ID);
 						preOrdersToReturn.Add(item);
 					}
 					

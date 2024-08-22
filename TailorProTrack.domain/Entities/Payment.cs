@@ -14,5 +14,7 @@ namespace TailorProTrack.domain.Entities
         public string? ACCOUNT_NUMBER { get; set; }
         public bool? NOTE_CREDIT { get; set; }
 
+        //nav props
+        public List<AccountDebit>? AccountDebit { get; set; }
 	}
 }

@@ -111,7 +111,7 @@ namespace TailorProTrack.Api.Controllers
         public IActionResult DeleteById(int id)
         {
             var result = this._service.Remove(new SizeDtoRemove(){Date = DateTime.UtcNow,Id = id, User = 1});
-            if (!result.Success || result.Data == null)
+            if (!result.Success)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }

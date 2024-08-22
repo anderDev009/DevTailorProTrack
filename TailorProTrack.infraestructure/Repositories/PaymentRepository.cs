@@ -11,16 +11,20 @@ namespace TailorProTrack.infraestructure.Repositories
 		private readonly TailorProTrackContext _context;
 		private readonly IPreOrderProductsRepository _preOrderProductRepository;
 		private readonly INoteCreditRepository _noteCreditRepository;
+		private readonly IBankAccountRepository _bankAccountRepository;
+		private readonly INoteCreditPaymentRepository _noteCreditPaymentRepository;
 
 		public PaymentRepository(TailorProTrackContext context, IPreOrderProductsRepository preOrderProductRepository,
-			INoteCreditRepository noteCreditRepository) : base(context)
+			INoteCreditRepository noteCreditRepository, IBankAccountRepository bankaAccountRepository, INoteCreditPaymentRepository noteCreditPaymentRepository) : base(context)
 		{
 			_context = context;
 			_noteCreditRepository = noteCreditRepository;
 			_preOrderProductRepository = preOrderProductRepository;
+			_bankAccountRepository = bankaAccountRepository;
+			_noteCreditPaymentRepository = noteCreditPaymentRepository;
 		}
 
-		
+
 
 		public override int Save(Payment entity)
 		{
@@ -29,13 +33,14 @@ namespace TailorProTrack.infraestructure.Repositories
 			//logica para sumarle el monto a la cuenta
 			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT != 0)
 			{
-				BankAccount account = _context.Set<BankAccount>().Find((int)entity.FK_BANK_ACCOUNT);
+				var account = _bankAccountRepository.GetEntity((int)entity.FK_BANK_ACCOUNT);
 				if (account == null)
 				{
 					throw new Exception("Cuenta de banco invalida.");
 				}
 				//sumandole el monto a la cuenta
-				account.BALANCE += entity.AMOUNT;
+				account.DEBIT_AMOUNT = entity.AMOUNT + GetDebitAmount((int)entity.FK_BANK_ACCOUNT);
+				account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
 				//actualizando el monto
 				_context.Set<BankAccount>().Update(account);
 			}
@@ -45,14 +50,22 @@ namespace TailorProTrack.infraestructure.Repositories
 			this._context.SaveChanges();
 			//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
 			//en caso de que sea negativo se toma en cuenta una nota de credito
-			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
+			decimal amountPending = GetAmountPendingNegativeByIdPreOrder(entity.FK_ORDER);
 			if (amountPending < 0)
 			{
-				_noteCreditRepository.Save(new NoteCredit
-				{
+				int idClient = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT;
+				_noteCreditPaymentRepository.Save(new NoteCreditPayment
+				{ 
 					AMOUNT = Math.Abs(amountPending),
-					FK_CLIENT = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT,
+					FK_CREDIT = _noteCreditRepository.Save(new NoteCredit
+					{
+						FK_CLIENT = idClient,
+						AMOUNT = 0,
+					}),
+					FK_PAYMENT = entity.ID
+					
 				});
+				_noteCreditRepository.UpdateAmount(idClient);
 			}
 
 			return entity.ID;
@@ -64,15 +77,7 @@ namespace TailorProTrack.infraestructure.Repositories
 		{
 			entity = GetEntity(entity.ID);
 
-			//logica para restarle el saldo en caso de que un pago sea cancelado
-			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
-			{
-				BankAccount account = _context.Set<BankAccount>().Find(entity.FK_BANK_ACCOUNT);
-				account.BALANCE -= entity.AMOUNT;
-				_context.Set<BankAccount>().Update(account);
-				_context.SaveChanges();
-			}
-
+			_noteCreditPaymentRepository.RemoveNoteCreditPaymentByPaymentId(entity.ID);
 			//validacion para  saber si el pedido ha sido pagado por completo
 			decimal amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
 			if (amountPending > 0)
@@ -82,10 +87,20 @@ namespace TailorProTrack.infraestructure.Repositories
 				_context.Set<PreOrder>().Update(preOrder);
 				_context.SaveChanges();
 			}
-		
+			//logica para restarle el saldo en caso de que un pago sea cancelado
+			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
+			{
+				BankAccount account = _context.Set<BankAccount>().Find(entity.FK_BANK_ACCOUNT);
+				account.DEBIT_AMOUNT = this.GetDebitAmount((int)entity.FK_BANK_ACCOUNT) - entity.AMOUNT;
+				account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
+				_context.Set<BankAccount>().Update(account);
+				_context.SaveChanges();
+			}
 
 			_context.Remove(entity);
 			_context.SaveChanges();
+
+
 		}
 
 		public bool ConfirmPayment(int idPreOrder)
@@ -116,9 +131,20 @@ namespace TailorProTrack.infraestructure.Repositories
 				var extra = (decimal)((double)amount * 18) / 100;
 				amount += (decimal)extra;
 			}
-			return  amount - _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT);
+			return _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT) - amount;
 		}
 
+		public decimal GetDebitAmount(int idAccount)
+		{
+			return _context.Set<Payment>().Where(x => x.FK_BANK_ACCOUNT == idAccount).Sum(x => x.AMOUNT);
+		}
+
+		public decimal GetDebitAmountThisMonth(int idAccount)
+		{
+			var now = DateTime.Now;
+			var firstDayMonth = new DateTime(now.Year, now.Month, 1);
+			return _context.Set<Payment>().Where(x => x.CREATED_AT >= firstDayMonth && x.FK_BANK_ACCOUNT == idAccount).Sum(x => x.AMOUNT);
+		}
 		public bool SaveWithNoteCredit(Payment entity)
 		{
 
@@ -130,10 +156,10 @@ namespace TailorProTrack.infraestructure.Repositories
 
 			if (note is not { AMOUNT: > 0 }) throw new Exception("No se puede realizar el pago con nota de credito.");
 
-			
+
 			var amountToUse = note.AMOUNT;
 			//obteniendo el monto pendiente para compararlo con la nota de credito
-			var amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
+			var amountPending = Math.Abs(GetAmountPendingByIdPreOrder(entity.FK_ORDER));
 			//---
 			//realizar un pago con nota de credito
 			if (amountPending < note.AMOUNT)
@@ -141,30 +167,62 @@ namespace TailorProTrack.infraestructure.Repositories
 				amountToUse = amountPending;
 			}
 
-			entity.AMOUNT = amountToUse;
+			entity.AMOUNT = amountToUse + entity.AMOUNT;
 			entity.FK_BANK_ACCOUNT = null;
 			entity.CREATED_AT = DateTime.Now;
 			entity.USER_CREATED = 1;
 			ConfirmPayment(entity.FK_ORDER);
 			this._context.Add(entity);
 			this._context.SaveChanges();
+
+
 			//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
 			//en caso de que sea negativo se toma en cuenta una nota de credito
-			amountPending = GetAmountPendingByIdPreOrder(entity.FK_ORDER);
 			if (amountPending < 0)
 			{
-				_noteCreditRepository.Save(new NoteCredit
+				int idClient = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT;
+				_noteCreditPaymentRepository.Save(new NoteCreditPayment
 				{
 					AMOUNT = Math.Abs(amountPending),
-					FK_CLIENT = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT,
+					FK_CREDIT = _noteCreditRepository.Save(new NoteCredit
+					{
+						FK_CLIENT = idClient,
+						AMOUNT = 0,
+					}),
+					FK_PAYMENT = entity.ID
+
 				});
+				_noteCreditRepository.UpdateAmount(idClient);
 			}
-	
-			entityToSend.ID = 0;
-			Save(entityToSend);
-			_noteCreditRepository.ExtractAmount(note.ID, amountToUse);
+
+			
+
+			_noteCreditPaymentRepository.Save(new NoteCreditPayment
+			{
+				AMOUNT = -amountToUse,
+				FK_CREDIT = note.ID,
+				FK_PAYMENT = entity.ID
+			});
+			_noteCreditRepository.UpdateAmount(note.FK_CLIENT);
 			return true;
 
+		}
+
+		public decimal GetAmountPendingNegativeByIdPreOrder(int idPreOrder)
+		{
+			var preOrder = _context.Set<PreOrder>().Find(idPreOrder);
+			var amount = _preOrderProductRepository.GetAmountByIdPreOrder(idPreOrder);
+			if (preOrder.ITBIS != null && preOrder.ITBIS != false)
+			{
+				var extra = (decimal)((double)amount * 18) / 100;
+				amount += (decimal)extra;
+			}
+			return amount - _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT);
+		}
+
+		public List<Payment> DetailBankAccount(int idBankAccount)
+		{
+			return _context.Set<Payment>().Where(x => x.FK_BANK_ACCOUNT == idBankAccount).ToList();
 		}
 	}
 }
