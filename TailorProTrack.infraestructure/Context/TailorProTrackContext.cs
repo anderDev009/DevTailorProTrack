@@ -40,13 +40,21 @@ namespace TailorProTrack.infraestructure.Context
 		public DbSet<AccountDebit> ACCOUNT_DEBIT { get; set; }
         public DbSet<AccountCredit> ACCOUNT_CREDIT { get; set; }
 
+        public DbSet<Supplier> SUPPLIERS { get; set; }
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             #region Foreign Keys
             modelBuilder.Entity<Size>().HasOne<CategorySize>(s => s.categorySize).WithMany().HasForeignKey(s => s.FKCATEGORYSIZE);
 
+
+            
             #region Compras de inventario
+
+            modelBuilder.Entity<BuyInventory>().HasMany(x => x.Expenses)
+                .WithOne(x => x.BuyInventory)
+                .HasForeignKey(x => x.FK_BUY);
+
             modelBuilder.Entity<BuyInventory>()
                 .HasMany(b => b.Details)
                 .WithOne(d => d.BuyInventory)

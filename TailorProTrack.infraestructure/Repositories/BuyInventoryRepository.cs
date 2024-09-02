@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -18,6 +19,19 @@ namespace TailorProTrack.infraestructure.Repositories
             _expensesRepository = expensesRepository;
 		}
 
+        public override BuyInventory GetEntity(int id)
+        {
+            return _ctx.Set<BuyInventory>()
+                .Include(x => x.Details)
+                .ThenInclude(x => x.Product)
+                .Include(x => x.Details)
+                .ThenInclude(x => x.ColorPrimary)
+                .Include(x => x.Details)
+                .ThenInclude(x => x.ColorSecondary)
+                .Include(x => x.Details)
+                .ThenInclude(x => x.Size)
+                .FirstOrDefault(x => x.ID == id);
+        }
         public bool AddBuyInventory(BuyInventory buyInventory, List<BuyInventoryDetail> detail)
         {
             buyInventory.USER_CREATED = 1;
@@ -54,6 +68,35 @@ namespace TailorProTrack.infraestructure.Repositories
                 return false;
             }
             return true; 
+        }
+
+        public override void Remove(BuyInventory entity)
+        {
+            //eliminando los gastos
+            var expenses = _ctx.Set<Expenses>().Where(x => x.FK_BUY == entity.ID).ToList();
+            _ctx.Set<Expenses>().RemoveRange(expenses);
+
+            //eliminando los detalles
+            var details = _ctx.Set<BuyInventoryDetail>().Where(x => x.FK_BUY_INVENTORY == entity.ID).ToList();
+            //eliminando el inventario
+            _inventoryRepository.RemoveInventoryByBuy(details);
+            //eliminando la compra
+            _ctx.Set<BuyInventory>().Remove(entity);
+            _ctx.SaveChanges();
+        }
+
+        public bool CheckUsed(int id)
+        {
+            var buy = _ctx.Set<BuyInventory>().Find(id);
+            if (buy == null)
+            {
+                return false;
+            }
+            //marcando la compra como utilizada
+            buy.USED = true;
+            _ctx.Set<BuyInventory>().Update(buy);
+            _ctx.SaveChanges();
+            return true;
         }
     }
 }

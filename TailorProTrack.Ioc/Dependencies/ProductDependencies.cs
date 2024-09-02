@@ -19,12 +19,14 @@ namespace TailorProTrack.Ioc.Dependencies
             service.AddScoped<IProductRepository, ProductRepository>();
             service.AddScoped<IProductColorRepository, ProductColorRepository>();
             service.AddScoped<IProductSizeRepository, ProductSizeRepository>();
+            service.AddScoped<ISupplierRepository, SupplierRepository>();
 
             //servicios
             service.AddTransient<IProductService, ProductService>();
             service.AddTransient<IProductFilterService, ProductFilterService>();
             service.AddScoped<IProductColorService,ProductColorService>();
             service.AddScoped<IProductSizeService,ProductSizeService>();
+            service.AddScoped<ISupplierService, SupplierService>();
 
         }
     }

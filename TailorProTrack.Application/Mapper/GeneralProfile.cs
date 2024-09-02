@@ -19,6 +19,7 @@ using TailorProTrack.Application.Dtos.ProductColor;
 using TailorProTrack.Application.Dtos.ProductSize;
 using TailorProTrack.Application.Dtos.Sale;
 using TailorProTrack.Application.Dtos.Size;
+using TailorProTrack.Application.Dtos.Suppliers;
 using TailorProTrack.domain.Entities;
 
 namespace TailorProTrack.Application.Mapper
@@ -47,6 +48,7 @@ namespace TailorProTrack.Application.Mapper
 					.ForMember(b => b.REMOVED, opt => opt.Ignore());
 
 			CreateMap<BuyInventory, BuyInventoryDtoGet>()
+
 				.ReverseMap()
 				 .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
 				 .ForMember(b => b.USER_MOD, opt => opt.Ignore())
@@ -71,9 +73,16 @@ namespace TailorProTrack.Application.Mapper
 					.ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
 					.ForMember(b => b.REMOVED, opt => opt.Ignore());
 
-			#endregion
-			#region Product
-			CreateMap<Product, ProductDtoGetMapped>()
+			CreateMap<BuyInventoryDetail, inventoryDetailDtoGet>()
+				    .ReverseMap()
+                    .ForMember(b => b.CREATED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+                    .ForMember(b => b.USER_MOD, opt => opt.Ignore())
+                    .ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
+                    .ForMember(b => b.REMOVED, opt => opt.Ignore());
+            #endregion
+            #region Product
+            CreateMap<Product, ProductDtoGetMapped>()
 				.ReverseMap()
 				 .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
 					.ForMember(b => b.USER_MOD, opt => opt.Ignore())
@@ -418,9 +427,32 @@ namespace TailorProTrack.Application.Mapper
 
 			#endregion
 
-			#region CodeDgi
+			#region Suppliers
+			CreateMap<Supplier, SuppliersDtoAdd>()
+				.ForMember(x => x.Nombre, opt => opt.MapFrom(x => x.NAME_SUPPLIER))
+				.ReverseMap()
+				.ForMember(x => x.ID, opt => opt.Ignore());
 
-			CreateMap<CodesDgi, CodeDgiDtoAdd>()
+			CreateMap<Supplier, SuppliersDtoGet>()
+                .ForMember(x => x.Nombre, opt => opt.MapFrom(x => x.NAME_SUPPLIER))
+                .ReverseMap()
+				.ForMember(x => x.REMOVED, opt => opt.Ignore())
+				.ForMember(x => x.USER_CREATED, opt => opt.Ignore())
+				.ForMember(x => x.USER_MOD, opt => opt.Ignore())
+				.ForMember(x => x.MODIFIED_AT, opt => opt.Ignore());
+
+
+            CreateMap<Supplier, SuppliersDtoUpdate>()
+                .ForMember(x => x.Nombre, opt => opt.MapFrom(x => x.NAME_SUPPLIER))
+                .ReverseMap()
+                .ForMember(x => x.REMOVED, opt => opt.Ignore())
+                .ForMember(x => x.USER_CREATED, opt => opt.Ignore())
+                .ForMember(x => x.USER_MOD, opt => opt.Ignore())
+                .ForMember(x => x.MODIFIED_AT, opt => opt.Ignore());
+            #endregion
+            #region CodeDgi
+
+            CreateMap<CodesDgi, CodeDgiDtoAdd>()
 				.ReverseMap()
 				.ForMember(x => x.ID, opt => opt.Ignore())
 				.ForMember(b => b.USER_CREATED, opt => opt.Ignore())

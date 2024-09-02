@@ -133,5 +133,22 @@ namespace TailorProTrack.infraestructure.Repositories
             }
             return true;
         }
+
+        public bool RemoveInventoryByBuy(List<BuyInventoryDetail> detail)
+        {
+            foreach (var item in detail)
+            {
+                Inventory invSearched = _context.Set<Inventory>().Where(i => i.FK_PRODUCT == item.FK_PRODUCT && i.FK_SIZE == item.FK_SIZE).FirstOrDefault();
+                if (invSearched != null)
+                {
+                    InventoryColor invColor = _context.Set<InventoryColor>().Where(i => i.FK_INVENTORY == invSearched.ID && i.FK_COLOR_PRIMARY == item.COLOR_PRIMARY && i.FK_COLOR_SECONDARY == item.COLOR_SECONDARY).First();
+                    invColor.QUANTITY -= item.QUANTITY;
+                    _context.Set<InventoryColor>().Update(invColor);
+                    _context.SaveChanges();
+                    UpdateQuantityInventory(invSearched.ID);
+                }
+            }
+            return true;    
+        }
     }
 }
