@@ -13,7 +13,7 @@ namespace TailorProTrack.domain.Entities
         public string? VOUCHER { get; set; }
         public string? DOCUMENT_NUMBER { get; set; }
         public bool? COMPLETED {  get; set; }
-        public int FK_BUY { get; set; }
+        public int? FK_BUY { get; set; }
 
 
         public BuyInventory? BuyInventory { get; set; }

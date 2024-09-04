@@ -52,7 +52,7 @@ namespace TailorProTrack.infraestructure.Repositories
             int success = _ctx.SaveChanges();
             _inventoryRepository.AddInventoryByBuy(detail);
             //creando gasto
-            _expensesRepository.Save(new Expenses()
+            _expensesRepository.Save(new    ()
             {
 	            AMOUNT = buyInventory.TOTAL_SALE,
 	            COMPLETED = false,
@@ -61,7 +61,9 @@ namespace TailorProTrack.infraestructure.Repositories
 	            NAME = $"Compra de inventario a {buyInventory.COMPANY}",
 	            DOCUMENT_NUMBER = $"{buyInventory.NCF}",
 	            USER_CREATED = 1,
-	            VOUCHER = $"{buyInventory.NCF}"
+	            VOUCHER = $"{buyInventory.NCF}",
+                FK_BUY = buyInventory.ID
+
             });
 			if (success == 0)
             {
