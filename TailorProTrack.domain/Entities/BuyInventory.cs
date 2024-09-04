@@ -10,7 +10,7 @@ namespace TailorProTrack.domain.Entities
         public DateTime DATE_MADE {  get; set; }
         public decimal TOTAL_SALE { get; set; }
 
-        public bool USED { get; set; }
+        public bool? USED { get; set; }
 
 
         public List<Expenses?> Expenses { get; set; }

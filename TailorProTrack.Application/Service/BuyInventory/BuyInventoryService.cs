@@ -102,7 +102,7 @@ namespace TailorProTrack.Application.Service.BuyInventoryService
                 BuyInventory buyInventory = _mapper.Map<BuyInventory>(dtoRemove);
                 //comprobando de que no se haya usado
                 var buyInventoryDb = _buyInventoryRepository.GetEntity(buyInventory.ID);
-                if (buyInventoryDb.USED)
+                if ((bool)buyInventoryDb.USED)
                 {
                     result.Message = "No se puede eliminar una compra que ya ha sido usada";
                     result.Success = true;
