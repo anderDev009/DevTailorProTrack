@@ -19,6 +19,7 @@ namespace TailorProTrack.Api.Controllers
             _expensesService = expensesService;
         }
 
+
         [HttpPost("SaveExpense")]
         public IActionResult Save([FromBody] ExpensesDtoAdd dtoAdd)
         {
@@ -61,6 +62,28 @@ namespace TailorProTrack.Api.Controllers
             if (!result.Success)
             {
                 return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("GetExpensesPendingWithBuy")]
+        public IActionResult GetExpensesWithBuyId()
+        {
+            var result = this._expensesService.GetExpensesWithIdBuy();
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("GetExpensesPendingWithoutBuy")]
+        public IActionResult GetExpensesWithoutBuyId()
+        {
+            var result = this._expensesService.GetExpensesWithoutBuy();
+            if (!result.Success)
+            {
+                return StatusCode(500,result);
             }
             return Ok(result);
         }

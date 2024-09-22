@@ -12,5 +12,7 @@ namespace TailorProTrack.Application.Contracts
         //ServiceResult GetAccountsPayable();
         ServiceResult ConfirmExpenses(int IdExpense);
         ServiceResult GetExpensesPending();
+        ServiceResult GetExpensesWithIdBuy();
+        ServiceResult GetExpensesWithoutBuy();
     }
 }

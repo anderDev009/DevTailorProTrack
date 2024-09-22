@@ -74,5 +74,42 @@ namespace TailorProTrack.Application.Service
 
             return result;
         }
+
+        public ServiceResult GetExpensesWithIdBuy()
+        {
+            ServiceResult result = new();
+            try
+            {
+                var expenses = _expensesRepository.GetExpensesWithBuyId();
+                var expensesMapped = _mapper.Map<List<ExpensesDtoGet>>(expenses);
+
+
+                result.Data = expensesMapped;
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error {ex.Message}";
+            }
+            return result;
+        }
+
+        public ServiceResult GetExpensesWithoutBuy()
+        {
+            ServiceResult result = new();
+            try
+            {
+                var results = _expensesRepository.GetExpensesWithoutBuyId();
+                result.Data = _mapper.Map<List<ExpensesDtoGet>>(results);
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error {ex.Message}";
+            }
+            return result;
+        }
     }
 }

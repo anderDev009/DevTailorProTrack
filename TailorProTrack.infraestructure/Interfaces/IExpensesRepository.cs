@@ -10,6 +10,8 @@ namespace TailorProTrack.infraestructure.Interfaces
         public void ConfirmExpenses(int idExpense);
         public bool ExpenseIsPending (int idExpense);
         public List<Expenses> GetExpensesPending();
+        public List<Expenses> GetExpensesWithBuyId();
+        public List<Expenses> GetExpensesWithoutBuyId();
         public decimal GetAmountPending(int idExpense);
     }
 }
