@@ -112,12 +112,12 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public List<Expenses> GetExpensesWithBuyId()
         {
-            return _context.Set<Expenses>().Where(x => x.COMPLETED == true && x.FK_BUY != null).ToList();
+            return _context.Set<Expenses>().Where(x => x.COMPLETED == false && x.FK_BUY != null).ToList();
         }
 
         public List<Expenses> GetExpensesWithoutBuyId()
         {
-            return _context.Set<Expenses>().Where(x => x.COMPLETED == true && x.FK_BUY == null).ToList();
+            return _context.Set<Expenses>().Where(x => x.COMPLETED == false && x.FK_BUY == null).ToList();
         }
     }
 }
