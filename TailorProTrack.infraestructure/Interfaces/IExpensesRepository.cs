@@ -12,6 +12,7 @@ namespace TailorProTrack.infraestructure.Interfaces
         public List<Expenses> GetExpensesPending();
         public List<Expenses> GetExpensesWithBuyId();
         public List<Expenses> GetExpensesWithoutBuyId();
+        public List<Expenses> GetExpensesWithBuyIdPaginated(int page, int itemsPerPage, bool withBuy);
         public decimal GetAmountPending(int idExpense);
     }
 }

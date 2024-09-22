@@ -24,8 +24,8 @@ namespace TailorProTrack.infraestructure.Repositories
 		
 
 			entity.CREATED_AT = DateTime.UtcNow;
-
-			this._context.Add(entity);
+			entity.CHECKED = false;
+            this._context.Add(entity);
 			this._context.SaveChanges();
 
 			return entity.ID;

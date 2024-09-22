@@ -13,6 +13,10 @@ namespace TailorProTrack.Application.Contracts
         ServiceResult ConfirmExpenses(int IdExpense);
         ServiceResult GetExpensesPending();
         ServiceResult GetExpensesWithIdBuy();
+        ServiceResultWithHeader GetExpensesWithIdBuyPaginated(PaginationParams @params);
+
         ServiceResult GetExpensesWithoutBuy();
+        ServiceResultWithHeader GetExpensesWithoutBuyPaginated(PaginationParams @params);
+
     }
 }

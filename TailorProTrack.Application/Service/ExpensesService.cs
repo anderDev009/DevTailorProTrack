@@ -95,6 +95,27 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResultWithHeader GetExpensesWithIdBuyPaginated(PaginationParams @params)
+        {
+            ServiceResultWithHeader result = new(); ;
+            try
+            {
+                int registerCount = _expensesRepository.CountEntities();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+                var banks = this._expensesRepository.GetExpensesWithBuyIdPaginated(@params.Page, @params.ItemsPerPage,true);
+
+                result.Data = _mapper.Map<List<ExpensesDtoGet>>(banks);
+                result.Header = header;
+                result.Message = "Data obtenida con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al intentar obtener la data : {ex.Message}";
+            }
+            return result;
+        }
+
         public ServiceResult GetExpensesWithoutBuy()
         {
             ServiceResult result = new();
@@ -108,6 +129,27 @@ namespace TailorProTrack.Application.Service
             {
                 result.Success = false;
                 result.Message = $"Error {ex.Message}";
+            }
+            return result;
+        }
+
+        public ServiceResultWithHeader GetExpensesWithoutBuyPaginated(PaginationParams @params)
+        {
+            ServiceResultWithHeader result = new(); ;
+            try
+            {
+                int registerCount = _expensesRepository.CountEntities();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+                var banks = this._expensesRepository.GetExpensesWithBuyIdPaginated(@params.Page, @params.ItemsPerPage, false);
+
+                result.Data = _mapper.Map<List<ExpensesDtoGet>>(banks);
+                result.Header = header;
+                result.Message = "Data obtenida con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al intentar obtener la data : {ex.Message}";
             }
             return result;
         }
