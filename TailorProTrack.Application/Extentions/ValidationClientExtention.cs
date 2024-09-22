@@ -8,9 +8,7 @@ namespace TailorProTrack.Application.Extentions
     {
         public static void IsValid(this ClientDtoBase dtoBase,IConfiguration configuration)
         {
-            if (string.IsNullOrEmpty(dtoBase.F_surname) || string.IsNullOrEmpty(dtoBase.L_surname)
-                || string.IsNullOrEmpty(dtoBase.F_name) || string.IsNullOrEmpty(dtoBase.L_name) ||
-                string.IsNullOrEmpty(dtoBase.Dni))
+            if (string.IsNullOrEmpty(dtoBase.F_name))
             {
                 throw new ClientServiceException(configuration["validations:chainEmpty"]);
             }

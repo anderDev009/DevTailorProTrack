@@ -430,20 +430,23 @@ namespace TailorProTrack.Application.Mapper
 			#region Suppliers
 			CreateMap<Supplier, SuppliersDtoAdd>()
 				.ForMember(x => x.Nombre, opt => opt.MapFrom(x => x.NAME_SUPPLIER))
+				.ForMember(x => x.Rnc, opt => opt.MapFrom(x => x.RNC))
 				.ReverseMap()
 				.ForMember(x => x.ID, opt => opt.Ignore());
 
 			CreateMap<Supplier, SuppliersDtoGet>()
                 .ForMember(x => x.Nombre, opt => opt.MapFrom(x => x.NAME_SUPPLIER))
+                .ForMember(x => x.Rnc, opt => opt.MapFrom(x => x.RNC))
                 .ReverseMap()
 				.ForMember(x => x.REMOVED, opt => opt.Ignore())
 				.ForMember(x => x.USER_CREATED, opt => opt.Ignore())
 				.ForMember(x => x.USER_MOD, opt => opt.Ignore())
 				.ForMember(x => x.MODIFIED_AT, opt => opt.Ignore());
-
+			
 
             CreateMap<Supplier, SuppliersDtoUpdate>()
                 .ForMember(x => x.Nombre, opt => opt.MapFrom(x => x.NAME_SUPPLIER))
+				.ForMember(x => x.Rnc, opt => opt.MapFrom(x => x.RNC))
                 .ReverseMap()
                 .ForMember(x => x.REMOVED, opt => opt.Ignore())
                 .ForMember(x => x.USER_CREATED, opt => opt.Ignore())

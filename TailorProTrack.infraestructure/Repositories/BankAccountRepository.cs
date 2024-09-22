@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.EntityFrameworkCore.Update;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -13,7 +14,28 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             _context = ctx;
         }
-      
+
+        public override int Save(BankAccount entity)
+        {
+            entity.DEBIT_AMOUNT = entity.BALANCE;
+            int id = base.Save(entity);
+
+            //creacion de cuenta debito
+            if(entity.BALANCE > 0)
+            {
+                AccountDebit account = new AccountDebit();
+                account.FK_BANK_ACC = id;
+                account.FK_PAYMENT = null;
+                account.AMOUNT = entity.BALANCE;
+                account.CREATED_AT = DateTime.UtcNow;
+                account.MODIFIED_AT = DateTime.UtcNow;
+
+                _context.Set<AccountDebit>().Add(account);
+                _context.SaveChanges();
+            }
+         
+            return id;
+        }
         public void AddBalance(int IdAccount, decimal Balance)
         {
             BankAccount account = _context.Set<BankAccount>().Find(IdAccount);
