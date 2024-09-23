@@ -131,7 +131,7 @@ namespace TailorProTrack.infraestructure.Repositories
             }
             else
             {
-                return _context.Set<Expenses>().Where(x => x.COMPLETED == false && (x.FK_BUY == null && x.FK_BUY == 0))
+                return _context.Set<Expenses>().Where(x => x.COMPLETED == false && (x.FK_BUY == null || x.FK_BUY == 0))
                     .Skip((page - 1) * itemsPerPage)
                     .Take(itemsPerPage)
                     .ToList();
