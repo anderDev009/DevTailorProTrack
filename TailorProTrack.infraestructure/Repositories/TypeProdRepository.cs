@@ -35,12 +35,6 @@ namespace TailorProTrack.infraestructure.Repositories
             this._context.SaveChanges();
         }
 
-        public override void Remove(Type_prod entity)
-        {
-            entity.REMOVED = true;
-
-            this._context.Update(entity);
-            this._context.SaveChanges();
-        }
+        
     }
 }

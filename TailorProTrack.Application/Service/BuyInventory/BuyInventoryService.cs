@@ -99,17 +99,20 @@ namespace TailorProTrack.Application.Service.BuyInventoryService
             ServiceResult result = new();
             try 
             {
-                BuyInventory buyInventory = _mapper.Map<BuyInventory>(dtoRemove);
                 //comprobando de que no se haya usado
-                var buyInventoryDb = _buyInventoryRepository.GetEntity(buyInventory.ID);
-                if ((bool)buyInventoryDb.USED)
+                var buyInventoryDb = _buyInventoryRepository.GetEntity(dtoRemove.ID);
+                if (buyInventoryDb.USED != null)
                 {
-                    result.Message = "No se puede eliminar una compra que ya ha sido usada";
-                    result.Success = true;
-                    return result;
+                    if ((bool)buyInventoryDb.USED)
+                    {
+                        result.Message = "No se puede eliminar una compra que ya ha sido usada";
+                        result.Success = true;
+                        return result;
+                    }
+                  
                 }
 
-                _buyInventoryRepository.Remove(buyInventory);
+                _buyInventoryRepository.Remove(new BuyInventory { ID = dtoRemove.ID});
                 result.Message = "Completado con exito";
             }catch(Exception ex)
             {
