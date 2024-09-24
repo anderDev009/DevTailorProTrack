@@ -19,6 +19,7 @@ namespace TailorProTrack.Api.Controllers
             _expensesService = expensesService;
         }
 
+
         [HttpPost("SaveExpense")]
         public IActionResult Save([FromBody] ExpensesDtoAdd dtoAdd)
         {
@@ -61,6 +62,52 @@ namespace TailorProTrack.Api.Controllers
             if (!result.Success)
             {
                 return BadRequest(result);
+            }
+            return Ok(result);
+        }
+        [HttpGet("GetExpensesPendingWithBuyPaginated")]
+        public IActionResult GetExpensesWithBuyPaginated([FromQuery] PaginationParams @params)
+        {
+            var result = this._expensesService.GetExpensesWithIdBuyPaginated(@params);
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            Response.AddHeaderPaginationJson(result.Header);
+            return Ok(response);
+        }
+        [HttpGet("GetExpensesPendingWithoutBuyPaginated")]
+        public IActionResult GetExpensesWithoutBuyPaginated([FromQuery] PaginationParams @params)
+        {
+            var result = this._expensesService.GetExpensesWithoutBuyPaginated(@params);
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            Response.AddHeaderPaginationJson(result.Header);
+            return Ok(response);
+        }
+
+        [HttpGet("GetExpensesPendingWithBuy")]
+        public IActionResult GetExpensesWithBuyId()
+        {
+            var result = this._expensesService.GetExpensesWithIdBuy();
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("GetExpensesPendingWithoutBuy")]
+        public IActionResult GetExpensesWithoutBuyId()
+        {
+            var result = this._expensesService.GetExpensesWithoutBuy();
+            if (!result.Success)
+            {
+                return StatusCode(500,result);
             }
             return Ok(result);
         }

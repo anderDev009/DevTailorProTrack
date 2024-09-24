@@ -21,9 +21,11 @@ namespace TailorProTrack.infraestructure.Repositories
 
 		public override int Save(Order entity)
 		{
-			entity.CREATED_AT = DateTime.Now;
+		
 
-			this._context.Add(entity);
+			entity.CREATED_AT = DateTime.UtcNow;
+			entity.CHECKED = false;
+            this._context.Add(entity);
 			this._context.SaveChanges();
 
 			return entity.ID;

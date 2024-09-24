@@ -9,7 +9,7 @@ using TailorProTrack.infraestructure.Interfaces;
 
 namespace TailorProTrack.infraestructure.Repositories
 {
-    public class ExpensesRepository : BaseRepository<Expenses>, IExpensesRepository    
+    public class ExpensesRepository : BaseRepository<Expenses>, IExpensesRepository
     {
         private readonly TailorProTrackContext _context;
         private readonly IBankAccountRepository _bankAccountRepository;
@@ -109,6 +109,33 @@ namespace TailorProTrack.infraestructure.Repositories
 			}
 			return 0;
         }
-        
+
+        public List<Expenses> GetExpensesWithBuyId()
+        {
+            return _context.Set<Expenses>().Where(x => x.COMPLETED == false && (x.FK_BUY != null && x.FK_BUY != 0)).ToList();
+        }
+
+        public List<Expenses> GetExpensesWithoutBuyId()
+        {
+            return _context.Set<Expenses>().Where(x => x.COMPLETED == false && (x.FK_BUY == null && x.FK_BUY == 0)).ToList();
+        }
+
+        public List<Expenses> GetExpensesWithBuyIdPaginated(int page, int itemsPerPage, bool withBuy)
+        {
+            if (withBuy)
+            {
+                return _context.Set<Expenses>().Where(x => x.COMPLETED == false && (x.FK_BUY != null && x.FK_BUY != 0))
+                    .Skip((page - 1) * itemsPerPage)
+                    .Take(itemsPerPage)
+                    .ToList();
+            }
+            else
+            {
+                return _context.Set<Expenses>().Where(x => x.COMPLETED == false && (x.FK_BUY == null || x.FK_BUY == 0))
+                    .Skip((page - 1) * itemsPerPage)
+                    .Take(itemsPerPage)
+                    .ToList();
+            }
+        }
     }
 }

@@ -9,13 +9,16 @@ namespace TailorProTrack.infraestructure.Repositories
 {
     public class OrderProductRepository : BaseRepository<OrderProduct>, IOrderProductRepository
     {
-        private readonly TailorProTrackContext _context; 
-        public OrderProductRepository(TailorProTrackContext context) : base(context) 
+        private readonly TailorProTrackContext _context;
+        //repositorio de compras
+        private readonly IBuyInventoryRepository _buyInventoryRepository;
+        public OrderProductRepository(TailorProTrackContext context, IBuyInventoryRepository buyInventoryRepository) : base(context)
         {
             _context = context;
+            _buyInventoryRepository = buyInventoryRepository;
         }
 
-   
+
 
         public override int Save(OrderProduct entity)
         {
@@ -52,8 +55,38 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public void SaveMany(List<OrderProduct> products)
         {
-            foreach(var item in products)
+            //comprobando por si hay un producto registrado en compras que no han sido marcadas como usadas
+            var buyDetails = this._context.Set<BuyInventoryDetail>()
+                                          .Include(x => x.BuyInventory)
+                                          .Where(x => x.BuyInventory.USED == false)
+                                          .ToList();
+
+            foreach ( var buy in buyDetails)
             {
+               
+
+            }
+            foreach (var item in products)
+            {
+                //obteniendo el inventory color de cada producto
+                var invColor = this._context.Set<InventoryColor>()
+                                           .Include(x => x.Inventory)
+                                           .Where(x => x.FK_INVENTORY == item.FK_INVENTORYCOLOR)
+                                           .FirstOrDefault();
+
+                //Extrayendo los detalles de la compra
+                var buy = buyDetails.Where(x => x.COLOR_PRIMARY == invColor.FK_COLOR_PRIMARY && x.FK_PRODUCT == invColor.Inventory.FK_PRODUCT && x.FK_SIZE == invColor.Inventory.FK_SIZE).ToList();
+                //comprobando si hay algun producto en la compra
+                if (buy.Count != 0)
+                {
+                    //marcando la compra como utilizada en caso de que se haya encontrado un producto
+                    foreach(var buyItem in buy)
+                    {
+                        this._buyInventoryRepository.CheckUsed(buyItem.FK_BUY_INVENTORY);
+                    }
+
+                }
+                //guardando
                 item.CREATED_AT = DateTime.Now; 
                 this._context.Add(item);
             }

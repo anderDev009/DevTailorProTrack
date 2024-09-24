@@ -59,19 +59,19 @@ namespace TailorProTrack.Application.Service.BuyInventoryService
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
                 var buyInventory = this._buyInventoryRepository.SearchEntities()
                     .Include(b => b.Details)
-                    .ThenInclude(b => new { b.Product, b.Size, b.ColorPrimary,b.ColorSecondary})
-                    .GroupBy(b => b.DATE_MADE)
-                    .OrderDescending()
-                    .Skip((@params.Page - 1) * @params.ItemsPerPage).Take(@params.ItemsPerPage).ToList();
+                    //.ThenInclude(b => new { b.Product, b.Size, b.ColorPrimary,b.ColorSecondary})
+                    .Skip((@params.Page - 1) * @params.ItemsPerPage).Take(@params.ItemsPerPage)
+                    .OrderBy(buy => buy.DATE_MADE)
+                    .ToList();
 
-                result.Data = buyInventory;
+                result.Data = _mapper.Map<List<BuyInventoryDtoGet>>(buyInventory);
                 result.Header = header;
                 result.Message = "Obtenidos con exito";
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Error al obtener las compras";
+                result.Message = $"Error al obtener las compras: {ex.Message}";
             }
             return result;
         }
@@ -81,18 +81,15 @@ namespace TailorProTrack.Application.Service.BuyInventoryService
             ServiceResult result = new();
             try
             {
-                var buy = _buyInventoryRepository.SearchEntities()
-                    .Include(b => b.Details)
-                    .ThenInclude(b => new { b.Product, b.Size, b.ColorPrimary, b.ColorSecondary })
-                    .Where(b => b.ID == id).FirstOrDefault();
+                var buy = _buyInventoryRepository.GetEntity(id);
 
-                result.Data = result;
+                result.Data = _mapper.Map<BuyInventoryDtoGet?>(buy);
                 result.Message = "Obtenidos con exito";
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Error al obtener la compra";
+                result.Message = $"Error al obtener la compra: {ex.Message}";
             }
             return result;
         }
@@ -102,8 +99,20 @@ namespace TailorProTrack.Application.Service.BuyInventoryService
             ServiceResult result = new();
             try 
             {
-                BuyInventory buyInventory = _mapper.Map<BuyInventory>(dtoRemove);
-                _buyInventoryRepository.Remove(buyInventory);
+                //comprobando de que no se haya usado
+                var buyInventoryDb = _buyInventoryRepository.GetEntity(dtoRemove.ID);
+                if (buyInventoryDb.USED != null)
+                {
+                    if ((bool)buyInventoryDb.USED)
+                    {
+                        result.Message = "No se puede eliminar una compra que ya ha sido usada";
+                        result.Success = true;
+                        return result;
+                    }
+                  
+                }
+
+                _buyInventoryRepository.Remove(new BuyInventory { ID = dtoRemove.ID});
                 result.Message = "Completado con exito";
             }catch(Exception ex)
             {
