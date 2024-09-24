@@ -37,6 +37,17 @@ namespace TailorProTrack.Application.Service.BuyInventoryService
 
             try
             {
+                //validacino de que no lleve vacios o data erronea
+                    
+                foreach (var detail in dtoAdd.InventoryDetailDtoAdd )
+                {
+                    if((detail.FK_PRODUCT == 0) || detail.FK_SIZE == 0 || detail.COLOR_PRIMARY == 0 || detail.QUANTITY >= 0)
+                    {
+                        serviceResult.Success = false;
+                        serviceResult.Message = "No puede llevar campos vacios";
+                        return serviceResult;
+                    }
+                }
                 BuyInventory buyInventory = _mapper.Map<BuyInventory>(dtoAdd);
                 List<BuyInventoryDetail> detailBuy = _mapper.Map<List<BuyInventoryDetail>>(dtoAdd.InventoryDetailDtoAdd);
                 _buyInventoryRepository.AddBuyInventory(buyInventory, detailBuy);

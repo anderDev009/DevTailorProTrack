@@ -37,7 +37,7 @@ namespace TailorProTrack.Application.Service
 			}
 	        else
 	        {
-		        preOrder.ITBIS = false;
+		        preOrder.ITBIS = true;
 	        }
 	        _preOrderRepository.Update(preOrder);
 

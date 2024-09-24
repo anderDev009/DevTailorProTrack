@@ -15,6 +15,11 @@ namespace TailorProTrack.infraestructure.Repositories
             _ctx = ctx;
         }
 
+        public bool ExistSupplierByRnc(string rnc)
+        {
+            return _ctx.Set<Supplier>().Any(x => x.RNC == rnc);
+        }
+
         public override void Update(Supplier entity)
         {
             //entity.MODIFIED_AT = DateTime.Now;

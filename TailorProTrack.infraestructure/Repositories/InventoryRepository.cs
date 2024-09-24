@@ -150,5 +150,21 @@ namespace TailorProTrack.infraestructure.Repositories
             }
             return true;    
         }
+
+        public bool ValidateToAddPreOrder(int fkProduct, int fkSize, int quantity, int fkPrimaryColor)
+        {
+            var inventory = _context.Set<Inventory>().FirstOrDefault(i => i.FK_PRODUCT == fkProduct && i.FK_SIZE == fkSize);    
+            if(inventory != null)
+            {
+                var invColor = _context.Set<InventoryColor>().FirstOrDefault(x => x.FK_INVENTORY == inventory.ID 
+                                                                            && x.FK_COLOR_PRIMARY == fkPrimaryColor);
+
+                if (invColor != null)
+                {
+                    return invColor.QUANTITY >= quantity;
+                }
+            }
+            return false;
+        }
     }
 }

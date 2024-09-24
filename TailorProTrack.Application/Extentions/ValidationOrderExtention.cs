@@ -66,6 +66,21 @@ namespace TailorProTrack.Application.Extentions
             //dtoAdd.products = new List<OrderProductDtoAdd>();
             //var preOrderProducts = preOrderProductsRepository.GetByPreOrderId(dtoAdd.FkPreOrder);
             bool addedOne = false;
+            foreach(var product in dtoAdd.products)
+            {
+                var inventoryColorProducts = inventoryColorRepository.GetEntity(product.FkInventoryColor);
+                if(inventoryColorProducts == null)
+                {
+                    throw new OrderProductServiceException("Inventario inexistente, favor revisar las referencias.");
+                }
+               
+                if (inventoryColorProducts.QUANTITY < product.Quantity)
+                {
+                    throw new OrderProductServiceException("Uno o mas elementos no cumplen con la condicion para ser agregados, por favor revise las cantidades enviadas.");
+
+                }
+
+            }
             foreach (var product in dtoAdd.products)
             {
                 //var productInventory = inventoryRepository.SearchEntities()
@@ -80,6 +95,8 @@ namespace TailorProTrack.Application.Extentions
 
                 //    if (inventoryColorProducts.Count != 0 && !orderProductRepository.Exists(ordr => ordr.FK_INVENTORYCOLOR == inventoryColorProducts.First().ID))
                 //    {
+
+                
                 var inventoryColorProducts = inventoryColorRepository.GetEntity(product.FkInventoryColor);
                
                 if (inventoryColorProducts.QUANTITY >= product.Quantity)

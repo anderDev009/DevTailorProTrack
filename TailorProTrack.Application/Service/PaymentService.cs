@@ -244,6 +244,14 @@ namespace TailorProTrack.Application.Service
 			ServiceResult result = new ServiceResult();
 			try
 			{
+				//validaciones
+				var isValid = _repository.CheckIsLastPaymentPreOrder(dtoRemove.Id);
+				if(!isValid)
+				{
+                    result.Message = "No se puede eliminar el ultimo pago de una orden";
+                    result.Success = true;
+                    return result;
+                }
 				Payment payment = new Payment
 				{
 					ID = dtoRemove.Id,

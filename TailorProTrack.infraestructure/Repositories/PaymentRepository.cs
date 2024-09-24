@@ -6,7 +6,7 @@ using TailorProTrack.infraestructure.Interfaces;
 
 namespace TailorProTrack.infraestructure.Repositories
 {
-	public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
+    public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
 	{
 		private readonly TailorProTrackContext _context;
 		private readonly IPreOrderProductsRepository _preOrderProductRepository;
@@ -224,5 +224,30 @@ namespace TailorProTrack.infraestructure.Repositories
 		{
 			return _context.Set<Payment>().Where(x => x.FK_BANK_ACCOUNT == idBankAccount).ToList();
 		}
-	}
+
+        public bool CheckIsLastPaymentPreOrder(int paymentId)
+        {
+			var payment = _context.Set<Payment>().Find(paymentId);
+            var payments = _context.Set<Payment>().Where(x => x.FK_ORDER == payment.FK_ORDER).ToList();
+            if (payments.Count == 1)
+            {
+                return true;
+            }
+            if (payments.Last().ID == paymentId)
+            {
+				//validando si la nota de credito tiene monto para restarle en el caso de que si este vinculado a una nota de credito
+				var noteCreditPayment = _context.Set<NoteCreditPayment>().Where(x => x.FK_PAYMENT == paymentId).FirstOrDefault();
+				if(noteCreditPayment != null)
+				{
+					var noteCredit = _context.Set<NoteCredit>().Find(noteCreditPayment.FK_CREDIT);
+					if(noteCredit.AMOUNT < payment.AMOUNT)
+					{
+						return false;
+					}
+                }
+                return true;
+            }
+            return false;
+        }
+    }
 }

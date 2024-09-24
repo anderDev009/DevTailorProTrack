@@ -14,6 +14,7 @@ namespace TailorProTrack.Application.Dtos.PreOrder
         //campo para saber is es editable el pedido
         public bool? IsEditable { get; set; }
         public decimal? Amount { get; set; }
+        public bool? Itbis { get; set; }
         public decimal? AmountBase { get; set; }
         public bool? Finished { get; set; }
         public bool? IsCompleted { get; set; }
