@@ -198,6 +198,7 @@ namespace TailorProTrack.Application.Service
                 dtoUpdate.IsValid(this.Configuration);
                 Client clientToAdd = new Client
                 {
+                    ID = dtoUpdate.Id,
                     FIRST_NAME = dtoUpdate.F_name,
                     LAST_NAME = dtoUpdate.L_name,
                     FIRST_SURNAME = dtoUpdate.F_surname,
