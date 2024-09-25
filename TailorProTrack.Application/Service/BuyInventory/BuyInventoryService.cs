@@ -41,7 +41,7 @@ namespace TailorProTrack.Application.Service.BuyInventoryService
                     
                 foreach (var detail in dtoAdd.InventoryDetailDtoAdd )
                 {
-                    if((detail.FK_PRODUCT == 0) || detail.FK_SIZE == 0 || detail.COLOR_PRIMARY == 0 || detail.QUANTITY >= 0)
+                    if((detail.FK_PRODUCT == 0) || detail.FK_SIZE == 0 || detail.COLOR_PRIMARY == 0 || detail.QUANTITY <= 0)
                     {
                         serviceResult.Success = false;
                         serviceResult.Message = "No puede llevar campos vacios";
