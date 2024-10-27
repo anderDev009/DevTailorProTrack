@@ -137,5 +137,43 @@ namespace TailorProTrack.infraestructure.Repositories
                     .ToList();
             }
         }
+
+        public List<Expenses> GetBuysPending()
+        {
+            List<Expenses> expenses = _context.Set<Expenses>().Where(x => x.COMPLETED == false && !x.REMOVED && x.FK_BUY != null).ToList();
+            List<Expenses> expensesPending = new List<Expenses>();
+            foreach (var expense in expenses)
+            {
+                bool isPending = ExpenseIsPending(expense.ID);
+                if (isPending)
+                {
+                    expensesPending.Add(expense);
+                }
+                else
+                {
+                    this.ConfirmExpenses(expense.ID);
+                }
+            }
+            return expensesPending;
+        }
+
+        public List<Expenses> GetOnlyExpensesPending()
+        {
+            List<Expenses> expenses = _context.Set<Expenses>().Where(x => x.COMPLETED == false && !x.REMOVED && x.FK_BUY == null).ToList();
+            List<Expenses> expensesPending = new List<Expenses>();
+            foreach (var expense in expenses)
+            {
+                bool isPending = ExpenseIsPending(expense.ID);
+                if (isPending)
+                {
+                    expensesPending.Add(expense);
+                }
+                else
+                {
+                    this.ConfirmExpenses(expense.ID);
+                }
+            }
+            return expensesPending;
+        }
     }
 }

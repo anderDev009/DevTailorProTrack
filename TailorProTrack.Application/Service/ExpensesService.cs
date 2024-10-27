@@ -52,6 +52,29 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult GetBuysPending()
+        {
+            ServiceResult result = new();
+            try
+            {
+                var expenses = _expensesRepository.GetBuysPending();
+                var expensesMapped = _mapper.Map<List<ExpensesDtoGet>>(expenses);
+                foreach (var item in expensesMapped)
+                {
+                    item.AmountPending = _expensesRepository.GetAmountPending(item.Id);
+                }
+
+                result.Data = expensesMapped;
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Message = $"Error {ex.Message}";
+            }
+
+            return result;
+        }
+
         public ServiceResult GetExpensesPending()
         {
             ServiceResult result = new();
@@ -151,6 +174,29 @@ namespace TailorProTrack.Application.Service
                 result.Success = false;
                 result.Message = $"Error al intentar obtener la data : {ex.Message}";
             }
+            return result;
+        }
+
+        public ServiceResult GetOnlyExpensesPending()
+        {
+            ServiceResult result = new();
+            try
+            {
+                var expenses = _expensesRepository.GetOnlyExpensesPending();
+                var expensesMapped = _mapper.Map<List<ExpensesDtoGet>>(expenses);
+                foreach (var item in expensesMapped)
+                {
+                    item.AmountPending = _expensesRepository.GetAmountPending(item.Id);
+                }
+
+                result.Data = expensesMapped;
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Message = $"Error {ex.Message}";
+            }
+
             return result;
         }
     }

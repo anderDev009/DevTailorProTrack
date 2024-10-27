@@ -42,7 +42,28 @@ namespace TailorProTrack.Api.Controllers
             Response.AddHeaderPaginationJson(result.Header);
             return Ok(response);
         }
-
+        [HttpGet("GetBuysPending")]
+        public IActionResult GetBuysPending()
+        {
+            var result = this._expensesService.GetBuysPending();
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+        [HttpGet("GetOnlyExpensesPending")]
+        public IActionResult GetOnlyExpensesPending()
+        {
+            var result = this._expensesService.GetOnlyExpensesPending();
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
         [HttpGet("GetExpenseById")]
         public IActionResult GetById(int id)
         {
