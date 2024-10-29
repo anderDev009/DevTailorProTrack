@@ -9,5 +9,6 @@ namespace TailorProTrack.infraestructure.Interfaces
         List<Client> FilterByDni(string dni);
         List<Client> FilterByRnc(string rnc);
         List<Client> FilterByFullName(string fullName);
+        
     }
 }

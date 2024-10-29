@@ -4,6 +4,7 @@ using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Expenses;
+using TailorProTrack.Application.Dtos.Reports;
 
 namespace TailorProTrack.Api.Controllers
 {
@@ -168,5 +169,27 @@ namespace TailorProTrack.Api.Controllers
             return NoContent();
         }
 
+        [HttpPost("ReportExpenses")]
+        public IActionResult ReportExpenses([FromBody] DateRangeDto dto)
+        {
+            var result = _expensesService.GetExpensesByDate(dto.start_date, dto.end_date);
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, result.Message);
+
+            }
+            return Ok(result);
+        }
+        [HttpPost("ReportBuys")]
+        public IActionResult ReporBuys([FromBody] DateRangeDto dto)
+        {
+            var result = _expensesService.GetBuysByDate(dto.start_date, dto.end_date);
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, result.Message);
+
+            }
+            return Ok(result);
+        }
     }
 }

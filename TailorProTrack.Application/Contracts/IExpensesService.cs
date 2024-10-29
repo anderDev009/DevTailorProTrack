@@ -19,6 +19,8 @@ namespace TailorProTrack.Application.Contracts
 
         ServiceResult GetExpensesWithoutBuy();
         ServiceResultWithHeader GetExpensesWithoutBuyPaginated(PaginationParams @params);
+        ServiceResult GetExpensesByDate(DateTime startDate, DateTime endDate);
+        ServiceResult GetBuysByDate(DateTime startDate, DateTime endDate);
 
     }
 }

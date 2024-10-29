@@ -175,5 +175,17 @@ namespace TailorProTrack.infraestructure.Repositories
             }
             return expensesPending;
         }
+
+        public List<Expenses> GetExpensesByDate(DateTime startDate, DateTime endDate)
+        {
+            var expenses = _context.Set<Expenses>().Where(x => x.CREATED_AT >= startDate && x.CREATED_AT <= endDate && x.FK_BUY == null).ToList();
+            return expenses;
+        }
+
+        public List<Expenses> GetBuysByDate(DateTime startDate, DateTime endDate)
+        {
+            var expenses = _context.Set<Expenses>().Where(x => x.CREATED_AT >= startDate && x.CREATED_AT <= endDate && x.FK_BUY != null).ToList();
+            return expenses;
+        }
     }
 }

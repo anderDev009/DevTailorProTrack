@@ -8,5 +8,7 @@ namespace TailorProTrack.Application.Contracts
 {
     public interface ISaleService : IBaseServiceGeneric<SaleDtoAdd, SaleDtoUpdate, SaleDtoGet, Sales>
     {
+        ServiceResult GetSalesInvoicedByDate(DateTime startDate, DateTime endDate);
+
     }
 }

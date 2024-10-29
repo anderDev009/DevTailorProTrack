@@ -93,5 +93,11 @@ namespace TailorProTrack.infraestructure.Repositories
             return isConfirmed;
         }
 
+        public List<Sales> GetSalesInvoicedByDate(DateTime startDate, DateTime endDate)
+        {
+            var sales = _context.Set<Sales>().Where(x => x.CREATED_AT >= startDate && x.CREATED_AT <= endDate && x.INVOICED == true)
+                        .ToList();
+            return sales;
+        }
     }
 }

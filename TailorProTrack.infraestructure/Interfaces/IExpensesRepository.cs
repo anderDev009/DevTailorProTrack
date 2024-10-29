@@ -15,6 +15,9 @@ namespace TailorProTrack.infraestructure.Interfaces
         public List<Expenses> GetExpensesWithBuyId();
         public List<Expenses> GetExpensesWithoutBuyId();
         public List<Expenses> GetExpensesWithBuyIdPaginated(int page, int itemsPerPage, bool withBuy);
+        public List<Expenses> GetExpensesByDate(DateTime startDate,DateTime endDate);
+        public List<Expenses> GetBuysByDate(DateTime startDate, DateTime endDate);
+
         public decimal GetAmountPending(int idExpense);
     }
 }
