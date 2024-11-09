@@ -6,6 +6,7 @@ using TailorProTrack.Application.Contracts.Report;
 using TailorProTrack.Application.Core;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Interfaces;
+using TailorProTrack.infraestructure.Interfaces.Reports;
 
 namespace TailorProTrack.Application.Service.Reports
 {
@@ -17,13 +18,15 @@ namespace TailorProTrack.Application.Service.Reports
         private readonly IPreOrderProductsRepository _preOrderProductRepository;
         private readonly IProductRepository _productRepository;
         private readonly ISizeRepository _sizeRepository;
+        private readonly IInventoryReports _inventoryReports;
 
         public ReportOrderInventoryService(IInventoryRepository inventoryRepository,
                                            IPreOrderRepository preOrderRepository,
                                            IPreOrderProductsRepository preOrderProductsRepository,
                                            IInventoryColorRepository inventoryColorRepository,
                                            IProductRepository productRepository,
-                                           ISizeRepository sizeRepository)
+                                           ISizeRepository sizeRepository,
+                                           IInventoryReports inventoryReports)
         {
             _inventoryColorRepository = inventoryColorRepository;
             _inventoryRepository = inventoryRepository;
@@ -31,6 +34,7 @@ namespace TailorProTrack.Application.Service.Reports
             _preOrderProductRepository = preOrderProductsRepository;
             _productRepository = productRepository;
             _sizeRepository = sizeRepository;
+            _inventoryReports = inventoryReports;
         }
 
         public ServiceResult GetDiffItems()
@@ -227,6 +231,23 @@ namespace TailorProTrack.Application.Service.Reports
             {
                 result.Success = false;
                 result.Message = $"Error al obtener el reporte: {ex.Message}.";
+            }
+            return result;
+        }
+
+        public ServiceResult GetMissedInventory()
+        {
+            ServiceResult result = new();
+            try
+            {
+                var report = _inventoryReports.GetMissedInventory();
+                result.Data = report;
+                result.Message = "Reporte obtenido con exito.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al obtener report {ex.Message}";
             }
             return result;
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 using TailorProTrack.domain.Entities;
+using TailorProTrack.domain.Reports;
 
 namespace TailorProTrack.infraestructure.Context
 {
@@ -41,10 +42,19 @@ namespace TailorProTrack.infraestructure.Context
         public DbSet<AccountCredit> ACCOUNT_CREDIT { get; set; }
 
         public DbSet<Supplier> SUPPLIERS { get; set; }
+
+        //reportes
+        public DbSet<MissedInventory> MissedInv { get; set; }
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            //no keys - entidades de solo lectura
+            #region Entidades solo lectura - Reportes
+            modelBuilder.Entity<MissedInventory>().HasNoKey();
+            #endregion
             #region Foreign Keys
+
+
             modelBuilder.Entity<Size>().HasOne<CategorySize>(s => s.categorySize).WithMany().HasForeignKey(s => s.FKCATEGORYSIZE);
 
 

@@ -45,7 +45,7 @@ namespace TailorProTrack.infraestructure.Repositories
             inventoryColor.USER_MOD = entity.USER_MOD;
 
 
-            this._context.Update(inventoryColor);
+            this._context.Set<InventoryColor>().Update(inventoryColor);
             this._context.SaveChanges();
         }
 

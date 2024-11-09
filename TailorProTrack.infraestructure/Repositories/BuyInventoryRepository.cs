@@ -106,5 +106,10 @@ namespace TailorProTrack.infraestructure.Repositories
             var buys = _ctx.Set<BuyInventory>().Include(x => x.Details).Where(x => x.DATE_MADE >= startDate && x.DATE_MADE <= endDate).ToList();
             return buys;
         }
+
+        public void MarkBuysUsed()
+        {
+            _ctx.Set<BuyInventory>().FromSqlRaw("UPDATE BUY_INVENTORY SET USED = 1 WHERE USED = NULL");
+        }
     }
 }

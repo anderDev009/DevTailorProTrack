@@ -107,7 +107,7 @@ namespace TailorProTrack.Application.Service
                     , _preOrderProductsRepository, _inventoryRepository, _inventoryColorRepository, _orderProductRepository);
 
 
-                
+
                 //logica para agregarele la cantidad
                 decimal amount = 0;
                 foreach (var item in dtoAdd.products)
@@ -139,11 +139,11 @@ namespace TailorProTrack.Application.Service
                 }
                 //mensaje de exito
                 result.Message = "Orden registrada con exito.";
-                //la validacion devuelve una cadena donde indica el ID de los productos que no se pudieron registrar
-                if(message != "")
-                {
-                    result.Message += $" Productos no registrados por falta de cantidad: {message}";
-                }
+                ////la validacion devuelve una cadena donde indica el ID de los productos que no se pudieron registrar
+                //if (message != "")
+                //{
+                //    result.Message += $" Productos no registrados por falta de cantidad: {message}";
+                //}
             }
             catch (Exception ex)
             {

@@ -4,7 +4,9 @@ using TailorProTrack.Application.Contracts.BuyInventoryContracts;
 using TailorProTrack.Application.Service;
 using TailorProTrack.Application.Service.BuyInventoryService;
 using TailorProTrack.infraestructure.Interfaces;
+using TailorProTrack.infraestructure.Interfaces.Reports;
 using TailorProTrack.infraestructure.Repositories;
+using TailorProTrack.infraestructure.Repositories.Reports;
 
 namespace TailorProTrack.Ioc.Dependencies
 {
@@ -21,6 +23,9 @@ namespace TailorProTrack.Ioc.Dependencies
 
             service.AddTransient<IInventoryService, InventoryService>();
             service.AddTransient<IBuyInventoryService, BuyInventoryService>();
+
+            //reportes
+            service.AddScoped<IInventoryReports, InventoryReports>();
 
 
         }

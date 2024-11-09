@@ -95,7 +95,9 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public List<Sales> GetSalesInvoicedByDate(DateTime startDate, DateTime endDate)
         {
-            var sales = _context.Set<Sales>().Where(x => x.CREATED_AT >= startDate && x.CREATED_AT <= endDate && x.INVOICED == true)
+            var sales = _context.Set<Sales>().Where(x => x.CREATED_AT >= startDate && x.CREATED_AT <= endDate)
+                        .Include(x => x.PreOrder)
+                        .ThenInclude(x => x.Client)
                         .ToList();
             return sales;
         }

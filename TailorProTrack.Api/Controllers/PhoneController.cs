@@ -39,7 +39,6 @@ namespace TailorProTrack.Api.Controllers
             }
             return StatusCode(StatusCodes.Status201Created, result);
         }
-
-       
+               
     }
 }

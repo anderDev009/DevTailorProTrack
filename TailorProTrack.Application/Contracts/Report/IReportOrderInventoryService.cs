@@ -6,5 +6,6 @@ namespace TailorProTrack.Application.Contracts.Report
     {
         ServiceResult GetDiffItemsByPreOrderId(int preOrderId);
         ServiceResult GetDiffItems();
+        ServiceResult GetMissedInventory();
     }
 }
