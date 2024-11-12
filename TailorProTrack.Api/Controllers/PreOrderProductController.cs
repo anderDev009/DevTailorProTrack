@@ -72,7 +72,11 @@ namespace TailorProTrack.Api.Controllers
 					return StatusCode(400, "Formato invalido");
 				}
 
-				_preOrderProductService.Update(dtoUpdate);
+				var result = _preOrderProductService.Update(dtoUpdate);
+				if(result.Success == false)
+				{
+					return StatusCode(400, result.Message);
+				}
 				return StatusCode(201);
 			}
 			catch (Exception e)

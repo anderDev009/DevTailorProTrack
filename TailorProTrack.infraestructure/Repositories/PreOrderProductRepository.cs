@@ -81,23 +81,23 @@ namespace TailorProTrack.infraestructure.Repositories
         {
 
 
-            //PreOrderProducts products = this.GetEntity(entity.ID);
+            PreOrderProducts products = this.GetEntity(entity.ID);
 
-            ////validando
-            //if (IsPreOrderProductInOrder(products.ID) && products.QUANTITY > entity.QUANTITY)
-            //{
-	           // throw new Exception("No puedes asignar menos si hay ordenes registradas");
-            //}
+            //validando
+            if (IsPreOrderProductInOrder(products.ID) && products.QUANTITY > entity.QUANTITY)
+            {
+                throw new Exception("No puedes asignar menos si hay ordenes registradas");
+            }
 
-            //products.QUANTITY = entity.QUANTITY;
-            //products.COLOR_PRIMARY = entity.COLOR_PRIMARY;
-            //products.COLOR_SECONDARY = entity.COLOR_SECONDARY;
-            //products.FK_PRODUCT = entity.FK_PRODUCT;
-            //products.FK_SIZE = entity.FK_SIZE;
-            //products.FK_PREORDER = entity.FK_PREORDER;
+            products.QUANTITY = entity.QUANTITY;
+            products.COLOR_PRIMARY = entity.COLOR_PRIMARY;
+            products.COLOR_SECONDARY = entity.COLOR_SECONDARY;
+            products.FK_PRODUCT = entity.FK_PRODUCT;
+            products.FK_SIZE = entity.FK_SIZE;
+            products.FK_PREORDER = entity.FK_PREORDER;
 
-            //this._ctx.Update(products);
-            //this._ctx.SaveChanges();
+            this._ctx.Update(products);
+            this._ctx.SaveChanges();
         }
         public List<PreOrderProducts> GetMissingColorsByIdPreOrder(int IdPreOrder)
         {
