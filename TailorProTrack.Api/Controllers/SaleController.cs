@@ -4,6 +4,7 @@ using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Expenses;
+using TailorProTrack.Application.Dtos.Reports;
 using TailorProTrack.Application.Dtos.Sale;
 using TailorProTrack.Application.Exceptions;
 using TailorProTrack.Application.Extentions;
@@ -87,6 +88,17 @@ namespace TailorProTrack.Api.Controllers
             if (!result.Success)
             {
                 return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("GetSalesInvoiced")]
+        public IActionResult GetSalesInvoiced([FromBody] DateRangeDto dto)
+        {
+            var result = _SaleService.GetSalesInvoicedByDate(dto.start_date, dto.end_date);
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, result);
             }
             return Ok(result);
         }

@@ -1,12 +1,8 @@
 ﻿
 
 using AutoMapper;
-using Azure;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.Json;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualBasic;
 using TailorProTrack.Application.Contracts.BuyInventoryContracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.BuyInventoryDtos;
@@ -37,6 +33,17 @@ namespace TailorProTrack.Application.Service.BuyInventoryService
 
             try
             {
+                //validacino de que no lleve vacios o data erronea
+                    
+                foreach (var detail in dtoAdd.InventoryDetailDtoAdd )
+                {
+                    if((detail.FK_PRODUCT == 0) || detail.FK_SIZE == 0 || detail.COLOR_PRIMARY == 0 || detail.QUANTITY <= 0)
+                    {
+                        serviceResult.Success = false;
+                        serviceResult.Message = "No puede llevar campos vacios";
+                        return serviceResult;
+                    }
+                }
                 BuyInventory buyInventory = _mapper.Map<BuyInventory>(dtoAdd);
                 List<BuyInventoryDetail> detailBuy = _mapper.Map<List<BuyInventoryDetail>>(dtoAdd.InventoryDetailDtoAdd);
                 _buyInventoryRepository.AddBuyInventory(buyInventory, detailBuy);
@@ -134,6 +141,23 @@ namespace TailorProTrack.Application.Service.BuyInventoryService
             {
                 result.Message = $"Error{ex.Message}";
                 result.Success = false;
+            }
+            return result;
+        }
+
+        public ServiceResult GetBuysByDate(DateTime startDate, DateTime endDate)
+        {
+            ServiceResult result = new();
+            try
+            {
+                var buyInventoryList = _buyInventoryRepository.GetBuysByDate(startDate, endDate);
+                result.Data = _mapper.Map<List<BuyInventory>>(buyInventoryList);
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al obtener las compras: {ex.Message}";
             }
             return result;
         }

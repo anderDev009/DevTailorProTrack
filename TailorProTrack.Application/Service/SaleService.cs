@@ -11,7 +11,7 @@ using TailorProTrack.infraestructure.Interfaces;
 
 namespace TailorProTrack.Application.Service
 {
-    public class SaleService : GenericService<SaleDtoAdd,SaleDtoUpdate,SaleDtoGet,Sales>, ISaleService
+    public class SaleService : GenericService<SaleDtoAdd, SaleDtoUpdate, SaleDtoGet, Sales>, ISaleService
     {
         private readonly ISalesRepository _repository;
         private readonly IMapper _mapper;
@@ -37,7 +37,7 @@ namespace TailorProTrack.Application.Service
 			}
 	        else
 	        {
-		        preOrder.ITBIS = false;
+		        preOrder.ITBIS = true;
 	        }
 	        _preOrderRepository.Update(preOrder);
 
@@ -63,6 +63,25 @@ namespace TailorProTrack.Application.Service
 
 			return result;
 
+        }
+
+        public ServiceResult GetSalesInvoicedByDate(DateTime startDate, DateTime endDate)
+        {
+			ServiceResult result = new();
+			try
+			{
+				var sales = _repository.GetSalesInvoicedByDate(startDate, endDate);
+				result.Data = _mapper.Map<List<SaleDtoGet>>(sales);
+				result.Message = "Obtenidos con exito";
+
+			}
+			catch (Exception ex )
+			{
+				result.Success = false;
+				result.Message = $"Error al obtener el reporte de ventas: {ex.Message}";
+
+			}
+			return result;
         }
     }
 }

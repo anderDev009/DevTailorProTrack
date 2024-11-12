@@ -135,7 +135,13 @@ namespace TailorProTrack.Application.Mapper
 				.ForMember(x => x.customPrice, opt => opt.MapFrom(src => src.CUSTOM_PRICE))
 				.ForMember(x => x.User, opt => opt.Ignore())
 				.ReverseMap()
-				.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
+				.ForMember(x => x.COLOR_PRIMARY, opt => opt.MapFrom(src => src.FkColorPrimary))
+                .ForMember(x => x.COLOR_SECONDARY, opt => opt.MapFrom(src => src.FkColorSecondary))
+                .ForMember(x => x.FK_PRODUCT, opt => opt.MapFrom(src => src.FkProduct))
+                .ForMember(x => x.FK_SIZE, opt => opt.MapFrom(src => src.FkSize))
+                .ForMember(x => x.QUANTITY, opt => opt.MapFrom(src => src.Quantity))
+                .ForMember(x => x.CUSTOM_PRICE, opt => opt.MapFrom(src => src.customPrice))
+                .ForMember(b => b.USER_CREATED, opt => opt.Ignore())
 				.ForMember(b => b.USER_MOD, opt => opt.Ignore())
 				.ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
 				.ForMember(b => b.REMOVED, opt => opt.Ignore());
@@ -149,12 +155,12 @@ namespace TailorProTrack.Application.Mapper
 				.ForMember(b => b.DateCreated, opt => opt.MapFrom(src => src.CREATED_AT))
 				.ForMember(b => b.DateDelivery, opt => opt.MapFrom(src => src.DATE_DELIVERY))
 				.ForMember(x => x.Finished, src => src.MapFrom(x => x.FINISHED))
+				.ForMember(x => x.Itbis, src => src.MapFrom(x => x.ITBIS))
 				.ReverseMap()
 					.ForMember(b => b.USER_CREATED, opt => opt.Ignore())
 					.ForMember(b => b.USER_MOD, opt => opt.Ignore())
 					.ForMember(b => b.MODIFIED_AT, opt => opt.Ignore())
-					.ForMember(b => b.REMOVED, opt => opt.Ignore())
-					.ForMember(b => b.ITBIS, opt => opt.Ignore());
+					.ForMember(b => b.REMOVED, opt => opt.Ignore());
 
 			#endregion
 			#region Size

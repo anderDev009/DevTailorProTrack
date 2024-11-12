@@ -19,6 +19,18 @@ namespace TailorProTrack.Api.Controllers.Report
             _preorProductService = preOrderProductService;
         }
 
+        [HttpGet("GetMissedInventory")]
+        public IActionResult GetMissedInventory()
+        {
+            var result = _reportOrderInventoryService.GetMissedInventory();
+
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,result);
+            }
+            return Ok(result);
+        }
+
         [HttpGet("GetReportDiffItemsById")]
         public IActionResult GetById(int preorderId)
         {

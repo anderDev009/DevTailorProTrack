@@ -9,5 +9,7 @@ namespace TailorProTrack.infraestructure.Interfaces
     {
         bool AddBuyInventory(BuyInventory buyInventory, List<BuyInventoryDetail> detail );
         bool CheckUsed(int id);
+        void MarkBuysUsed();
+        List<BuyInventory> GetBuysByDate(DateTime startDate, DateTime endDate);
     }
 }

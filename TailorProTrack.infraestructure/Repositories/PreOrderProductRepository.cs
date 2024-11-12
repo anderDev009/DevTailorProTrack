@@ -86,7 +86,7 @@ namespace TailorProTrack.infraestructure.Repositories
             //validando
             if (IsPreOrderProductInOrder(products.ID) && products.QUANTITY > entity.QUANTITY)
             {
-	            throw new Exception("No puedes asignar menos si hay ordenes registradas");
+                throw new Exception("No puedes asignar menos si hay ordenes registradas");
             }
 
             products.QUANTITY = entity.QUANTITY;

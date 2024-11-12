@@ -52,6 +52,65 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult GetBuysByDate(DateTime startDate, DateTime endDate)
+        {
+            ServiceResult result = new();
+            try
+            {
+                var expenses = _expensesRepository.GetBuysByDate(startDate, endDate);
+                result.Data = _mapper.Map<List<ExpensesDtoGet>>(expenses);
+                result.Message = "Obtenido con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al intentar obtener los gastos de compra: {ex.Message}";
+            }
+
+            return result;
+        }
+
+        public ServiceResult GetBuysPending()
+        {
+            ServiceResult result = new();
+            try
+            {
+                var expenses = _expensesRepository.GetBuysPending();
+                var expensesMapped = _mapper.Map<List<ExpensesDtoGet>>(expenses);
+                foreach (var item in expensesMapped)
+                {
+                    item.AmountPending = _expensesRepository.GetAmountPending(item.Id);
+                }
+
+                result.Data = expensesMapped;
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Message = $"Error {ex.Message}";
+            }
+
+            return result;
+        }
+
+        public ServiceResult GetExpensesByDate(DateTime startDate, DateTime endDate)
+        {
+            ServiceResult result = new();
+            try
+            {
+                var expenses = _expensesRepository.GetExpensesByDate(startDate, endDate);
+                result.Data = _mapper.Map<List<ExpensesDtoGet>>(expenses);
+                result.Message = "Obtenido con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al intentar obtener los gastos: {ex.Message}";
+            }
+
+            return result;
+        }
+
         public ServiceResult GetExpensesPending()
         {
             ServiceResult result = new();
@@ -151,6 +210,29 @@ namespace TailorProTrack.Application.Service
                 result.Success = false;
                 result.Message = $"Error al intentar obtener la data : {ex.Message}";
             }
+            return result;
+        }
+
+        public ServiceResult GetOnlyExpensesPending()
+        {
+            ServiceResult result = new();
+            try
+            {
+                var expenses = _expensesRepository.GetOnlyExpensesPending();
+                var expensesMapped = _mapper.Map<List<ExpensesDtoGet>>(expenses);
+                foreach (var item in expensesMapped)
+                {
+                    item.AmountPending = _expensesRepository.GetAmountPending(item.Id);
+                }
+
+                result.Data = expensesMapped;
+                result.Message = "Obtenidos con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Message = $"Error {ex.Message}";
+            }
+
             return result;
         }
     }

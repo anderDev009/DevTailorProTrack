@@ -13,7 +13,7 @@ namespace TailorProTrack.infraestructure.Interfaces
         List<Payment> DetailBankAccount(int idBankAccount);
 
 		bool SaveWithNoteCredit(Payment payment);
-
+        bool CheckIsLastPaymentPreOrder(int paymentId);
         decimal GetDebitAmount(int idAccount);
 		decimal GetDebitAmountThisMonth(int idAccount);    
 	}

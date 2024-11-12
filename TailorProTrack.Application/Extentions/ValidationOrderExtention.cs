@@ -38,48 +38,54 @@ namespace TailorProTrack.Application.Extentions
                                         IOrderProductRepository orderProductRepository)
         {
             IsValid(dtoAdd, configuration, clientRepository, userRepository);
-            if (!preOrderRepository.Exists(pr => pr.ID == dtoAdd.FkPreOrder))
-            {
-                throw new OrderServiceException(configuration["validations:preOrderDoesntExist"]);
-            }
+            //if (!preOrderRepository.Exists(pr => pr.ID == dtoAdd.FkPreOrder))
+            //{
+            //    throw new OrderServiceException(configuration["validations:preOrderDoesntExist"]);
+            //}
 
 			//en caso de que intente enviar mas de la cantidad solicitada
-			var preOrderProducts = preOrderProductsRepository.GetPreOrderWithOrders(dtoAdd.FkPreOrder);
-			foreach (var dto in dtoAdd.products)
-			{
-                var invColor = inventoryColorRepository.GetEntity(dto.FkInventoryColor);
-                var inventory = inventoryRepository.GetEntity(invColor.FK_INVENTORY);
-				var preOrderProduct = preOrderProducts.Find(pr => pr.FK_PRODUCT == inventory.FK_PRODUCT && pr.FK_SIZE == inventory.FK_SIZE && pr.COLOR_PRIMARY == invColor.FK_COLOR_PRIMARY);
+			//var preOrderProducts = preOrderProductsRepository.GetPreOrderWithOrders(dtoAdd.FkPreOrder);
+			//foreach (var dto in dtoAdd.products)
+			//{
+   //             var invColor = inventoryColorRepository.GetEntity(dto.FkInventoryColor);
+   //             var inventory = inventoryRepository.GetEntity(invColor.FK_INVENTORY);
+			//	var preOrderProduct = preOrderProducts.Find(pr => pr.FK_PRODUCT == inventory.FK_PRODUCT && pr.FK_SIZE == inventory.FK_SIZE && pr.COLOR_PRIMARY == invColor.FK_COLOR_PRIMARY);
 				
-				if (preOrderProduct != null)
-				{
-					//var quantity = preOrderProduct.QUANTITY - preOrderProduct.QUANTITY;
-					if (dto.Quantity > preOrderProduct.QUANTITY)
-					{
-						throw new OrderProductServiceException("No puedes poner mas de lo solicitado en el pedido.");
-					}
-				}
-			}
+			//	if (preOrderProduct != null)
+			//	{
+			//		//var quantity = preOrderProduct.QUANTITY - preOrderProduct.QUANTITY;
+			//		if (dto.Quantity > preOrderProduct.QUANTITY)
+			//		{
+			//			throw new OrderProductServiceException("No puedes poner mas de lo solicitado en el pedido.");
+			//		}
+			//	}
+			//}
 			//mensaje para enviar en caso de que se hayan insertado varios
 			string message = "";
             //----
             //dtoAdd.products = new List<OrderProductDtoAdd>();
             //var preOrderProducts = preOrderProductsRepository.GetByPreOrderId(dtoAdd.FkPreOrder);
             bool addedOne = false;
+            foreach(var product in dtoAdd.products)
+            {
+                var inventoryColorProducts = inventoryColorRepository.GetEntity(product.FkInventoryColor);
+                if(inventoryColorProducts == null)
+                {
+                    throw new OrderProductServiceException("Inventario inexistente, favor revisar las referencias.");
+                }
+               
+                if (inventoryColorProducts.QUANTITY < product.Quantity)
+                {
+                    throw new OrderProductServiceException("Uno o mas elementos no cumplen con la condicion para ser agregados, por favor revise las cantidades enviadas.");
+
+                }
+
+            }
             foreach (var product in dtoAdd.products)
             {
-                //var productInventory = inventoryRepository.SearchEntities()
-                //    .Where(data => data.FK_PRODUCT == product.FK_PRODUCT && data.FK_SIZE == product.FK_SIZE).ToList();
+      
 
-                //if (productInventory.Count != 0)
-                //{
-
-                //    var inventoryColorProducts = inventoryColorRepository.SearchEntities()
-                //  .Where(data => data.FK_INVENTORY == productInventory.First().ID && data.FK_COLOR_PRIMARY == product.COLOR_PRIMARY
-                //  && data.FK_COLOR_SECONDARY == data.FK_COLOR_SECONDARY).ToList();
-
-                //    if (inventoryColorProducts.Count != 0 && !orderProductRepository.Exists(ordr => ordr.FK_INVENTORYCOLOR == inventoryColorProducts.First().ID))
-                //    {
+                
                 var inventoryColorProducts = inventoryColorRepository.GetEntity(product.FkInventoryColor);
                
                 if (inventoryColorProducts.QUANTITY >= product.Quantity)

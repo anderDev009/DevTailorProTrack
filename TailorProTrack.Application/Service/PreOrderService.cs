@@ -26,6 +26,7 @@ namespace TailorProTrack.Application.Service
 		private readonly IPreOrderProductsRepository _preOrderProductRepository;
 		private readonly ISizeRepository _sizeRepository;
 		private readonly IColorRepository _colorRepository;
+		
 		//mapper
 		private readonly IMapper _mapper;
 		//orderService
@@ -42,6 +43,7 @@ namespace TailorProTrack.Application.Service
 						ISizeRepository sizeRepository,
 						IColorRepository colorRepository,
 						IClientService clientService,
+						IInventoryRepository inventoryRepository,
 						IOrderService orderService, IMapper mapper)
 		{
 			_preOrderRepository = preOrderRepository;
@@ -69,6 +71,7 @@ namespace TailorProTrack.Application.Service
 					FINISHED = null,
 					ITBIS = dtoAdd.Itbis,
 				};
+
 
 				int id = this._preOrderRepository.Save(preOrder);
 				var data = this._preOrderProductService.SaveMany(dtoAdd.productsDtoAdds.Select(data => new PreOrderProductsDtoAdd
@@ -148,9 +151,10 @@ namespace TailorProTrack.Application.Service
 
 				var preOrdersMapped = _mapper.Map<List<PreOrderDtoGetMapped>>(preOrders);
 				var preOrdersToReturn = new List<PreOrderDtoGetMapped>();
+				
 				foreach (var item in preOrdersMapped)
 				{
-
+					
 					item.AmountBase = _paymentRepository.GetAmountPendingByIdPreOrder(item.ID);
 					if (item.AmountBase >= 0)
 					{

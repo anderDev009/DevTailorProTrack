@@ -11,24 +11,28 @@ namespace TailorProTrack.infraestructure.Repositories
 		private readonly TailorProTrackContext _context;
 		private readonly IInventoryColorRepository _inventoryColorRepository;
 		private readonly IInventoryRepository _inventoryRepository;
+		private readonly IBuyInventoryRepository _buyInventoryRepository;
 
-		public OrderRepository(TailorProTrackContext context, IInventoryColorRepository inventoryColorRepository, IInventoryRepository inventoryRepository) : base(context)
+        public OrderRepository(TailorProTrackContext context, IInventoryColorRepository inventoryColorRepository, 
+			IInventoryRepository inventoryRepository,
+			IBuyInventoryRepository buyInventoryRepository) : base(context)
 		{
 			this._context = context;
 			_inventoryColorRepository = inventoryColorRepository;
 			_inventoryRepository = inventoryRepository;
+			_buyInventoryRepository = buyInventoryRepository;
 		}
 
 		public override int Save(Order entity)
 		{
-		
 
 			entity.CREATED_AT = DateTime.UtcNow;
 			entity.CHECKED = false;
-            this._context.Add(entity);
+			this._context.Add(entity);
 			this._context.SaveChanges();
+            _buyInventoryRepository.MarkBuysUsed();
 
-			return entity.ID;
+            return entity.ID;
 		}
 
 		public override void Update(Order entity)

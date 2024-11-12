@@ -29,6 +29,10 @@ namespace TailorProTrack.infraestructure.Repositories
         public override void Update(Client entity)
         {
             Client clientToUpdate = this.GetEntity(entity.ID);
+            if(clientToUpdate == null)
+            {
+                throw new System.Exception("Cliente no encontrado");
+            }
 
             clientToUpdate.FIRST_NAME = entity.FIRST_NAME;
             clientToUpdate.LAST_NAME = entity.LAST_NAME;
