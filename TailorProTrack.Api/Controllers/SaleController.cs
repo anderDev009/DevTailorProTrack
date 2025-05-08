@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using TailorProTrack.Api.Utils;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
-using TailorProTrack.Application.Dtos.Expenses;
 using TailorProTrack.Application.Dtos.Reports;
 using TailorProTrack.Application.Dtos.Sale;
 using TailorProTrack.Application.Exceptions;
-using TailorProTrack.Application.Extentions;
 
 namespace TailorProTrack.Api.Controllers
 {
@@ -102,6 +100,17 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(result);
         }
+
+        // [HttpDelete("RemoveSale")]
+        // public IActionResult RemoveSale(int id)
+        // {
+        //     var result = _SaleService.Remove(id);
+        //     if (!result.Success)
+        //     {
+        //         return BadRequest(result);
+        //     }
+        //     return Ok(result);
+        // }
     } 
 }
 

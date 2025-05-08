@@ -24,6 +24,12 @@ namespace TailorProTrack.infraestructure.Repositories
 		public override void Remove(Sales entity)
 		{
 			var entityToRemove = GetEntity(entity.ID);
+            //marcando el ITBIS como 0 de la entidad pedido 
+            var preOrder = _context.Set<PreOrder>()
+                .Where(x => x.ID == entityToRemove.FK_PREORDER)
+                .First();
+            preOrder.ITBIS = false;
+            _context.Set<PreOrder>().Update(preOrder);
 			_context.Set<Sales>().Remove(entityToRemove);
 			_context.SaveChanges();
 		}
