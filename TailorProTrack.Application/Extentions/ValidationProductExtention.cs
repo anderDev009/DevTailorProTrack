@@ -19,7 +19,7 @@ namespace TailorProTrack.Application.Extentions
                 throw new ProductServiceException(configuration["validations:chainEmpty"]);
             }
             
-            if(productDto.name_prod.Length > 30)
+            if(productDto.name_prod.Length > 255)
             {
                 throw new ProductServiceException(configuration["validations:extendsCharacters"]); 
             }
