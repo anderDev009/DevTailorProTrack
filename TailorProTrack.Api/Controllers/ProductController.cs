@@ -33,7 +33,18 @@ namespace TailorProTrack.Api.Controllers
             Response.AddHeaderPaginationJson(result.Header);
             return Ok(response);
         }
+        [HttpGet("GetProducts/WithoutPagination")]
+        public IActionResult GetWithoutPagionation()
+        {
+            var result = this._Productservice.GetAllWithoutPagination();
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
 
+            if (!result.Success)
+            {
+                return StatusCode(500, response);
+            }
+            return Ok(response);
+        }
         [HttpGet("GetProduct")]
         public IActionResult Get(int id)
         {
@@ -45,7 +56,7 @@ namespace TailorProTrack.Api.Controllers
             return Ok(result);
         }
         [HttpPost("SaveProduct")]
-        public IActionResult Post([FromBody] ProductDtoAdd productDtoAdd)        
+        public IActionResult Post([FromBody] ProductDtoAdd productDtoAdd)
         {
             var result = this._Productservice.Add(productDtoAdd);
             if (!result.Success)
@@ -60,7 +71,7 @@ namespace TailorProTrack.Api.Controllers
             var result = this._Productservice.Update(productDtoUpdate);
             if (!result.Success)
             {
-                return BadRequest(result);  
+                return BadRequest(result);
             }
             return Ok(result);
         }

@@ -95,7 +95,7 @@ namespace TailorProTrack.Application.Service
                                  //.Join(this._repositoryType.GetEntities(),
                                  //       product => product.ID,
                                  //       typeProd => typeProd.ID,
-                                 //       (product,typeProd) => 
+                                 //       (product,typeProd) =>
                                  //       new {Product = product, Type_prod = typeProd})
                                  //.Where(data  => !data.Product.REMOVED)
                                  //.Select(data => new ProductDtoGet()
@@ -124,7 +124,7 @@ namespace TailorProTrack.Application.Service
             ServiceResult result = new ServiceResult();
             try
             {
-                
+
                 var product = this._repository.GetEntityToJoin(id)
                                                .Join(this._repositoryType.GetEntities(),
                                                       product => product.FK_TYPE,
@@ -182,7 +182,7 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
-        public ServiceResult Update(ProductDtoUpdate dtoUpdate) 
+        public ServiceResult Update(ProductDtoUpdate dtoUpdate)
         {
             ServiceResult result = new ServiceResult();
             try
@@ -217,11 +217,47 @@ namespace TailorProTrack.Application.Service
                  price = this._repository.GetEntities().Where(d => d.ID == id)
                                                               .Select(data => data.SALE_PRICE)
                                                              .Single();
-            }catch (Exception ex) 
+            }catch (Exception ex)
             {
                 price = 0;
             }
             return price;
+        }
+
+        public ServiceResult GetAllWithoutPagination()
+        {
+            var result = new ServiceResult();
+            try
+            {
+
+                var products = this._repository.GetEntities()
+                    .Join(this._repositoryType.GetEntities(),
+                        product => product.FK_TYPE,
+                        typeProd => typeProd.ID,
+                        (product, typeProd) => new { product, typeProd })
+                    .Where(data => !data.product.REMOVED)
+                    .GroupBy(data => data.product)
+                    .Select(data => new ProductDtoGet
+                    {
+                        Id = data.Key.ID,
+                        name_prod = data.Key.NAME_PRODUCT,
+                        description = data.Key.DESCRIPTION_PRODUCT,
+                        type = data.Select(d => d.typeProd.TYPE_PROD).FirstOrDefault(),
+                        sale_price = data.Key.SALE_PRICE,
+                        ColorsAsociated =  _mapper.Map<List<ColorDtoGetMapped>>(_colorRepository.FilterByProductAsociated(data.Key.ID))
+                    })
+                    .ToList();
+                result.Success = true;
+                result.Message = "Obtenido con exito";
+                result.Data = products;
+            }
+            catch (Exception e)
+            {
+                result.Success = false;
+                result.Message = $"Error: {e.Message}";
+                result.Data = null;
+            }
+            return result;
         }
     }
 }
