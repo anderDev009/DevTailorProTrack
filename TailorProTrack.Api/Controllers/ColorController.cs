@@ -24,18 +24,17 @@ namespace TailorProTrack.Api.Controllers
         // GET: Colors
 
         [HttpGet("GetColors")]
-        public ActionResult Index([FromQuery] PaginationParams @params)
+        public ActionResult Index()
         {
-            var result = this._service.GetAll(@params);
+            var result = this._service.GetColorsWithoutHeader();
 
-            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
+            ServiceResult response = new ServiceResult { Data = result, Message = "Obtenidos", Success = result.Count > 0 };
 
 
-            if (!result.Success)
+            if (!response.Success)
             {
                 return BadRequest(response);
             }
-            Response.AddHeaderPaginationJson(result.Header);
             return Ok(response);
         }
 

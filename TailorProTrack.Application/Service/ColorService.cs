@@ -15,8 +15,9 @@ namespace TailorProTrack.Application.Service
         private readonly IColorRepository _repository;
         private readonly ILogger logger;
         private readonly IMapper _mapper;
+
         public ColorService(IColorRepository colorRepository, ILogger<IColorRepository> logger,
-                            IConfiguration configuration, IMapper mapper)
+            IConfiguration configuration, IMapper mapper)
         {
             this._repository = colorRepository;
             this.logger = logger;
@@ -25,12 +26,13 @@ namespace TailorProTrack.Application.Service
         }
 
         private IConfiguration Configuration { get; set; }
+
         public ServiceResult Add(ColorDtoAdd dtoAdd)
         {
             ServiceResult result = new ServiceResult();
             try
             {
-                dtoAdd.IsColorValidToAdd(this.Configuration,_repository);
+                dtoAdd.IsColorValidToAdd(this.Configuration, _repository);
 
 
                 Color colorToAdd = new Color();
@@ -44,11 +46,13 @@ namespace TailorProTrack.Application.Service
 
                 result.Message = "Insertado por exito.";
                 result.Data = id;
-            }catch(Exception ex) 
-            { 
+            }
+            catch (Exception ex)
+            {
                 result.Success = false;
                 result.Message = $"Error al intentar registrarlo ${ex}.";
             }
+
             return result;
         }
 
@@ -60,16 +64,16 @@ namespace TailorProTrack.Application.Service
                 int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
                 PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
 
-                var colors = this._repository.GetEntitiesPaginated(@params.Page,@params.ItemsPerPage)
-                                            .Where(data => !data.REMOVED)
-                                            .OrderBy(data => data.ID)
-                                            .Select(data => new ColorDtoGet
-                                            {
-                                                Id = data.ID,
-                                                colorname = data.COLORNAME,
-                                                code = data.CODE_COLOR
-                                            })
-                                            .ToList() ;
+                var colors = this._repository.GetEntitiesPaginated(@params.Page, @params.ItemsPerPage)
+                    .Where(data => !data.REMOVED)
+                    .OrderBy(data => data.ID)
+                    .Select(data => new ColorDtoGet
+                    {
+                        Id = data.ID,
+                        colorname = data.COLORNAME,
+                        code = data.CODE_COLOR
+                    })
+                    .ToList();
 
                 result.Data = colors;
                 result.Header = header;
@@ -80,6 +84,7 @@ namespace TailorProTrack.Application.Service
                 result.Success = false;
                 result.Message = $"Error al intentar obtener los colores ${ex}.";
             }
+
             return result;
         }
 
@@ -90,8 +95,8 @@ namespace TailorProTrack.Application.Service
             {
                 var color = this._repository.GetEntity(id);
 
-                ColorDtoGet dtoColor = new ColorDtoGet 
-                { 
+                ColorDtoGet dtoColor = new ColorDtoGet
+                {
                     Id = color.ID,
                     colorname = color.COLORNAME,
                     code = color.CODE_COLOR
@@ -104,6 +109,7 @@ namespace TailorProTrack.Application.Service
                 result.Success = false;
                 result.Message = $"Error al obetenr el color${ex}";
             }
+
             return result;
         }
 
@@ -111,6 +117,18 @@ namespace TailorProTrack.Application.Service
         {
             List<Color> colors = _repository.FilterByProductAsociated(Id);
             return _mapper.Map<List<ColorDtoGetMapped>>(colors);
+        }
+
+        public List<ColorDtoGet> GetColorsWithoutHeader()
+        {
+            List<ColorDtoGet> colors = _repository.GetEntities().Where(d => !d.REMOVED)
+                .Select(data => new ColorDtoGet
+                {
+                    Id = data.ID,
+                    colorname = data.COLORNAME,
+                    code = data.CODE_COLOR
+                }).ToList();
+            return colors;
         }
 
         public ServiceResult Remove(ColorDtoRemove dtoRemove)
@@ -133,6 +151,7 @@ namespace TailorProTrack.Application.Service
                 result.Success = false;
                 result.Message = $"Error al intentar removerlo ${ex}";
             }
+
             return result;
         }
 
@@ -151,13 +170,13 @@ namespace TailorProTrack.Application.Service
                 };
                 this._repository.Update(color);
                 result.Message = "Actualizado con exito";
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 result.Message = "Error al actualizar";
             }
+
             return result;
         }
-
-        
     }
 }
