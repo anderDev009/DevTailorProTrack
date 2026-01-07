@@ -147,6 +147,38 @@ namespace TailorProTrack.Application.Service
             return result;
         }
 
+        public ServiceResult GetSizesWithoutHeader()
+        {
+            ServiceResult result = new ServiceResult();
+            try
+            {
+                int registerCount = this._repository.GetEntities().Where(d => !d.REMOVED).Count();
+
+                var sizes = this._repository.GetEntities().Where(d => !d.REMOVED)
+                    .Join
+                    (
+                        this._cateogoryRepository.GetEntities(),
+                        size => size.FKCATEGORYSIZE,
+                        category => category.ID,
+                        (size, category) => new { size, category }
+                    )
+                    .OrderBy(d => d.size.ID)
+                    .Select(data => new SizeDtoGet
+                    {
+                        Id = data.size.ID,
+                        Size = data.size.SIZE,
+                        Category = data.category.CATEGORY
+                    }).ToList();
+                result.Data = sizes;
+                result.Message = "Sizes obtenidos correctamente";
+            }catch(Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al intentar obtener los sizes {ex}";
+            }
+            return result;
+        }
+
         public ServiceResult GetSizesAvailablesProductById(int id)
         {
             ServiceResult result = new ServiceResult();

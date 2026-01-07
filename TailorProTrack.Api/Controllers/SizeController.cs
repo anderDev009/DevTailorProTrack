@@ -21,9 +21,9 @@ namespace TailorProTrack.Api.Controllers
         }
 
         [HttpGet("GetSizes")]
-        public IActionResult Index([FromQuery] PaginationParams @params)
+        public IActionResult Index()
         {
-            var result = this._service.GetAll(@params);
+            var result = this._service.GetSizesWithoutHeader();
             ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
 
 
@@ -31,7 +31,6 @@ namespace TailorProTrack.Api.Controllers
             {
                 return BadRequest(response);
             }
-            Response.AddHeaderPaginationJson(result.Header);
             return Ok(response);
         }
         [HttpGet("GetSize")]
