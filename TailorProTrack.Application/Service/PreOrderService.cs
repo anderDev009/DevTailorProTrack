@@ -206,7 +206,7 @@ namespace TailorProTrack.Application.Service
 														.Include(x => x.Client)
 														.Skip((@params.Page - 1) * @params.ItemsPerPage)
 														.OrderBy(x => x.FINISHED == null)
-														.Where(data => !data.REMOVED && !(bool)data.COMPLETED)
+														.Where(data => !data.REMOVED)
 														.Take(@params.ItemsPerPage).ToList();
 
 
