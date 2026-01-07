@@ -33,6 +33,20 @@ namespace TailorProTrack.Api.Controllers
             }
             return Ok(response);
         }
+      
+        [HttpGet("GetSizes/withoutpagination")]
+        public IActionResult IndexWithoutPagination()
+        {
+            var result = this._service.GetSizesWithoutHeader();
+            ServiceResult response = new ServiceResult { Data = result.Data, Message = result.Message, Success = result.Success };
+
+
+            if (!result.Success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
         [HttpGet("GetSize")]
         public IActionResult Get(int id) 
         {
