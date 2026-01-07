@@ -77,5 +77,16 @@ namespace TailorProTrack.Api.Controllers
             return Ok(result);
 
         }
+
+        [HttpDelete("Remove")]
+        public IActionResult Remove([FromBody] SuppliersDtoGet supplier)
+        {
+            var result = _supplierService.Remove(supplier.ID);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }
