@@ -102,6 +102,7 @@ namespace TailorProTrack.infraestructure.Repositories
                .Include(e => e.PaymentsExpenses)
                .AsNoTracking()
                .Where(e =>
+                   e.REMOVED == false &&
                    e.AMOUNT >
                    (e.PaymentsExpenses.Sum(p => (decimal?)p.AMOUNT) ?? 0)
                )
