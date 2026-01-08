@@ -19,6 +19,27 @@ namespace TailorProTrack.Application.Service
             _mapper = mapper;
         }
 
+        
+        public virtual ServiceResultWithHeader GetAll(PaginationParams @params)
+        {
+            ServiceResultWithHeader result = new(); ;
+            try
+            {
+                int registerCount = _expensesRepository.CountEntities();
+                PaginationMetaData header = new PaginationMetaData(registerCount, @params.Page, @params.ItemsPerPage);
+                var expenses = this._expensesRepository.GetExpensesLessPayments();
+
+                result.Data =  _mapper.Map<List<ExpensesDtoGet>>(expenses);
+                result.Header = header;
+                result.Message = "Data obtenida con exito";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al intentar obtener la data : {ex.Message}";
+            }
+            return result;
+        }
         //public ServiceResult GetAccountsPayable()
         //{
         //    ServiceResult result = new();

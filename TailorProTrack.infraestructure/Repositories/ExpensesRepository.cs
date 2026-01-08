@@ -96,6 +96,26 @@ namespace TailorProTrack.infraestructure.Repositories
             return expensesPending;
         }
 
+        public List<Expenses> GetExpensesLessPayments()
+        {
+           var expenses = _context.Set<Expenses>()
+               .Include(e => e.PaymentsExpenses)
+               .AsNoTracking()
+               .Where(e =>
+                   e.AMOUNT >
+                   (e.PaymentsExpenses.Sum(p => (decimal?)p.AMOUNT) ?? 0)
+               )
+               .ToList();
+       
+           foreach (var e in expenses)
+           {
+               var totalPaid = e.PaymentsExpenses?.Sum(p => p.AMOUNT) ?? 0;
+               e.AMOUNT -= totalPaid;
+           }
+       
+           return expenses;
+        }
+
         public decimal GetAmountPending(int idExpense)
         {
 			var expense = _context.Set<Expenses>().Find(idExpense);
