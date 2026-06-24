@@ -102,10 +102,10 @@ namespace TailorProTrack.Api.Controllers
 			return Ok(result);
 		}
 
-		[HttpPatch("MarkCompletePreOrder")]
-		public IActionResult MarkCompletePreOrder(int id)
+		[HttpPatch("MarkCompletePreOrder/{id}/{status}")]
+		public IActionResult MarkCompletePreOrder([FromRoute]int id, [FromRoute] bool status)
 		{
-			var result = _preOrderService.ChangeStatusPreOrder(id, true);
+			var result = _preOrderService.ChangeStatusPreOrder(id, status);
 			if (!result)
 			{
 				return StatusCode(500, result);

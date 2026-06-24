@@ -9,5 +9,6 @@ namespace TailorProTrack.infraestructure.Interfaces
     {
         void ConfirmSale(int idSales);
         List<Sales> GetSalesInvoicedByDate(DateTime startDate, DateTime endDate);
+        bool PreOrderHasInvoiceAsociated(int preOrderId);
     }
 }

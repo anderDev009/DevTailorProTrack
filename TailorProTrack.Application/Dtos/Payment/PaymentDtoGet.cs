@@ -8,6 +8,7 @@ namespace TailorProTrack.Application.Dtos.Payment
     {
         public int IdOrder { get; set; }
         public decimal Amount { get; set; }
+        public decimal AmountPending { get; set; }
         public string? AccountPayment { get; set; }
 
         public int PaymentNumbers { get; set; }

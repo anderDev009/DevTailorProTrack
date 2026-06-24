@@ -137,6 +137,7 @@ namespace TailorProTrack.Application.Service
                                                     description = data.product.DESCRIPTION_PRODUCT,
                                                     type = data.typeProd.TYPE_PROD,
                                                     sale_price = data.product.SALE_PRICE,
+                                                    category_id = data.product.FK_TYPE,
                                                     ColorsAsociated = _mapper.Map<List<ColorDtoGetMapped>>(_colorRepository.FilterByProductAsociated(data.product.ID)),
                                                     SizesAsociated =  _mapper.Map<List<SizeDtoGetMapped>>(_sizeRepository.SizeByAsociatedProductId(data.product.ID))
 

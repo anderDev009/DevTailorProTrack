@@ -21,6 +21,7 @@ namespace TailorProTrack.Application.Service
 
 		private readonly IPaymentRepository _paymentRepository;
 
+		private readonly ISalesRepository _salesRepository;
 		private readonly IProductRepository _productRepository;
 
 		private readonly IPreOrderProductsRepository _preOrderProductRepository;
@@ -44,6 +45,7 @@ namespace TailorProTrack.Application.Service
 						IColorRepository colorRepository,
 						IClientService clientService,
 						IInventoryRepository inventoryRepository,
+						ISalesRepository salesRepository,
 						IOrderService orderService, IMapper mapper)
 		{
 			_preOrderRepository = preOrderRepository;
@@ -56,6 +58,7 @@ namespace TailorProTrack.Application.Service
 			_sizeRepository = sizeRepository;
 			_colorRepository = colorRepository;
 			_orderService = orderService;
+			_salesRepository = salesRepository;
 		}
 
 		public ServiceResult Add(PreOrderDtoAdd dtoAdd)
@@ -240,6 +243,7 @@ namespace TailorProTrack.Application.Service
 			try
 			{
 				bool isEditable = _preOrderRepository.PreOrderIsEditable(id);
+				var hasInvoiceAsociated = _salesRepository.PreOrderHasInvoiceAsociated(id);
 				var preOrder = this._preOrderRepository.GetEntityToJoin(id)
 										.Select(data => new
 										{
@@ -249,6 +253,8 @@ namespace TailorProTrack.Application.Service
 											DateCreated = data.CREATED_AT,
 											DateDelivery = data.DATE_DELIVERY,
 											IsEditable = isEditable,
+											finished = data.FINISHED,
+											has_invoice_asociated = hasInvoiceAsociated
 										});
 
 				result.Data = preOrder;

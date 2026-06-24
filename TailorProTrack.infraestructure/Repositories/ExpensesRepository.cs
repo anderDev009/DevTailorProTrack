@@ -28,7 +28,7 @@ namespace TailorProTrack.infraestructure.Repositories
 			{
 				_context.Set<PaymentExpenses>().Remove(payment);
 				_context.SaveChanges();
-                if(payment.FK_BANK_ACCOUNT == null && payment.FK_BANK_ACCOUNT > 0)
+                if(payment.FK_BANK_ACCOUNT != null && payment.FK_BANK_ACCOUNT > 0)
                 {
 					BankAccount account = _context.Set<BankAccount>().Find(payment.FK_BANK_ACCOUNT);
 					account.CREDIT_AMOUNT = _context.Set<PaymentExpenses>().Where(x => x.FK_BANK_ACCOUNT == payment.FK_BANK_ACCOUNT).Sum(x => x.AMOUNT);
@@ -62,16 +62,7 @@ namespace TailorProTrack.infraestructure.Repositories
             Expenses expense = _context.Set<Expenses>().Find(idExpense);
             if (expense != null)
             {
-                //pagos que le han realizado a ese gasto
-                var paymentsExpenses = _context.Set<Expenses>()
-                    .Include(x => x.PaymentsExpenses)
-                    .Where(x => x.ID == idExpense)
-                    .Select(x => x.PaymentsExpenses.Sum(x => x.AMOUNT)).Single();
-
-                if (expense.AMOUNT > paymentsExpenses)
-                {
-                    return true;
-                }
+                return GetAmountPending(idExpense) > 0;
             }
 
             return false;
@@ -79,7 +70,7 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public List<Expenses> GetExpensesPending()
         {
-            List<Expenses> expenses = _context.Set<Expenses>().Where(x => x.COMPLETED == false && !x.REMOVED).ToList();
+            List<Expenses> expenses = _context.Set<Expenses>().Where(x => x.COMPLETED != true && !x.REMOVED).ToList();
             List<Expenses> expensesPending = new List<Expenses>();
             foreach (var expense in expenses)
             {
@@ -122,11 +113,11 @@ namespace TailorProTrack.infraestructure.Repositories
 			var expense = _context.Set<Expenses>().Find(idExpense);
 			if (expense != null)
 			{
-				var paymentsExpenses = _context.Set<Expenses>()
-					.Include(x => x.PaymentsExpenses)
-					.Where(x => x.ID == idExpense)
-					.Select(x => x.PaymentsExpenses.Sum(x => x.AMOUNT)).Single();
-				return expense.AMOUNT - paymentsExpenses;
+				var paymentsExpenses = _context.Set<PaymentExpenses>()
+					.Where(x => x.FK_EXPENSE == idExpense && !x.REMOVED)
+					.Sum(x => x.AMOUNT);
+				var amountPending = expense.AMOUNT - paymentsExpenses;
+				return amountPending > 0 ? amountPending : 0;
 			}
 			return 0;
         }
@@ -138,7 +129,7 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public List<Expenses> GetExpensesWithoutBuyId()
         {
-            return _context.Set<Expenses>().Where(x => x.COMPLETED == false && (x.FK_BUY == null && x.FK_BUY == 0)).ToList();
+            return _context.Set<Expenses>().Where(x => x.COMPLETED != true && !x.REMOVED && (x.FK_BUY == null || x.FK_BUY == 0)).ToList();
         }
 
         public List<Expenses> GetExpensesWithBuyIdPaginated(int page, int itemsPerPage, bool withBuy)
@@ -161,7 +152,7 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public List<Expenses> GetBuysPending()
         {
-            List<Expenses> expenses = _context.Set<Expenses>().Where(x => x.COMPLETED == false && !x.REMOVED && x.FK_BUY != null).ToList();
+            List<Expenses> expenses = _context.Set<Expenses>().Where(x => x.COMPLETED != true && !x.REMOVED && x.FK_BUY != null).ToList();
             List<Expenses> expensesPending = new List<Expenses>();
             foreach (var expense in expenses)
             {
@@ -180,7 +171,7 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public List<Expenses> GetOnlyExpensesPending()
         {
-            List<Expenses> expenses = _context.Set<Expenses>().Where(x => x.COMPLETED == false && !x.REMOVED && x.FK_BUY == null).ToList();
+            List<Expenses> expenses = _context.Set<Expenses>().Where(x => x.COMPLETED != true && !x.REMOVED && x.FK_BUY == null).ToList();
             List<Expenses> expensesPending = new List<Expenses>();
             foreach (var expense in expenses)
             {

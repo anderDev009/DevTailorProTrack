@@ -20,7 +20,7 @@ namespace TailorProTrack.infraestructure.Repositories
 				var noteCredit = context.Set<NoteCredit>().First(x => x.FK_CLIENT == entity.FK_CLIENT);
 				return noteCredit.ID;
 			}
-			entity.AMOUNT = context.Set<NoteCreditPayment>().Sum(x => x.AMOUNT);
+			entity.AMOUNT = 0;
 			return base.Save(entity);
 		}
 
@@ -41,7 +41,9 @@ namespace TailorProTrack.infraestructure.Repositories
 		public void UpdateAmount(int FK_CLIENT)
 		{
 			var noteCredit = context.Set<NoteCredit>().First(x => x.FK_CLIENT == FK_CLIENT);
-			noteCredit.AMOUNT = context.Set<NoteCreditPayment>().Sum(x => x.AMOUNT);
+			noteCredit.AMOUNT = context.Set<NoteCreditPayment>()
+				.Where(x => x.FK_CREDIT == noteCredit.ID)
+				.Sum(x => x.AMOUNT);
 			Update(noteCredit);
 		}
 	}

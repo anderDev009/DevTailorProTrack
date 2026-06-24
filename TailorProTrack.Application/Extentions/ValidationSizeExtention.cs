@@ -30,7 +30,7 @@ namespace TailorProTrack.Application.Extentions
             ICategorySizeRepository _categoryRepository, ISizeRepository sizeRepository)
         {
             IsSizeValid(sizeDto, configuration, _categoryRepository);
-            if (sizeRepository.SearchEntities().Where(size => size.SIZE == sizeDto.size).Count() == 0)
+            if (sizeRepository.SearchEntities().Where(size => size.SIZE == sizeDto.size).Count() > 0)
             {
                 throw new SizeServiceException(configuration["validations:sizeAlreadyExist"]);
             }

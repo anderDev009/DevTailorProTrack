@@ -111,6 +111,7 @@ namespace TailorProTrack.Application.Service
 																			   AccountPayment = d
 																			   .Select(x => x.payment.ACCOUNT_PAYMENT).First(),
 																			   Amount = d.Sum(d => d.payment.AMOUNT),
+																			   AmountPending = GetAmountPendingToShow(d.Key),
 																			   PaymentNumbers = d.Select(d => d.type.ID).Count(),
 																			   Client = _mapper.Map<ClientDtoGet>(_clientRepository.GetEntity(_preOrderRepository.GetEntity(d.Key).FK_CLIENT))
 																		   }).Skip((@params.Page - 1) * @params.ItemsPerPage)
@@ -165,6 +166,9 @@ namespace TailorProTrack.Application.Service
 			ServiceResult result = new ServiceResult();
 			try
 			{
+				decimal amountPendingRaw = _repository.GetAmountPendingByIdPreOrder(orderId);
+				decimal amountPending = amountPendingRaw < 0 ? Math.Abs(amountPendingRaw) : 0;
+
 				var payments = this._repository.GetEntities().Where(d => !d.REMOVED && d.FK_ORDER == orderId)
 															 .Join
 																		   (
@@ -177,18 +181,17 @@ namespace TailorProTrack.Application.Service
 											   {
 												   Id = d.payment.ID,
 												   Amount = d.payment.AMOUNT,
+												   AmountPending = amountPending,
 												   Type = d.type.TYPE_PAYMENT,
 												   Bank = d.payment.FK_BANK_ACCOUNT != null ? _bankRepository.GetEntity(_bankAccRepository.GetEntity((int)d.payment.FK_BANK_ACCOUNT).FK_BANK).NAME : "NA",
 												   Account = d.payment.FK_BANK_ACCOUNT != null ? _bankAccRepository.GetEntity((int)d.payment.FK_BANK_ACCOUNT).BANK_ACCOUNT : "Caja",
 												   DocumentNumber = d.payment.ACCOUNT_NUMBER,
 												   Client = _mapper.Map<ClientDtoGet>(_clientRepository.GetEntity(_preOrderRepository.GetEntity(d.payment.FK_ORDER).FK_CLIENT))
 											   }).ToList();
-				if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
-				decimal amountPending = _repository.GetAmountPendingByIdPreOrder(orderId);
 				var orderPayments = new
 				{
 					payments,
-					AmountPending = amountPending > 0 ? amountPending : 0
+					AmountPending = amountPending
 
 				};
 
@@ -206,7 +209,8 @@ namespace TailorProTrack.Application.Service
 
 		public decimal GetAmountByIdOrder(int orderId)
 		{
-			return _repository.GetAmountPendingByIdPreOrder(orderId);
+			var amountPending = _repository.GetAmountPendingByIdPreOrder(orderId);
+			return amountPending < 0 ? Math.Abs(amountPending) : 0;
 		}
 
 		public ServiceResult AddPaymentUsingNoteCredits(PaymentDtoAddWithNoteCredit dtoAdd)
@@ -338,6 +342,12 @@ namespace TailorProTrack.Application.Service
 			}
 
 			return result;
+		}
+
+		private decimal GetAmountPendingToShow(int orderId)
+		{
+			var amountPending = _repository.GetAmountPendingByIdPreOrder(orderId);
+			return amountPending < 0 ? Math.Abs(amountPending) : 0;
 		}
 	}
 }

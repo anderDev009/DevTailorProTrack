@@ -17,7 +17,7 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public bool ExistSupplierByRnc(string rnc)
         {
-            return _ctx.Set<Supplier>().Any(x => x.RNC == rnc);
+            return _ctx.Set<Supplier>().Where(x => x.REMOVED == false).Any(x => x.RNC == rnc);
         }
 
         public override void Update(Supplier entity)

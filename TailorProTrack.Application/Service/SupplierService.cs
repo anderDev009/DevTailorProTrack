@@ -31,7 +31,7 @@ namespace TailorProTrack.Application.Service
                     return new ServiceResult
                     {
                         Data = null,
-                        Message = "Ya ay un suplidor con el RNC indicado",
+                        Message = "Ya existe un suplidor con este RNC.",
                         Success = false
                     };
                 }

@@ -107,5 +107,10 @@ namespace TailorProTrack.infraestructure.Repositories
                         .ToList();
             return sales;
         }
+
+        public bool PreOrderHasInvoiceAsociated(int preOrderId)
+        {
+            return _context.Set<Sales>().Any(x => !x.REMOVED && x.FK_PREORDER == preOrderId);
+        }
     }
 }

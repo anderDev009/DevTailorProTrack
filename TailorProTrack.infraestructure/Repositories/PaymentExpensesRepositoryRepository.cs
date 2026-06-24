@@ -12,16 +12,41 @@ namespace TailorProTrack.infraestructure.Repositories
     {
         private readonly TailorProTrackContext _ctx;
         private readonly IBankAccountRepository _bankAccountRepository;
+        private readonly IExpensesRepository _expensesRepository;
 
         public PaymentExpensesRepositoryRepository(TailorProTrackContext ctx,
-            IBankAccountRepository bankAccountRepository) : base(ctx)
+            IBankAccountRepository bankAccountRepository,
+            IExpensesRepository expensesRepository) : base(ctx)
         {
             _ctx = ctx;
             _bankAccountRepository = bankAccountRepository;
+            _expensesRepository = expensesRepository;
         }
 
         public override int Save(PaymentExpenses entity)
         {
+            if (entity.AMOUNT <= 0)
+            {
+                throw new Exception("El monto del pago debe ser mayor a cero");
+            }
+
+            var expense = _ctx.Set<Expenses>().Find(entity.FK_EXPENSE);
+            if (expense == null || expense.REMOVED)
+            {
+                throw new Exception("El gasto no existe");
+            }
+
+            var amountPending = _expensesRepository.GetAmountPending(entity.FK_EXPENSE);
+            if (amountPending <= 0)
+            {
+                throw new Exception("Este gasto no tiene monto pendiente por pagar");
+            }
+
+            if (entity.AMOUNT > amountPending)
+            {
+                throw new Exception($"El pago no puede ser mayor al monto pendiente ({amountPending})");
+            }
+
             if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT != 0)
             {
                 BankAccount account = _bankAccountRepository.GetEntity((int)entity.FK_BANK_ACCOUNT);
@@ -35,18 +60,28 @@ namespace TailorProTrack.infraestructure.Repositories
                 account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
 				_bankAccountRepository.Update(account);
             }
-            return base.Save(entity);
+
+            int id = base.Save(entity);
+            if (entity.AMOUNT == amountPending)
+            {
+                expense.COMPLETED = true;
+                _ctx.Set<Expenses>().Update(expense);
+                _ctx.SaveChanges();
+            }
+
+            return id;
         }
 
         public override void Remove(PaymentExpenses entity)
         {
 	        var entityToRemove = this.GetEntity(entity.ID);
+	        var idBankAccount = entityToRemove.FK_BANK_ACCOUNT;
 	        _ctx.Remove(entityToRemove);
 			_ctx.SaveChanges();
-			if (entity.FK_BANK_ACCOUNT != null && entity.FK_BANK_ACCOUNT > 0)
+			if (idBankAccount != null && idBankAccount > 0)
 			{
-				BankAccount account = _ctx.Set<BankAccount>().Find(entity.FK_BANK_ACCOUNT);
-				account.CREDIT_AMOUNT = this.GetCreditAmountTotal((int)entity.FK_BANK_ACCOUNT);
+				BankAccount account = _ctx.Set<BankAccount>().Find(idBankAccount);
+				account.CREDIT_AMOUNT = this.GetCreditAmountTotal((int)idBankAccount);
 				account.BALANCE = account.DEBIT_AMOUNT - account.CREDIT_AMOUNT;
 				_ctx.Set<BankAccount>().Update(account);
 				_ctx.SaveChanges();
