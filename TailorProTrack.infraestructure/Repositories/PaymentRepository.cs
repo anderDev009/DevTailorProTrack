@@ -1,4 +1,4 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -28,90 +28,126 @@ namespace TailorProTrack.infraestructure.Repositories
 
 		public override int Save(Payment entity)
 		{
-			entity.CREATED_AT = DateTime.Now;
-			entity.USER_CREATED = 1;
-			ValidateBankAccount(entity.FK_BANK_ACCOUNT);
+			var ownsTransaction = _context.Database.CurrentTransaction == null;
+			using var transaction = ownsTransaction ? _context.Database.BeginTransaction() : null;
 
-			this._context.Add(entity);
-			this._context.SaveChanges();
-			RecalculateBankAccount(entity.FK_BANK_ACCOUNT);
-			ConfirmPayment(entity.FK_ORDER);
-			//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
-			//en caso de que sea negativo se toma en cuenta una nota de credito
-			decimal amountPending = GetAmountPendingNegativeByIdPreOrder(entity.FK_ORDER);
-			if (amountPending < 0)
+			try
 			{
-				int idClient = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT;
-				_noteCreditPaymentRepository.Save(new NoteCreditPayment
-				{ 
-					AMOUNT = Math.Abs(amountPending),
-					FK_CREDIT = _noteCreditRepository.Save(new NoteCredit
-					{
-						FK_CLIENT = idClient,
-						AMOUNT = 0,
-					}),
-					FK_PAYMENT = entity.ID
-					
-				});
-				_noteCreditRepository.UpdateAmount(idClient);
-			}
+				entity.CREATED_AT = DateTime.Now;
+				entity.USER_CREATED = 1;
+				ValidateBankAccount(entity.FK_BANK_ACCOUNT);
 
-			return entity.ID;
+				this._context.Add(entity);
+				this._context.SaveChanges();
+				RecalculateBankAccount(entity.FK_BANK_ACCOUNT);
+				ConfirmPayment(entity.FK_ORDER);
+				//obtener el monto pendiente para confirmar si es necesario crear una nota de credito
+				//en caso de que sea negativo se toma en cuenta una nota de credito
+				decimal amountPending = GetAmountPendingNegativeByIdPreOrder(entity.FK_ORDER);
+				if (amountPending < 0)
+				{
+					int idClient = _context.Set<PreOrder>().Find(entity.FK_ORDER).FK_CLIENT;
+					_noteCreditPaymentRepository.Save(new NoteCreditPayment
+					{
+						AMOUNT = Math.Abs(amountPending),
+						FK_CREDIT = _noteCreditRepository.Save(new NoteCredit
+						{
+							FK_CLIENT = idClient,
+							AMOUNT = 0,
+						}),
+						FK_PAYMENT = entity.ID
+
+					});
+					_noteCreditRepository.UpdateAmount(idClient);
+				}
+
+				transaction?.Commit();
+				return entity.ID;
+			}
+			catch
+			{
+				transaction?.Rollback();
+				throw;
+			}
 		}
 
 
 
 		public override void Remove(Payment entity)
 		{
-			entity = GetEntity(entity.ID);
+			var ownsTransaction = _context.Database.CurrentTransaction == null;
+			using var transaction = ownsTransaction ? _context.Database.BeginTransaction() : null;
 
-			_noteCreditPaymentRepository.RemoveNoteCreditPaymentByPaymentId(entity.ID);
+			try
+			{
+				entity = GetEntity(entity.ID);
 
-			int idPreOrder = entity.FK_ORDER;
-			int? idBankAccount = entity.FK_BANK_ACCOUNT;
-			_context.Remove(entity);
-			_context.SaveChanges();
-			RecalculateBankAccount(idBankAccount);
-			ConfirmPayment(idPreOrder);
+				_noteCreditPaymentRepository.RemoveNoteCreditPaymentByPaymentId(entity.ID);
+
+				int idPreOrder = entity.FK_ORDER;
+				int? idBankAccount = entity.FK_BANK_ACCOUNT;
+				_context.Remove(entity);
+				_context.SaveChanges();
+				RecalculateBankAccount(idBankAccount);
+				ConfirmPayment(idPreOrder);
+				transaction?.Commit();
+			}
+			catch
+			{
+				transaction?.Rollback();
+				throw;
+			}
 
 
 		}
 
 		public override void Update(Payment entity)
 		{
-			var paymentToUpdate = GetEntity(entity.ID);
-			if (paymentToUpdate == null)
+			var ownsTransaction = _context.Database.CurrentTransaction == null;
+			using var transaction = ownsTransaction ? _context.Database.BeginTransaction() : null;
+
+			try
 			{
-				throw new Exception("Pago no encontrado.");
-			}
+				var paymentToUpdate = GetEntity(entity.ID);
+				if (paymentToUpdate == null)
+				{
+					throw new Exception("Pago no encontrado.");
+				}
 
-			bool hasNoteCredit = _context.Set<NoteCreditPayment>().Any(x => x.FK_PAYMENT == entity.ID);
-			if (hasNoteCredit)
+				bool hasNoteCredit = _context.Set<NoteCreditPayment>().Any(x => x.FK_PAYMENT == entity.ID);
+				if (hasNoteCredit)
+				{
+					throw new Exception("No se puede actualizar un pago vinculado a una nota de credito. Eliminelo y registrelo nuevamente.");
+				}
+
+				ValidateBankAccount(entity.FK_BANK_ACCOUNT);
+
+				int oldPreOrder = paymentToUpdate.FK_ORDER;
+				int? oldBankAccount = paymentToUpdate.FK_BANK_ACCOUNT;
+
+				paymentToUpdate.AMOUNT = entity.AMOUNT;
+				paymentToUpdate.ACCOUNT_PAYMENT = entity.ACCOUNT_PAYMENT;
+				paymentToUpdate.ACCOUNT_NUMBER = entity.ACCOUNT_NUMBER;
+				paymentToUpdate.FK_BANK_ACCOUNT = entity.FK_BANK_ACCOUNT;
+				paymentToUpdate.FK_ORDER = entity.FK_ORDER;
+				paymentToUpdate.FK_TYPE_PAYMENT = entity.FK_TYPE_PAYMENT;
+				paymentToUpdate.MODIFIED_AT = DateTime.Now;
+				paymentToUpdate.USER_MOD = entity.USER_MOD;
+
+				_context.Set<Payment>().Update(paymentToUpdate);
+				_context.SaveChanges();
+
+				RecalculateBankAccount(oldBankAccount);
+				RecalculateBankAccount(entity.FK_BANK_ACCOUNT);
+				ConfirmPayment(oldPreOrder);
+				ConfirmPayment(entity.FK_ORDER);
+				transaction?.Commit();
+			}
+			catch
 			{
-				throw new Exception("No se puede actualizar un pago vinculado a una nota de credito. Eliminelo y registrelo nuevamente.");
+				transaction?.Rollback();
+				throw;
 			}
-
-			ValidateBankAccount(entity.FK_BANK_ACCOUNT);
-
-			int oldPreOrder = paymentToUpdate.FK_ORDER;
-			int? oldBankAccount = paymentToUpdate.FK_BANK_ACCOUNT;
-
-			paymentToUpdate.AMOUNT = entity.AMOUNT;
-			paymentToUpdate.ACCOUNT_PAYMENT = entity.ACCOUNT_PAYMENT;
-			paymentToUpdate.ACCOUNT_NUMBER = entity.ACCOUNT_NUMBER;
-			paymentToUpdate.FK_BANK_ACCOUNT = entity.FK_BANK_ACCOUNT;
-			paymentToUpdate.FK_ORDER = entity.FK_ORDER;
-			paymentToUpdate.FK_TYPE_PAYMENT = entity.FK_TYPE_PAYMENT;
-			paymentToUpdate.MODIFIED_AT = DateTime.Now;
-			paymentToUpdate.USER_MOD = entity.USER_MOD;
-
-			_context.Set<Payment>().Update(paymentToUpdate);
-			_context.SaveChanges();
-
-			RecalculateBankAccount(oldBankAccount);
-			RecalculateBankAccount(entity.FK_BANK_ACCOUNT);
-			ConfirmPayment(oldPreOrder);
-			ConfirmPayment(entity.FK_ORDER);
 		}
 
 		public bool ConfirmPayment(int idPreOrder)
@@ -153,60 +189,72 @@ namespace TailorProTrack.infraestructure.Repositories
 		}
 		public bool SaveWithNoteCredit(Payment entity)
 		{
+			var ownsTransaction = _context.Database.CurrentTransaction == null;
+			using var transaction = ownsTransaction ? _context.Database.BeginTransaction() : null;
 
-			var note = _noteCreditRepository.SearchNoteCreditByClientId(_context.Set<PreOrder>()
-				.First(x => x.ID == entity.FK_ORDER).FK_CLIENT);
-
-			if (note is not { AMOUNT: > 0 }) throw new Exception("No se puede realizar el pago con nota de credito.");
-
-
-			var cashAmount = entity.AMOUNT;
-			var amountToUse = note.AMOUNT;
-			//obteniendo el monto pendiente para compararlo con la nota de credito
-			var amountPending = Math.Max(GetAmountPendingNegativeByIdPreOrder(entity.FK_ORDER) - cashAmount, 0);
-			//---
-			//realizar un pago con nota de credito
-			if (amountPending < note.AMOUNT)
+			try
 			{
-				amountToUse = amountPending;
-			}
+				var note = _noteCreditRepository.SearchNoteCreditByClientId(_context.Set<PreOrder>()
+					.First(x => x.ID == entity.FK_ORDER).FK_CLIENT);
 
-			if (cashAmount > 0)
-			{
-				Save(new Payment
+				if (note is not { AMOUNT: > 0 }) throw new Exception("No se puede realizar el pago con nota de credito.");
+
+
+				var cashAmount = entity.AMOUNT;
+				var amountToUse = note.AMOUNT;
+				//obteniendo el monto pendiente para compararlo con la nota de credito
+				var amountPending = Math.Max(GetAmountPendingNegativeByIdPreOrder(entity.FK_ORDER) - cashAmount, 0);
+				//---
+				//realizar un pago con nota de credito
+				if (amountPending < note.AMOUNT)
 				{
-					AMOUNT = cashAmount,
-					ACCOUNT_NUMBER = entity.ACCOUNT_NUMBER,
-					ACCOUNT_PAYMENT = entity.ACCOUNT_PAYMENT,
-					FK_BANK_ACCOUNT = entity.FK_BANK_ACCOUNT,
-					FK_ORDER = entity.FK_ORDER,
-					FK_TYPE_PAYMENT = entity.FK_TYPE_PAYMENT,
-					USER_CREATED = entity.USER_CREATED
-				});
-			}
+					amountToUse = amountPending;
+				}
 
-			if (amountToUse <= 0)
-			{
+				if (cashAmount > 0)
+				{
+					Save(new Payment
+					{
+						AMOUNT = cashAmount,
+						ACCOUNT_NUMBER = entity.ACCOUNT_NUMBER,
+						ACCOUNT_PAYMENT = entity.ACCOUNT_PAYMENT,
+						FK_BANK_ACCOUNT = entity.FK_BANK_ACCOUNT,
+						FK_ORDER = entity.FK_ORDER,
+						FK_TYPE_PAYMENT = entity.FK_TYPE_PAYMENT,
+						USER_CREATED = entity.USER_CREATED
+					});
+				}
+
+				if (amountToUse <= 0)
+				{
+					transaction?.Commit();
+					return true;
+				}
+
+				entity.AMOUNT = amountToUse;
+				entity.FK_BANK_ACCOUNT = null;
+				entity.NOTE_CREDIT = true;
+				entity.CREATED_AT = DateTime.Now;
+				entity.USER_CREATED = 1;
+				this._context.Add(entity);
+				this._context.SaveChanges();
+				ConfirmPayment(entity.FK_ORDER);
+
+				_noteCreditPaymentRepository.Save(new NoteCreditPayment
+				{
+					AMOUNT = -amountToUse,
+					FK_CREDIT = note.ID,
+					FK_PAYMENT = entity.ID
+				});
+				_noteCreditRepository.UpdateAmount(note.FK_CLIENT);
+				transaction?.Commit();
 				return true;
 			}
-
-			entity.AMOUNT = amountToUse;
-			entity.FK_BANK_ACCOUNT = null;
-			entity.NOTE_CREDIT = true;
-			entity.CREATED_AT = DateTime.Now;
-			entity.USER_CREATED = 1;
-			this._context.Add(entity);
-			this._context.SaveChanges();
-			ConfirmPayment(entity.FK_ORDER);
-			
-			_noteCreditPaymentRepository.Save(new NoteCreditPayment
+			catch
 			{
-				AMOUNT = -amountToUse,
-				FK_CREDIT = note.ID,
-				FK_PAYMENT = entity.ID
-			});
-			_noteCreditRepository.UpdateAmount(note.FK_CLIENT);
-			return true;
+				transaction?.Rollback();
+				throw;
+			}
 
 		}
 

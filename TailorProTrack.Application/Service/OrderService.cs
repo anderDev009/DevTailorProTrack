@@ -12,6 +12,7 @@ using TailorProTrack.Application.Dtos.Order;
 using TailorProTrack.Application.Dtos.PreOrder;
 using TailorProTrack.Application.Extentions;
 using TailorProTrack.domain.Entities;
+using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Interfaces;
 
 namespace TailorProTrack.Application.Service
@@ -52,6 +53,7 @@ namespace TailorProTrack.Application.Service
         private readonly IProductService _productService;
         //servicio de detalle ordenes
         private readonly IOrderProductService _orderProductService;
+        private readonly TailorProTrackContext _context;
 
         public OrderService(IOrderRepository repository
                             , ILogger<IOrderRepository> logger
@@ -71,7 +73,8 @@ namespace TailorProTrack.Application.Service
                             IPreOrderRepository preOrderRepository,
                             IPreOrderProductsRepository preOrderProductsRepository,
                             IInventoryColorService inventoryColorService,
-                            IMapper mapper
+                            IMapper mapper,
+                            TailorProTrackContext context
                             )
         {
             this._repository = repository;
@@ -93,6 +96,7 @@ namespace TailorProTrack.Application.Service
             _preOrderProductsRepository = preOrderProductsRepository;
             _inventoryColorService = inventoryColorService;
             _mapper = mapper;
+            _context = context;
         }
 
         public IConfiguration Configuration { get; }
@@ -100,6 +104,8 @@ namespace TailorProTrack.Application.Service
         public ServiceResult Add(OrderDtoAdd dtoAdd)
         {
             ServiceResult result = new ServiceResult();
+            var ownsTransaction = _context.Database.CurrentTransaction == null;
+            using var transaction = ownsTransaction ? _context.Database.BeginTransaction() : null;
             try
             {
                 //validaciones
@@ -135,8 +141,10 @@ namespace TailorProTrack.Application.Service
                 var resultOrderProd = this._orderProductService.AddMany(dtoAdd.products, idOrder);
                 if (!resultOrderProd.Success)
                 {
+                    transaction?.Rollback();
                     return resultOrderProd;
                 }
+                transaction?.Commit();
                 //mensaje de exito
                 result.Message = "Orden registrada con exito.";
                 ////la validacion devuelve una cadena donde indica el ID de los productos que no se pudieron registrar
@@ -147,6 +155,7 @@ namespace TailorProTrack.Application.Service
             }
             catch (Exception ex)
             {
+                transaction?.Rollback();
                 result.Success = false;
                 result.Message = $"Error al registrar la orden: {ex.Message}";
             }

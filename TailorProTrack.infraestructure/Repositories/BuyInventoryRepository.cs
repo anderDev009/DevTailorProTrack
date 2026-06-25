@@ -34,42 +34,55 @@ namespace TailorProTrack.infraestructure.Repositories
         }
         public bool AddBuyInventory(BuyInventory buyInventory, List<BuyInventoryDetail> detail)
         {
-            buyInventory.USER_CREATED = 1;
-            buyInventory.CREATED_AT = DateTime.Now;
-            buyInventory.DATE_MADE = DateTime.Now;
-            _ctx.Set<BuyInventory>().Add(buyInventory);
-            _ctx.SaveChanges();
-           
+            var ownsTransaction = _ctx.Database.CurrentTransaction == null;
+            using var transaction = ownsTransaction ? _ctx.Database.BeginTransaction() : null;
 
-            foreach(var item in detail)
+            try
             {
-                item.FK_BUY_INVENTORY = buyInventory.ID;
-                item.USER_CREATED = 1;
-                item.CREATED_AT =DateTime.Now;
-			}
-            
-            _ctx.Set<BuyInventoryDetail>().AddRange(detail);
-            int success = _ctx.SaveChanges();
-            _inventoryRepository.AddInventoryByBuy(detail);
-            //creando gasto
-            _expensesRepository.Save(new    ()
-            {
-	            AMOUNT = buyInventory.TOTAL_SALE,
-	            COMPLETED = false,
-	            CREATED_AT = DateTime.UtcNow,
-	            DESCR = "Compra de inventario",
-	            NAME = $"Compra de inventario a {buyInventory.COMPANY}",
-	            DOCUMENT_NUMBER = $"{buyInventory.NCF}",
-	            USER_CREATED = 1,
-	            VOUCHER = $"{buyInventory.NCF}",
-                FK_BUY = buyInventory.ID
+                buyInventory.USER_CREATED = 1;
+                buyInventory.CREATED_AT = DateTime.Now;
+                buyInventory.DATE_MADE = DateTime.Now;
+                _ctx.Set<BuyInventory>().Add(buyInventory);
+                _ctx.SaveChanges();
 
-            });
-			if (success == 0)
-            {
-                return false;
+                foreach(var item in detail)
+                {
+                    item.FK_BUY_INVENTORY = buyInventory.ID;
+                    item.USER_CREATED = 1;
+                    item.CREATED_AT =DateTime.Now;
+				}
+
+                _ctx.Set<BuyInventoryDetail>().AddRange(detail);
+                int success = _ctx.SaveChanges();
+                _inventoryRepository.AddInventoryByBuy(detail);
+                //creando gasto
+                _expensesRepository.Save(new    ()
+                {
+		            AMOUNT = buyInventory.TOTAL_SALE,
+		            COMPLETED = false,
+		            CREATED_AT = DateTime.UtcNow,
+		            DESCR = "Compra de inventario",
+		            NAME = $"Compra de inventario a {buyInventory.COMPANY}",
+		            DOCUMENT_NUMBER = $"{buyInventory.NCF}",
+		            USER_CREATED = 1,
+		            VOUCHER = $"{buyInventory.NCF}",
+                    FK_BUY = buyInventory.ID
+
+                });
+				if (success == 0)
+                {
+                    transaction?.Rollback();
+                    return false;
+                }
+
+                transaction?.Commit();
+                return true;
             }
-            return true; 
+            catch
+            {
+                transaction?.Rollback();
+                throw;
+            }
         }
 
         public override void Remove(BuyInventory entity)
