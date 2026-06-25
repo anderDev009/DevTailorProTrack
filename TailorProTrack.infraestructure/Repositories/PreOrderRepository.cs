@@ -22,12 +22,12 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             var preOrders = _ctx.Set<PreOrder>()
                 .Include(x => x.Client)
-                .Where(x => x.REMOVED == false && x.COMPLETED == null || x.COMPLETED == false).ToList();
+                .Where(x => x.REMOVED == false && (x.COMPLETED == null || x.COMPLETED == false)).ToList();
 
             List<PreOrder> preOrderReport = new();
             foreach(var item in preOrders)
             {
-                if (!_paymentRepository.ConfirmPayment(item.ID))
+                if (!_paymentRepository.IsPreOrderPaymentCompleted(item.ID))
                 {
                     preOrderReport.Add(item);
                 }

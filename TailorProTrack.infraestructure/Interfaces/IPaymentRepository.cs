@@ -8,6 +8,7 @@ namespace TailorProTrack.infraestructure.Interfaces
     public interface IPaymentRepository : IBaseRepository<Payment>
     {
         bool ConfirmPayment(int idPreOrder);
+        bool IsPreOrderPaymentCompleted(int idPreOrder);
         decimal GetAmountPendingByIdPreOrder(int idPreOrder);
 		decimal GetAmountPendingNegativeByIdPreOrder(int idPreOrder);
         List<Payment> DetailBankAccount(int idBankAccount);

@@ -158,10 +158,15 @@ namespace TailorProTrack.infraestructure.Repositories
 				throw new Exception("Pedido no encontrado.");
 			}
 
-			preOrder.COMPLETED = GetAmountPendingNegativeByIdPreOrder(idPreOrder) <= 0;
+			preOrder.COMPLETED = IsPreOrderPaymentCompleted(idPreOrder);
 			_context.Set<PreOrder>().Update(preOrder);
 			_context.SaveChanges();
 			return preOrder.COMPLETED == true;
+		}
+
+		public bool IsPreOrderPaymentCompleted(int idPreOrder)
+		{
+			return GetAmountPendingNegativeByIdPreOrder(idPreOrder) <= 0;
 		}
 
 		public decimal GetAmountPendingByIdPreOrder(int idPreOrder)
@@ -173,19 +178,19 @@ namespace TailorProTrack.infraestructure.Repositories
 				var extra = (decimal)((double)amount * 18) / 100;
 				amount += (decimal)extra;
 			}
-			return _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT) - amount;
+			return _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder && !x.REMOVED).Sum(x => x.AMOUNT) - amount;
 		}
 
 		public decimal GetDebitAmount(int idAccount)
 		{
-			return _context.Set<Payment>().Where(x => x.FK_BANK_ACCOUNT == idAccount).Sum(x => x.AMOUNT);
+			return _context.Set<Payment>().Where(x => x.FK_BANK_ACCOUNT == idAccount && !x.REMOVED).Sum(x => x.AMOUNT);
 		}
 
 		public decimal GetDebitAmountThisMonth(int idAccount)
 		{
 			var now = DateTime.Now;
 			var firstDayMonth = new DateTime(now.Year, now.Month, 1);
-			return _context.Set<Payment>().Where(x => x.CREATED_AT >= firstDayMonth && x.FK_BANK_ACCOUNT == idAccount).Sum(x => x.AMOUNT);
+			return _context.Set<Payment>().Where(x => x.CREATED_AT >= firstDayMonth && x.FK_BANK_ACCOUNT == idAccount && !x.REMOVED).Sum(x => x.AMOUNT);
 		}
 		public bool SaveWithNoteCredit(Payment entity)
 		{
@@ -267,18 +272,18 @@ namespace TailorProTrack.infraestructure.Repositories
 				var extra = (decimal)((double)amount * 18) / 100;
 				amount += (decimal)extra;
 			}
-			return amount - _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder).Sum(x => x.AMOUNT);
+			return amount - _context.Set<Payment>().Where(x => x.FK_ORDER == idPreOrder && !x.REMOVED).Sum(x => x.AMOUNT);
 		}
 
 		public List<Payment> DetailBankAccount(int idBankAccount)
 		{
-			return _context.Set<Payment>().Where(x => x.FK_BANK_ACCOUNT == idBankAccount).ToList();
+			return _context.Set<Payment>().Where(x => x.FK_BANK_ACCOUNT == idBankAccount && !x.REMOVED).ToList();
 		}
 
         public bool CheckIsLastPaymentPreOrder(int paymentId)
         {
 			var payment = _context.Set<Payment>().Find(paymentId);
-            var payments = _context.Set<Payment>().Where(x => x.FK_ORDER == payment.FK_ORDER).ToList();
+			var payments = _context.Set<Payment>().Where(x => x.FK_ORDER == payment.FK_ORDER && !x.REMOVED).ToList();
             if (payments.Count == 1)
             {
                 return true;
