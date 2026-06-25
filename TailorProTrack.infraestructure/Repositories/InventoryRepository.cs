@@ -1,5 +1,5 @@
 ﻿
-using System.ComponentModel.Design;
+using Microsoft.EntityFrameworkCore;
 using TailorProTrack.domain.Entities;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.infraestructure.Core;
@@ -118,20 +118,47 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public bool UpdateQuantityInventory(int id)
         {
-            int quantity = _context.Set<InventoryColor>().Where(i => i.FK_INVENTORY == id)
+            int quantity = _context.Set<InventoryColor>().AsNoTracking().Where(i => i.FK_INVENTORY == id)
                 .GroupBy(i => i.FK_INVENTORY)
                 .Select(i => i.Sum(i => i.QUANTITY)).First();
 
 
             Inventory inv = _context.Set<Inventory>().Find(id);
-            inv.QUANTITY = quantity;
-            Update(inv);
-            int success = _context.SaveChanges();
-            if (success == 0)
+            if (inv == null)
             {
                 return false;
             }
+
+            inv.QUANTITY = quantity;
+            _context.SaveChanges();
             return true;
+        }
+
+        public bool DecreaseInventoryColorQuantity(int inventoryColorId, int quantity)
+        {
+            int? inventoryId = _context.Set<InventoryColor>()
+                .AsNoTracking()
+                .Where(i => i.ID == inventoryColorId && !i.REMOVED)
+                .Select(i => (int?)i.FK_INVENTORY)
+                .FirstOrDefault();
+
+            if (inventoryId == null)
+            {
+                return false;
+            }
+
+            int updated = _context.Set<InventoryColor>()
+                .Where(i => i.ID == inventoryColorId && !i.REMOVED && i.QUANTITY >= quantity)
+                .ExecuteUpdate(setters => setters
+                    .SetProperty(i => i.QUANTITY, i => i.QUANTITY - quantity)
+                    .SetProperty(i => i.MODIFIED_AT, DateTime.Now));
+
+            if (updated != 1)
+            {
+                return false;
+            }
+
+            return UpdateQuantityInventory(inventoryId.Value);
         }
 
         public bool RemoveInventoryByBuy(List<BuyInventoryDetail> detail)

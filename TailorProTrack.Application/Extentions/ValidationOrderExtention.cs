@@ -60,12 +60,9 @@ namespace TailorProTrack.Application.Extentions
 			//		}
 			//	}
 			//}
-			//mensaje para enviar en caso de que se hayan insertado varios
-			string message = "";
             //----
             //dtoAdd.products = new List<OrderProductDtoAdd>();
             //var preOrderProducts = preOrderProductsRepository.GetByPreOrderId(dtoAdd.FkPreOrder);
-            bool addedOne = false;
             foreach(var product in dtoAdd.products)
             {
                 var inventoryColorProducts = inventoryColorRepository.GetEntity(product.FkInventoryColor);
@@ -81,38 +78,11 @@ namespace TailorProTrack.Application.Extentions
                 }
 
             }
-            foreach (var product in dtoAdd.products)
-            {
-      
 
-                
-                var inventoryColorProducts = inventoryColorRepository.GetEntity(product.FkInventoryColor);
-               
-                if (inventoryColorProducts.QUANTITY >= product.Quantity)
-                {
-                    InventoryColor invColor = inventoryColorProducts;
-                    invColor.QUANTITY -= product.Quantity;
-                    inventoryColorRepository.Update(invColor);
-                    inventoryRepository.UpdateQuantityInventory(invColor.FK_INVENTORY);
-                    addedOne = true;
-                }
-                else
-                {
-                    message += $" {product.FkInventoryColor
-                        },";
-                }
-
-            }
-            if (!addedOne)
-            {
-                throw new OrderProductServiceException(configuration["validations:DoesntHaveInventoryToAddOrder"]);
-            }
-
-            return message;
+            return "";
         }
 
 
 
     }
 }
-

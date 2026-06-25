@@ -109,7 +109,7 @@ namespace TailorProTrack.Application.Service
             try
             {
                 //validaciones
-                string message = dtoAdd.IsValidToAdd(this.Configuration, this._clientRepository, this._userRepository, _preOrderRepository
+                dtoAdd.IsValidToAdd(this.Configuration, this._clientRepository, this._userRepository, _preOrderRepository
                     , _preOrderProductsRepository, _inventoryRepository, _inventoryColorRepository, _orderProductRepository);
 
 
@@ -143,6 +143,17 @@ namespace TailorProTrack.Application.Service
                 {
                     transaction?.Rollback();
                     return resultOrderProd;
+                }
+                foreach (var product in dtoAdd.products)
+                {
+                    bool inventoryUpdated = _inventoryRepository.DecreaseInventoryColorQuantity(product.FkInventoryColor, product.Quantity);
+                    if (!inventoryUpdated)
+                    {
+                        transaction?.Rollback();
+                        result.Success = false;
+                        result.Message = $"No hay inventario suficiente para registrar el producto {product.FkInventoryColor}.";
+                        return result;
+                    }
                 }
                 transaction?.Commit();
                 //mensaje de exito
