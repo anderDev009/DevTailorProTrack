@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using TailorProTrack.infraestructure.Context;
 using TailorProTrack.Ioc.Dependencies;
 using TailorProTrack.Application;
@@ -7,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 //dependencias
 //cadena de conexion
-builder.Services.AddDbContext<TailorProTrackContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("TailorProTrackContext")));
+var connectionString = builder.Configuration.GetConnectionString("TailorProTrackContext");
+builder.Services.AddDbContext<TailorProTrackContext>(options => options.UseMySql(connectionString, new MySqlServerVersion(new Version(9, 7, 1))));
 //dependencias de productos
 builder.Services.AddProductDependencies();
 //dependencias de los tipos de productos

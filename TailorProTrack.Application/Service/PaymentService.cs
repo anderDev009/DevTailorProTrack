@@ -3,7 +3,6 @@
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using TailorProTrack.Application.Contracts;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.Client;
@@ -149,7 +148,7 @@ namespace TailorProTrack.Application.Service
 																			   Client = _mapper.Map<ClientDtoGet>(_clientRepository.GetEntity(_preOrderRepository.GetEntity(d.Select(data => data.payment.FK_ORDER).First()).FK_CLIENT)),
 																			   Amount = d.Select(data => data.payment.AMOUNT).First(),
 																		   }); ;
-				if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
+				if (!payments.Any()) throw new Exception("No se encontraron registros");
 				result.Data = payments;
 				result.Message = "Obtenido con exito.";
 			}
@@ -325,7 +324,7 @@ namespace TailorProTrack.Application.Service
 												   DocumentNumber = d.payment.ACCOUNT_NUMBER,
 												   Client = _mapper.Map<ClientDtoGet>(_clientRepository.GetEntity(_preOrderRepository.GetEntity(d.payment.FK_ORDER).FK_CLIENT))
 											   }).ToList();
-				if (payments.IsNullOrEmpty()) throw new Exception("No se encontraron registros");
+				if (!payments.Any()) throw new Exception("No se encontraron registros");
 				var orderPayments = new
 				{
 					payments,

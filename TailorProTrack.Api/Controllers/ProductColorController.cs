@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 using TailorProTrack.Application.Contracts.ProductColor;
 using TailorProTrack.Application.Core;
 using TailorProTrack.Application.Dtos.ProductColor;

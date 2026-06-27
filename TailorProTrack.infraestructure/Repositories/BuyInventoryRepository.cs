@@ -122,7 +122,9 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public void MarkBuysUsed()
         {
-            _ctx.Set<BuyInventory>().FromSqlRaw("UPDATE BUY_INVENTORY SET USED = 1 WHERE USED = NULL");
+            _ctx.Set<BuyInventory>()
+                .Where(buyInventory => buyInventory.USED == null)
+                .ExecuteUpdate(setters => setters.SetProperty(buyInventory => buyInventory.USED, true));
         }
     }
 }
