@@ -169,6 +169,8 @@ namespace TailorProTrack.infraestructure.Repositories
                 if (invSearched != null)
                 {
                     InventoryColor invColor = _context.Set<InventoryColor>().Where(i => i.FK_INVENTORY == invSearched.ID && i.FK_COLOR_PRIMARY == item.COLOR_PRIMARY && i.FK_COLOR_SECONDARY == item.COLOR_SECONDARY).First();
+                    if (invColor.QUANTITY < item.QUANTITY)
+                        throw new InvalidOperationException($"Cannot reduce stock below zero for InventoryColor {invColor.ID}.");
                     invColor.QUANTITY -= item.QUANTITY;
                     _context.Set<InventoryColor>().Update(invColor);
                     _context.SaveChanges();

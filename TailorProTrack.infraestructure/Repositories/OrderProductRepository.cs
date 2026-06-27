@@ -42,13 +42,14 @@ namespace TailorProTrack.infraestructure.Repositories
         {
             OrderProduct orderP = this.GetEntity(entity.ID);
             this._context.Remove(orderP);
+            this._context.SaveChanges();
         }
 
         public OrderProduct GetByForeignKeys(int idOrder, int idProduct)
         {
             return this._entities
-                                  .Where(data => data.FK_INVENTORYCOLOR == idOrder &&
-                                         data.FK_ORDER == idProduct)
+                                  .Where(data => data.FK_ORDER == idOrder &&
+                                         data.FK_INVENTORYCOLOR == idProduct)
                                   .Single();
 
         }

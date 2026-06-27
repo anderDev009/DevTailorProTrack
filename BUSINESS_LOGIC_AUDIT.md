@@ -1,209 +1,304 @@
-# Business Logic Audit: Payments, Orders, and Inventory
+# Business Logic Audit — TailorProTrack Backend
 
-This document lists the business-logic issues that should be corrected before delivery. The goal is not to refactor the whole project, but to protect money, balances, invoices, orders, and inventory from inconsistent states.
+**Audit date:** 2026-06-27  
+**Auditor:** Code analysis (fresh-context read-only scan)  
+**Scope:** All infrastructure repositories and application services covering payments, orders, inventory, sales, expenses, and credit notes.
 
-## Delivery priority
+---
 
-Fix these first:
+## Previously reported issues — current status
 
-1. Add database transactions around money and inventory flows.
-2. Remove inventory mutations from validation logic.
-3. Correct accounts payable payment update/delete behavior.
-4. Stop read operations from mutating accounts receivable state.
-5. Fix the accounts receivable filter precedence bug.
-6. Confirm and correct invoice tax/ITBIS rules.
-7. Add minimal authorization to financial and inventory endpoints.
+| Prior Issue | Status |
+|---|---|
+| Inventory decrement inside validation | **FIXED** |
+| Accounts payable payment update/delete: bank balance and expense completion | **FIXED** |
+| Accounts receivable read: mutating ConfirmPayment on GET | **FIXED** |
+| Accounts receivable filter parentheses bug | **FIXED** |
 
-## Critical issues
+---
 
-### 1. Missing transactions in money and inventory flows
+## CRITICAL
 
-**Risk:** Partial persistence can leave orphan payments, incorrect bank balances, completed expenses without valid payments, or inventory decremented without a valid order.
+### C-1. `OrderProductRepository.GetByForeignKeys()` — FK arguments are swapped
 
-**Evidence:**
-
-- `TailorProTrack.infraestructure/Repositories/PaymentRepository.cs`
-- `TailorProTrack.infraestructure/Repositories/PaymentExpensesRepositoryRepository.cs`
-- `TailorProTrack.Application/Extentions/ValidationOrderExtention.cs`
-- `TailorProTrack.Application/Service/OrderService.cs`
-
-**Required correction:** Wrap each full business operation in one transaction:
-
-- Accounts receivable payment + bank update + preorder status + credit note.
-- Accounts payable payment + bank debit + expense status.
-- Order save + order products + inventory decrement.
-- Inventory purchase + purchase details + stock increment + generated expense.
-
-**Regression tests:**
-
-- Force an exception after payment creation and verify bank/preorder/credit-note state is rolled back.
-- Force an exception after inventory decrement and verify order/inventory state is rolled back.
-
-### 2. Inventory is decremented inside validation
-
-**Risk:** Validation has side effects. If order detail creation fails after validation, inventory remains reduced without a complete order.
-
-**Evidence:**
-
-- `TailorProTrack.Application/Extentions/ValidationOrderExtention.cs`
-- `TailorProTrack.Application/Service/OrderService.cs`
-
-**Required correction:** Validation should only validate. Move stock mutation into the order command flow:
-
-1. Validate stock availability.
-2. Create order.
-3. Create order products.
-4. Decrement inventory with a guarded update, for example `WHERE Quantity >= requested`.
-5. Recalculate parent inventory totals if applicable.
-
-**Regression tests:**
-
-- Two simultaneous orders for the last available unit: only one should succeed.
-- Failure after order creation should roll back order products and inventory changes.
-
-### 3. Accounts payable payment updates bypass bank and expense rules
-
-**Risk:** Updating amount, bank, or expense can leave bank balances and expense completion state incorrect.
-
-**Evidence:**
-
-- `TailorProTrack.Application/Service/PaymentExpenseService.cs`
-- `TailorProTrack.Application/Service/BaseServices/GenericService.cs`
-- `TailorProTrack.infraestructure/Repositories/PaymentExpensesRepositoryRepository.cs`
-
-**Required correction:** Implement explicit accounts payable payment update logic that:
-
-- Validates pending amount.
-- Validates bank balance.
-- Recalculates old and new bank accounts when the bank changes.
-- Recomputes expense completion status.
-- Runs inside a transaction.
-
-**Regression tests:**
-
-- Update a payable payment from bank A to bank B and verify both bank balances.
-- Increase a payment above pending amount and verify it fails.
-- Reduce a payment for a completed expense and verify the expense becomes pending again.
-
-### 4. Deleting an accounts payable payment does not reopen the expense
-
-**Risk:** A fully paid expense can remain marked as completed after its payment is deleted.
-
-**Evidence:**
-
-- `TailorProTrack.infraestructure/Repositories/PaymentExpensesRepositoryRepository.cs`
-
-**Required correction:** After deleting or updating a payable payment, recalculate the pending amount and set completion state from the recalculated balance.
-
-**Regression test:**
-
-- Fully pay an expense, delete the payment, and verify the expense is no longer completed.
-
-### 5. Financial and inventory APIs lack visible authorization
-
-**Risk:** Anyone who can reach the API may be able to create/delete payments, cancel orders, change inventory, or create invoices.
-
-**Evidence:**
-
-- `TailorProTrack.Api/Program.cs`
-- Financial and inventory controllers do not appear to use `[Authorize]`.
-
-**Required correction:** Add authentication and authorization policies/roles, then protect financial and inventory controllers/actions.
-
-## High-priority issues
-
-### 6. Accounts receivable read operation mutates payment status
-
-**Risk:** A GET/reporting operation can unexpectedly change database state, which creates hard-to-debug behavior.
-
-**Evidence:**
-
-- `TailorProTrack.infraestructure/Repositories/PreOrderRepository.cs`
-- `TailorProTrack.infraestructure/Repositories/PaymentRepository.cs`
-
-**Required correction:** Separate query logic from command logic. Read operations should compute status for display, not persist changes. Payment status updates should happen only in payment commands or explicit reconciliation jobs.
-
-### 7. Accounts receivable removed-filter precedence bug
-
-**Risk:** Removed preorders with `COMPLETED == false` may appear in accounts receivable.
-
-**Evidence:**
-
-- `TailorProTrack.infraestructure/Repositories/PreOrderRepository.cs`
-
-Current logic:
+**File:** `TailorProTrack.infraestructure/Repositories/OrderProductRepository.cs:49-53`  
+**Risk:** Every `OrderProduct.Update()` call finds the wrong record or throws `InvalidOperationException`. All order-product edits are silently corrupt or crash.
 
 ```csharp
-x.REMOVED == false && x.COMPLETED == null || x.COMPLETED == false
+// Current (wrong):
+.Where(data => data.FK_INVENTORYCOLOR == idOrder &&
+               data.FK_ORDER == idProduct)
+
+// Correct:
+.Where(data => data.FK_ORDER == idOrder &&
+               data.FK_INVENTORYCOLOR == idProduct)
 ```
 
-Corrected logic:
+---
+
+### C-2. `BuyInventoryRepository.MarkBuysUsed()` — never executes; wrong SQL
+
+**File:** `TailorProTrack.infraestructure/Repositories/BuyInventoryRepository.cs:123-126`  
+**Risk:** No `BuyInventory` record is ever marked as USED via this path. The USED flag stays stale, breaking the guard against deleting purchases that were already consumed.
+
+Two independent bugs:
+1. `FromSqlRaw` returns `IQueryable`; it is never materialized, so EF Core never sends the SQL.
+2. `WHERE USED = NULL` is always false in SQL — null comparisons require `IS NULL`.
 
 ```csharp
-x.REMOVED == false && (x.COMPLETED == null || x.COMPLETED == false)
+// Current (dead code):
+_ctx.Set<BuyInventory>().FromSqlRaw("UPDATE BUY_INVENTORY SET USED = 1 WHERE USED = NULL");
+
+// Correct:
+_ctx.Database.ExecuteSqlRaw("UPDATE BUY_INVENTORY SET USED = 1 WHERE USED IS NULL");
 ```
 
-### 8. Invoice ITBIS/tax rule is ambiguous
+---
 
-**Risk:** ITBIS may be applied when it should not be, or calculated from the wrong source.
+### C-3. `SalesRepository.Save()` — ITBIS applied when it should not be (`||` instead of `&&`)
 
-**Evidence:**
-
-- `TailorProTrack.infraestructure/Repositories/SalesRepository.cs`
-- `TailorProTrack.Application/Service/SaleService.cs`
-
-Current condition:
+**File:** `TailorProTrack.infraestructure/Repositories/SalesRepository.cs:44`  
+**Risk:** A sale with `ITBIS = 0` (explicitly no tax) triggers an 18% tax calculation, inflating `TOTAL_AMOUNT`. The invoice total is wrong and all downstream payment calculations inherit the inflated value.
 
 ```csharp
-if(entity.ITBIS != null || entity.ITBIS >= 0)
+// Current (wrong — || means null check and value check are independent):
+if (entity.ITBIS != null || entity.ITBIS >= 0)
+
+// Correct:
+if (entity.ITBIS != null && entity.ITBIS > 0)
 ```
 
-**Required correction:** Confirm the business rule and replace this condition with explicit tax logic. Prefer a clear boolean/rate decision instead of relying on nullable numeric checks.
+---
 
-**Regression tests:**
+### C-4. No authentication on any financial controller
 
-- Invoice without ITBIS.
-- Invoice with ITBIS.
-- Invoice where preorder tax configuration differs from sale tax configuration.
+**File:** `TailorProTrack.Api/Program.cs` and all financial controllers  
+**Risk:** Any unauthenticated HTTP client can create/delete payments, cancel orders, record purchases, issue credit notes, or view all financial data.
 
-## Medium-priority issues
+`Program.cs` calls `app.UseAuthorization()` but never registers an authentication scheme (`AddAuthentication` / `AddJwtBearer`). None of the following controllers carry `[Authorize]`:
+- `PaymentController`
+- `PaymentExpensesController`
+- `OrderController`
+- `SaleController`
+- `BuyInventoryController`
+- `NoteCreditController`
 
-These are important, but can be corrected after the critical delivery risks if time is limited.
+**Fix:** Register a JWT Bearer scheme in `Program.cs` and add `[Authorize]` at class level on every financial controller.
 
-- `OrderProductRepository.GetByForeignKeys()` appears to compare reversed fields.
-- Deleting inventory purchases may make stock negative if the items were already consumed.
-- `BuyInventoryRepository.MarkBuysUsed()` appears to use raw SQL incorrectly and may not save changes.
-- Many records hardcode `USER_CREATED = 1`, reducing auditability.
-- No migrations were found, so schema constraints, unique indexes, and concurrency protections could not be verified.
+---
 
-## Business rules to confirm
+## HIGH
 
-- Should accounts receivable overpayment automatically create a credit note?
-- Should cash payments with no bank account affect a cash-box ledger?
-- Can a completed invoice/preorder still receive payments or changes?
-- Should cancelling a completed order restock inventory?
-- Can inventory purchases be deleted after partial consumption?
-- What exact rule decides when ITBIS applies?
+### H-1. `SalesRepository.Update()` — wrong FK passed and total never saved to the persisted entity
 
-## Correction checklist
+**File:** `TailorProTrack.infraestructure/Repositories/SalesRepository.cs:71-85`  
+**Risk:** Every `UpdateSale` call persists a wrong (likely zero) total amount.
 
-- [ ] Add transactions to AR payment, AP payment, order creation/cancellation, sales, and inventory purchase flows.
-- [ ] Move inventory decrements out of validation methods.
-- [ ] Implement explicit update logic for accounts payable payments.
-- [ ] Recalculate expense completion after payable payment update/delete.
-- [ ] Prevent read operations from mutating accounts receivable/payment state.
-- [ ] Fix accounts receivable filter parentheses.
-- [ ] Require payment `Amount > 0`.
-- [ ] Add duplicate-payment protection or idempotency key/reference.
-- [ ] Confirm and correct ITBIS business rule.
-- [ ] Add authorization to financial and inventory endpoints.
-- [ ] Add regression tests for payments, expenses, invoices, orders, stock, and cancellation.
+Three compounding bugs:
+1. `GetAmountByIdPreOrder` receives `entity.ID` (Sales ID) instead of `entity.FK_PREORDER`.
+2. The result is stored in `entity.TOTAL_AMOUNT`, not `sale.TOTAL_AMOUNT`.
+3. `_context.Update(sale)` is called, so the stale `sale.TOTAL_AMOUNT` is what actually persists.
 
-## Suggested implementation order
+```csharp
+// Current:
+entity.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.ID); // wrong FK
+if (entity.ITBIS != null) entity.TOTAL_AMOUNT += (decimal)entity.ITBIS;             // modifies entity
+this._context.Update(sale);                                                           // sale.TOTAL_AMOUNT unchanged
 
-1. Fix the small correctness bugs first: filter parentheses, `Amount > 0`, and read-side mutation.
-2. Add transactions around existing business flows without large refactors.
-3. Correct accounts payable update/delete behavior.
-4. Refactor order/inventory flow so validation does not mutate stock.
-5. Confirm and implement ITBIS rules.
-6. Add authorization and regression tests.
+// Correct:
+sale.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.FK_PREORDER);
+if (sale.ITBIS != null && sale.ITBIS > 0) sale.TOTAL_AMOUNT += (decimal)sale.ITBIS;
+this._context.Update(sale);
+```
+
+---
+
+### H-2. `PaymentService.Remove()` — returns `Success = true` when deletion is blocked
+
+**File:** `TailorProTrack.Application/Service/PaymentService.cs:253-258`  
+**Risk:** Frontend receives HTTP 200 OK for a blocked deletion. The client has no way to detect that the payment was NOT deleted and shows a stale UI.
+
+```csharp
+// Current:
+result.Message = "No se puede eliminar el ultimo pago de una orden";
+result.Success = true;   // BUG
+
+// Correct:
+result.Success = false;
+```
+
+---
+
+### H-3. `OrderRepository.Remove()` — no transaction; partial inventory restoration on failure
+
+**File:** `TailorProTrack.infraestructure/Repositories/OrderRepository.cs:55-75`  
+**Risk:** If the restoration loop fails mid-iteration, items 1…N-1 have their inventory restored and committed while items N…end are not. The order record still exists. Result: permanently corrupted stock levels.
+
+Each `_inventoryColorRepository.Update()` and `_inventoryRepository.UpdateQuantityInventory()` call `SaveChanges()` internally. There is no wrapping transaction.
+
+**Fix:** Wrap the entire `Remove` method body in a `BeginTransaction / Commit / Rollback` block.
+
+---
+
+### H-4. `BuyInventoryRepository.Remove()` — no transaction, bank balances not adjusted, no negative-stock guard
+
+**File:** `TailorProTrack.infraestructure/Repositories/BuyInventoryRepository.cs:88-101`  
+**Risk:** Deleting a purchase can leave bank accounts with incorrect balances and `InventoryColor.QUANTITY` can go negative, making future order stock validation pass when it should fail.
+
+Three issues:
+1. No transaction — `Expenses` are deleted before `RemoveInventoryByBuy` runs; a partial failure leaves orphan expense deletions.
+2. `PaymentExpenses` recorded against the deleted `Expenses` records are not handled — `CREDIT_AMOUNT` on the bank account is not recalculated.
+3. `RemoveInventoryByBuy` subtracts quantity with no non-negative guard (see M-3).
+
+---
+
+### H-5. `ExpensesRepository` GET methods — read-side mutation (`ConfirmExpenses` called on GET)
+
+**File:** `TailorProTrack.infraestructure/Repositories/ExpensesRepository.cs:71-88, 153-170, 172-189`  
+**Risk:** Any GET call to `GetExpensesPending()`, `GetBuysPending()`, or `GetOnlyExpensesPending()` permanently alters expense state. Retrying a read, running a health check, or loading a report page confirms expenses that may not be fully paid.
+
+```csharp
+// Inside GetExpensesPending():
+else { this.ConfirmExpenses(expense.ID); }   // WRITE on GET path
+```
+
+This is the same pattern that was already fixed in `PreOrderRepository.GetAccountsReceivable()`.
+
+**Fix:** Remove `ConfirmExpenses` from all three `Get*` methods. Trigger confirmation only on write paths (after a payment is recorded).
+
+---
+
+## MEDIUM
+
+### M-1. `NoteCreditPaymentRepository.ExtractAmount()` — no `Update()` or `SaveChanges()`
+
+**File:** `TailorProTrack.infraestructure/Repositories/NoteCreditRepository.cs:34-39`  
+**Risk:** If the `NoteCredit` entity was loaded as `AsNoTracking()`, the balance reduction is silently lost and the credit note retains an inflated balance.
+
+```csharp
+// Current:
+note.AMOUNT -= amount;
+// No Update(note) or SaveChanges() here
+
+// Fix:
+note.AMOUNT -= amount;
+_context.Set<NoteCredit>().Update(note);
+_context.SaveChanges();
+```
+
+---
+
+### M-2. `SaleService.Add()` — PreOrder ITBIS flag committed before Sale is saved
+
+**File:** `TailorProTrack.Application/Service/SaleService.cs:29-44`  
+**Risk:** If the Sale save throws, the PreOrder.ITBIS flag is already flipped in the database, permanently altering all subsequent payment calculations for that order.
+
+```csharp
+_preOrderRepository.Update(preOrder);   // commits — no rollback if next line fails
+return base.Add(dtoAdd);
+```
+
+**Fix:** Wrap both operations in a single transaction, or defer the ITBIS flag update until after the Sale is confirmed saved.
+
+---
+
+### M-3. `InventoryRepository.RemoveInventoryByBuy()` — no non-negative stock guard
+
+**File:** `TailorProTrack.infraestructure/Repositories/InventoryRepository.cs:164-179`  
+**Risk:** `InventoryColor.QUANTITY` can go negative. Future order validation (`QUANTITY >= requested`) then behaves unpredictably.
+
+```csharp
+// Current:
+invColor.QUANTITY -= item.QUANTITY;   // no guard
+
+// Fix:
+if (invColor.QUANTITY < item.QUANTITY)
+    throw new InvalidOperationException("Cannot reduce stock below zero.");
+invColor.QUANTITY -= item.QUANTITY;
+```
+
+---
+
+### M-4. `BankAccountRepository.AddBalance` / `SubstractBalance` — bypass DEBIT/CREDIT reconciliation
+
+**File:** `TailorProTrack.infraestructure/Repositories/BankAccountRepository.cs:39-58`  
+**Risk:** If these methods are ever called, `BALANCE` diverges from `DEBIT_AMOUNT - CREDIT_AMOUNT`. The next `RecalculateBankAccount` call (used by payment repositories) silently overrides the manual change, making the correction appear to vanish.
+
+All other balance mutations derive `BALANCE = DEBIT_AMOUNT - CREDIT_AMOUNT`. These two methods modify `BALANCE` directly without touching the component fields.
+
+**Fix:** Either update `DEBIT_AMOUNT` alongside `BALANCE` in these methods, or deprecate them and route all balance changes through `RecalculateBankAccount`.
+
+---
+
+### M-5. `USER_CREATED` hardcoded to `1` in multiple repositories
+
+**Files:**
+- `PaymentRepository.cs:37, 207`
+- `BuyInventoryRepository.cs:42, 51`
+- `InventoryRepository.cs:66, 77, 92`
+
+**Risk:** Audit trail is incorrect — all financial records appear created by user ID 1 regardless of who performed the action. This is a compliance issue for any financial audit.
+
+**Fix:** Remove the hardcoded assignments. Propagate the authenticated user ID from the HTTP context through to the repository layer.
+
+---
+
+## LOW
+
+### L-1. `PreOrderRepository.GetPreOrdersByRecentDate()` — returns oldest, not newest
+
+**File:** `TailorProTrack.infraestructure/Repositories/PreOrderRepository.cs:39-42`
+
+```csharp
+// Current (ascending = oldest first):
+.OrderBy(x => x.CREATED_AT).Take(10)
+
+// Fix:
+.OrderByDescending(x => x.CREATED_AT).Take(10)
+```
+
+---
+
+### L-2. `OrderProductRepository.Remove()` — does not call `SaveChanges()`
+
+**File:** `TailorProTrack.infraestructure/Repositories/OrderProductRepository.cs:41-45`  
+Only marks the entity for removal without committing. The delete fires only if the caller happens to call `SaveChanges()` afterwards. Silent no-op for callers that do not.
+
+---
+
+## INFO
+
+### I-1. `OrderProductRepository.SaveMany()` — empty foreach loop over buy details
+
+**File:** `TailorProTrack.infraestructure/Repositories/OrderProductRepository.cs:60-68`  
+The loop iterates `buyDetails` with an empty body. No immediate financial risk but signals incomplete business logic.
+
+---
+
+### I-2. `ValidationOrderExtention` — user FK validation is commented out
+
+**File:** `TailorProTrack.Application/Extentions/ValidationOrderExtention.cs:24-27`  
+Orders can be created with any arbitrary `FK_USER`. Referential integrity is enforced only at the database level if a FK constraint exists.
+
+---
+
+## Recommended fix order
+
+| Priority | Issue | Effort |
+|---|---|---|
+| 1 | C-1: Fix swapped FK args in `GetByForeignKeys` | Trivial |
+| 2 | C-3: Fix ITBIS `||` → `&&` condition | Trivial |
+| 3 | H-2: Fix `PaymentService.Remove()` returning `Success = true` | Trivial |
+| 4 | L-1: Fix `OrderByDescending` on recent preorders | Trivial |
+| 5 | C-2: Fix `MarkBuysUsed()` with `ExecuteSqlRaw` + `IS NULL` | Low |
+| 6 | H-5: Remove `ConfirmExpenses` from GET methods | Low |
+| 7 | M-1: Add `Update()` + `SaveChanges()` in `ExtractAmount` | Low |
+| 8 | L-2: Add `SaveChanges()` to `OrderProductRepository.Remove()` | Low |
+| 9 | H-1: Fix `SalesRepository.Update()` — wrong FK and wrong target entity | Medium |
+| 10 | M-2: Wrap `SaleService.Add()` ITBIS flag update in transaction | Medium |
+| 11 | M-4: Fix `AddBalance`/`SubstractBalance` DEBIT/CREDIT bypass | Medium |
+| 12 | H-3: Wrap `OrderRepository.Remove()` in a transaction | Medium |
+| 13 | H-4: Wrap `BuyInventoryRepository.Remove()` in a transaction + recalculate bank | High |
+| 14 | M-3: Add non-negative stock guard in `RemoveInventoryByBuy` | Low |
+| 15 | M-5: Remove hardcoded `USER_CREATED = 1` | Medium |
+| 16 | C-4: Add authentication and `[Authorize]` to financial controllers | High |

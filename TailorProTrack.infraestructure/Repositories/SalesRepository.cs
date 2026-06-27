@@ -41,7 +41,7 @@ namespace TailorProTrack.infraestructure.Repositories
             }
             entity.CREATED_AT = DateTime.Now;
             entity.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.FK_PREORDER);
-            if(entity.ITBIS != null || entity.ITBIS >= 0)
+            if(entity.ITBIS != null && entity.ITBIS > 0)
             {
                 entity.ITBIS = (decimal)((double)entity.TOTAL_AMOUNT * 18)/100;
                 entity.TOTAL_AMOUNT += (decimal)entity.ITBIS;
@@ -75,10 +75,10 @@ namespace TailorProTrack.infraestructure.Repositories
             sale.FK_PREORDER = entity.FK_PREORDER;
             sale.USER_MOD = entity.USER_MOD;
             sale.MODIFIED_AT = DateTime.Now;
-            entity.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.ID);
+            sale.TOTAL_AMOUNT = _preOrderProductsRepository.GetAmountByIdPreOrder(entity.FK_PREORDER);
             if (entity.ITBIS != null)
             {
-                entity.TOTAL_AMOUNT += (decimal)entity.ITBIS;
+                sale.TOTAL_AMOUNT += (decimal)entity.ITBIS;
             }
             this._context.Update(sale);
             this._context.SaveChanges();

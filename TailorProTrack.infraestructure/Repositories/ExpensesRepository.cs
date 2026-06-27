@@ -79,10 +79,6 @@ namespace TailorProTrack.infraestructure.Repositories
                 {
                     expensesPending.Add(expense);
                 }
-                else
-                {
-                    this.ConfirmExpenses(expense.ID);
-                }
             }
             return expensesPending;
         }
@@ -161,10 +157,6 @@ namespace TailorProTrack.infraestructure.Repositories
                 {
                     expensesPending.Add(expense);
                 }
-                else
-                {
-                    this.ConfirmExpenses(expense.ID);
-                }
             }
             return expensesPending;
         }
@@ -179,10 +171,6 @@ namespace TailorProTrack.infraestructure.Repositories
                 if (isPending)
                 {
                     expensesPending.Add(expense);
-                }
-                else
-                {
-                    this.ConfirmExpenses(expense.ID);
                 }
             }
             return expensesPending;

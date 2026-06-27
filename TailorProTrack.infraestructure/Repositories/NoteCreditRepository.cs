@@ -35,7 +35,8 @@ namespace TailorProTrack.infraestructure.Repositories
 		{
 			var note = GetEntity(idNoteCredit);
 			note.AMOUNT -= amount;
-		
+			context.Set<NoteCredit>().Update(note);
+			context.SaveChanges();
 		}
 
 		public void UpdateAmount(int FK_CLIENT)

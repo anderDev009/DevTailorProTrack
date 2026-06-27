@@ -39,9 +39,13 @@ namespace TailorProTrack.Application.Service
 	        {
 		        preOrder.ITBIS = true;
 	        }
-	        _preOrderRepository.Update(preOrder);
 
-			return base.Add(dtoAdd);
+			var result = base.Add(dtoAdd);
+			if (result.Success)
+			{
+				_preOrderRepository.Update(preOrder);
+			}
+			return result;
 		}
 
         public override ServiceResult GetById(int id)

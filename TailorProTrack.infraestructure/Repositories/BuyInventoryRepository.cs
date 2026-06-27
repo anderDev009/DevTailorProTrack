@@ -87,17 +87,27 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public override void Remove(BuyInventory entity)
         {
-            //eliminando los gastos
-            var expenses = _ctx.Set<Expenses>().Where(x => x.FK_BUY == entity.ID).ToList();
-            _ctx.Set<Expenses>().RemoveRange(expenses);
+            using var transaction = _ctx.Database.BeginTransaction();
+            try
+            {
+                //eliminando los gastos
+                var expenses = _ctx.Set<Expenses>().Where(x => x.FK_BUY == entity.ID).ToList();
+                _ctx.Set<Expenses>().RemoveRange(expenses);
 
-            //eliminando los detalles
-            var details = _ctx.Set<BuyInventoryDetail>().Where(x => x.FK_BUY_INVENTORY == entity.ID).ToList();
-            //eliminando el inventario
-            _inventoryRepository.RemoveInventoryByBuy(details);
-            //eliminando la compra
-            _ctx.Set<BuyInventory>().Remove(entity);
-            _ctx.SaveChanges();
+                //eliminando los detalles
+                var details = _ctx.Set<BuyInventoryDetail>().Where(x => x.FK_BUY_INVENTORY == entity.ID).ToList();
+                //eliminando el inventario
+                _inventoryRepository.RemoveInventoryByBuy(details);
+                //eliminando la compra
+                _ctx.Set<BuyInventory>().Remove(entity);
+                _ctx.SaveChanges();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
         public bool CheckUsed(int id)
@@ -122,7 +132,7 @@ namespace TailorProTrack.infraestructure.Repositories
 
         public void MarkBuysUsed()
         {
-            _ctx.Set<BuyInventory>().FromSqlRaw("UPDATE BUY_INVENTORY SET USED = 1 WHERE USED = NULL");
+            _ctx.Database.ExecuteSqlRaw("UPDATE BUY_INVENTORY SET USED = 1 WHERE USED IS NULL");
         }
     }
 }

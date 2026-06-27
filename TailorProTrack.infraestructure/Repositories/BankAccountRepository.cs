@@ -43,6 +43,7 @@ namespace TailorProTrack.infraestructure.Repositories
             {
                 throw new Exception("Cuenta inexistente");
             }
+            account.DEBIT_AMOUNT += Balance;
             account.BALANCE += Balance;
             _context.SaveChanges();
         }
@@ -53,6 +54,7 @@ namespace TailorProTrack.infraestructure.Repositories
             {
                 throw new Exception("Cuenta inexistente");
             }
+            account.CREDIT_AMOUNT += Balance;
             account.BALANCE -= Balance;
             _context.SaveChanges();
         }

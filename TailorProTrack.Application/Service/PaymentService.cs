@@ -253,7 +253,7 @@ namespace TailorProTrack.Application.Service
 				if(!isValid)
 				{
                     result.Message = "No se puede eliminar el ultimo pago de una orden";
-                    result.Success = true;
+                    result.Success = false;
                     return result;
                 }
 				Payment payment = new Payment

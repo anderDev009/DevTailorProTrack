@@ -38,7 +38,7 @@ namespace TailorProTrack.infraestructure.Repositories
         //trae los 10 pedidos recientes
         public List<PreOrder> GetPreOrdersByRecentDate()
         {
-            return _ctx.Set<PreOrder>().OrderBy(x => x.CREATED_AT).Take(10).ToList();
+            return _ctx.Set<PreOrder>().OrderByDescending(x => x.CREATED_AT).Take(10).ToList();
         }
 
         public void Complete(int id)

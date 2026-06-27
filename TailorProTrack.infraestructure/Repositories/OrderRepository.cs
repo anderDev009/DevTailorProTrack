@@ -54,24 +54,34 @@ namespace TailorProTrack.infraestructure.Repositories
 
 		public override void Remove(Order entity)
 		{
-			List<OrderProduct> orderProducts = _context.Set<OrderProduct>()
-													   .Where(x => x.FK_ORDER == entity.ID)
-													   .ToList();
-			//logica para devolver el inventario color
-			foreach (var product in orderProducts)
+			using var transaction = _context.Database.BeginTransaction();
+			try
 			{
-				//obteniendo el inventario color para agregarle la cantidad
-				InventoryColor invColor = _inventoryColorRepository.GetEntity(product.FK_INVENTORYCOLOR);
-				invColor.QUANTITY += product.QUANTITY;
-				//actualizando la cantidad 
-				_inventoryColorRepository.Update(invColor);
-				//actualizar el inventario mientras se van agregando 
-				_inventoryRepository.UpdateQuantityInventory(invColor.FK_INVENTORY);
-				_context.Set<OrderProduct>().Remove(product);
+				List<OrderProduct> orderProducts = _context.Set<OrderProduct>()
+														   .Where(x => x.FK_ORDER == entity.ID)
+														   .ToList();
+				//logica para devolver el inventario color
+				foreach (var product in orderProducts)
+				{
+					//obteniendo el inventario color para agregarle la cantidad
+					InventoryColor invColor = _inventoryColorRepository.GetEntity(product.FK_INVENTORYCOLOR);
+					invColor.QUANTITY += product.QUANTITY;
+					//actualizando la cantidad
+					_inventoryColorRepository.Update(invColor);
+					//actualizar el inventario mientras se van agregando
+					_inventoryRepository.UpdateQuantityInventory(invColor.FK_INVENTORY);
+					_context.Set<OrderProduct>().Remove(product);
+				}
+				//eliminar la orden
+				_context.Set<Order>().Remove(entity);
+				_context.SaveChanges();
+				transaction.Commit();
 			}
-			//eliminar la orden
-			_context.Set<Order>().Remove(entity);
-			_context.SaveChanges();
+			catch
+			{
+				transaction.Rollback();
+				throw;
+			}
 		}
 
 		public void UpdateAmount(Order order)
