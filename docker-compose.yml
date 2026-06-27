@@ -10,8 +10,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      db-init:
-        condition: service_completed_successfully
+      sqlserver:
+        condition: service_healthy
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -23,18 +23,12 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
-
-  db-init:
-    image: mcr.microsoft.com/mssql-tools
-    depends_on:
-      - sqlserver
-    environment:
-      SA_PASSWORD: ${SA_PASSWORD:-Your_strong_password123}
-    volumes:
-      - ./CREATEDB.sql:/scripts/CREATEDB.sql:ro
-      - ./docker/init-db.sh:/scripts/init-db.sh:ro
-    entrypoint: ["/bin/bash", "/scripts/init-db.sh"]
-    restart: "no"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"${SA_PASSWORD:-Your_strong_password123}\" -Q \"SELECT 1\" -No -C || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
 volumes:
   sqlserver-data:
