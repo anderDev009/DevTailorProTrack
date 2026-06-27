@@ -1,0 +1,40 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__TailorProTrackContext: Server=sqlserver,1433;Database=TESTING_GARCIA;User ID=sa;Password=${SA_PASSWORD:-Your_strong_password123};Encrypt=false;TrustServerCertificate=true;
+    ports:
+      - "8080:8080"
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD:-Your_strong_password123}
+      MSSQL_PID: Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      - sqlserver
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD:-Your_strong_password123}
+    volumes:
+      - ./CREATEDB.sql:/scripts/CREATEDB.sql:ro
+      - ./docker/init-db.sh:/scripts/init-db.sh:ro
+    entrypoint: ["/bin/bash", "/scripts/init-db.sh"]
+    restart: "no"
+
+volumes:
+  sqlserver-data:
