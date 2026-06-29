@@ -217,6 +217,11 @@ namespace TailorProTrack.Application.Service
 				//recorriendo las ordenes y confirmando si estan completas
 				foreach (var preOrder in preOrdersMapped)
 				{
+					preOrder.Amount = _preOrderProductRepository.GetAmountByIdPreOrder(preOrder.ID);
+					var pendingRaw = _paymentRepository.GetAmountPendingByIdPreOrder(preOrder.ID);
+					preOrder.AmountBase = Math.Abs((decimal)pendingRaw);
+					preOrder.IsEditable = _preOrderRepository.PreOrderIsEditable(preOrder.ID);
+
 					if (preOrder.Finished == null || preOrder.Finished == false)
 					{
 						preOrder.IsCompleted = _orderService.ConfirmOrdersIsComplete(preOrder.ID);

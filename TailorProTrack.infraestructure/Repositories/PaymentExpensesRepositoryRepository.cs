@@ -219,6 +219,43 @@ namespace TailorProTrack.infraestructure.Repositories
 			}
 		}
 
+		public void Void(int id)
+		{
+			var ownsTransaction = _ctx.Database.CurrentTransaction == null;
+			using var transaction = ownsTransaction ? _ctx.Database.BeginTransaction() : null;
+
+			try
+			{
+				var entity = this.GetEntity(id);
+				if (entity == null || entity.REMOVED)
+				{
+					throw new Exception("Pago no encontrado o ya fue anulado.");
+				}
+
+				var idBankAccount = entity.FK_BANK_ACCOUNT;
+				var idExpense = entity.FK_EXPENSE;
+
+				entity.REMOVED = true;
+				entity.MODIFIED_AT = DateTime.Now;
+				_ctx.Set<PaymentExpenses>().Update(entity);
+				_ctx.SaveChanges();
+
+				if (idBankAccount != null && idBankAccount > 0)
+				{
+					RecalculateBankAccount((int)idBankAccount);
+				}
+
+				RecalculateExpenseCompletion(idExpense);
+
+				transaction?.Commit();
+			}
+			catch
+			{
+				transaction?.Rollback();
+				throw;
+			}
+		}
+
 		private void RecalculateBankAccount(int idBankAccount)
 		{
 			BankAccount account = _ctx.Set<BankAccount>().Find(idBankAccount);

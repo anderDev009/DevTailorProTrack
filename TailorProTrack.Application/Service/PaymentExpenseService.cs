@@ -20,7 +20,22 @@ namespace TailorProTrack.Application.Service
             _mapper = mapper;
             _paymentExpensesRepository = repository;
         }
-      
+
+        public ServiceResult Void(int id)
+        {
+            ServiceResult result = new();
+            try
+            {
+                _paymentExpensesRepository.Void(id);
+                result.Message = "Pago anulado con éxito.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al anular el pago: {ex.Message}";
+            }
+            return result;
+        }
     }
 
 }

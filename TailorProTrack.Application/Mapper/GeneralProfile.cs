@@ -379,6 +379,7 @@ namespace TailorProTrack.Application.Mapper
 			CreateMap<Sales, SaleDtoGet>()
 			   .ForMember(x => x.Id, opt => opt.MapFrom(x => x.ID))
 			   .ForMember(x => x.CodIsc, opt => opt.MapFrom(x => x.COD_ISC))
+			   .ForMember(x => x.NCF, opt => opt.MapFrom(x => x.B14))
 			   .ForMember(x => x.FkOrder, opt => opt.MapFrom(x => x.FK_PREORDER))
 			   .ForMember(x => x.Itbis, opt => opt.MapFrom(x => x.ITBIS))
 			   .ForMember(x => x.CodIsc, opt => opt.MapFrom(x => x.COD_ISC))

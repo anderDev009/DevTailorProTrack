@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ioc", "Ioc", "{B849F000-C5F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TailorProTrack.Ioc", "TailorProTrack.Ioc\TailorProTrack.Ioc.csproj", "{D2D42772-1935-46B1-8B6B-A70AC27D1E6D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TailorProTrack.Tests", "TailorProTrack.Tests\TailorProTrack.Tests.csproj", "{F230E938-F5C6-4FD3-909C-895535773956}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{D2D42772-1935-46B1-8B6B-A70AC27D1E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2D42772-1935-46B1-8B6B-A70AC27D1E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2D42772-1935-46B1-8B6B-A70AC27D1E6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F230E938-F5C6-4FD3-909C-895535773956}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F230E938-F5C6-4FD3-909C-895535773956}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F230E938-F5C6-4FD3-909C-895535773956}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F230E938-F5C6-4FD3-909C-895535773956}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

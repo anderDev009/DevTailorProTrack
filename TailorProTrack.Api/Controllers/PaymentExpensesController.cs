@@ -100,5 +100,20 @@ namespace TailorProTrack.Api.Controllers
 
             return NoContent();
         }
+
+        [HttpPatch("VoidPaymentExpense/{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult Void(int id)
+        {
+            var result = _paymentExpenseService.Void(id);
+            if (!result.Success)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, result);
+            }
+
+            return NoContent();
+        }
     }
 }

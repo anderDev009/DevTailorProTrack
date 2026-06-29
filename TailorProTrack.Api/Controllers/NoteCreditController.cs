@@ -32,7 +32,7 @@ namespace TailorProTrack.Api.Controllers
 		[HttpGet("GetById")]
 		public IActionResult GetById(int id)
 		{
-			var result = noteCreditService.GetByIdWithInclude(id,new List<string>{"Client"});
+			var result = noteCreditService.GetDetail(id);
 			if (!result.Success)
 			{
 				return StatusCode(500,result);

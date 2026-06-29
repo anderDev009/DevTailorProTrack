@@ -33,7 +33,7 @@ namespace TailorProTrack.infraestructure.Repositories
             decimal totalAmount = 0;
             var preOrder = _ctx.Set<PreOrderProducts>()
 	            .Include(x => x.PreOrder)
-	            .Where(x => x.FK_PREORDER == preOrderId && x.PreOrder.COMPLETED == false && !x.PreOrder.REMOVED )
+	            .Where(x => x.FK_PREORDER == preOrderId && !x.PreOrder.REMOVED)
                 .Include(x => x.Product)
                 .ToList();
 				foreach (var product in preOrder)
@@ -243,3 +243,4 @@ namespace TailorProTrack.infraestructure.Repositories
         }
     }
 }
+

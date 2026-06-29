@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,300 +12,347 @@ namespace TailorProTrack.infraestructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateTable(
                 name: "BANK",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NAME = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    NAME = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BANK", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "BANK_ACCOUNT",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BANK_ACCOUNT = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    BANK_ACCOUNT = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     FK_BANK = table.Column<int>(type: "int", nullable: false),
-                    BALANCE = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CREDIT_AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DEBIT_AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BALANCE = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    CREDIT_AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    DEBIT_AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BANK_ACCOUNT", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "BUY_INVENTORY",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    COMPANY = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RNC = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NCF = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DATE_MADE = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TOTAL_SALE = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    USED = table.Column<bool>(type: "bit", nullable: true),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    COMPANY = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RNC = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NCF = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DATE_MADE = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    TOTAL_SALE = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    USED = table.Column<bool>(type: "tinyint(1)", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BUY_INVENTORY", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "CATEGORYSIZE",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CATEGORY = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CATEGORY = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CATEGORYSIZE", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "CLIENT",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FIRST_NAME = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LAST_NAME = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FIRST_SURNAME = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LAST_SURNAME = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DNI = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RNC = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    FIRST_NAME = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LAST_NAME = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FIRST_SURNAME = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LAST_SURNAME = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DNI = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RNC = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CLIENT", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "COLOR",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    COLORNAME = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CODE_COLOR = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    COLORNAME = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CODE_COLOR = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_COLOR", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "INVENTORY",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_SIZE = table.Column<int>(type: "int", nullable: false),
                     FK_PRODUCT = table.Column<int>(type: "int", nullable: false),
                     QUANTITY = table.Column<int>(type: "int", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_INVENTORY", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "MissedInv",
                 columns: table => new
                 {
-                    NombreProducto = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Size = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ColorPrimary = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ColorSecondary = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NombreProducto = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Size = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ColorPrimary = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ColorSecondary = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CantidadFaltante = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PAYMENT",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_ORDER = table.Column<int>(type: "int", nullable: false),
                     FK_TYPE_PAYMENT = table.Column<int>(type: "int", nullable: false),
-                    ACCOUNT_PAYMENT = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ACCOUNT_PAYMENT = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     FK_BANK_ACCOUNT = table.Column<int>(type: "int", nullable: true),
-                    AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ACCOUNT_NUMBER = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NOTE_CREDIT = table.Column<bool>(type: "bit", nullable: true),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    ACCOUNT_NUMBER = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NOTE_CREDIT = table.Column<bool>(type: "tinyint(1)", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PAYMENT", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PAYMENT_CREDIT_NOTE",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_PAYMENT = table.Column<int>(type: "int", nullable: false),
                     FK_CREDIT = table.Column<int>(type: "int", nullable: false),
-                    AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PAYMENT_CREDIT_NOTE", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PAYMENT_TYPE",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TYPE_PAYMENT = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    TYPE_PAYMENT = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PAYMENT_TYPE", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PHONE",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TYPE = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NUMBER = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    TYPE = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NUMBER = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     FK_CLIENT = table.Column<int>(type: "int", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PHONE", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "SUPPLIERS",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NAME_SUPPLIER = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RNC = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    NAME_SUPPLIER = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RNC = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SUPPLIERS", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "TYPE_PROD",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TYPE_PROD = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    TYPE_PROD = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TYPE_PROD", x => x.ID);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "EXPENSES",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NAME = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DESCR = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    VOUCHER = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DOCUMENT_NUMBER = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    COMPLETED = table.Column<bool>(type: "bit", nullable: true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    NAME = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DESCR = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    VOUCHER = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DOCUMENT_NUMBER = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    COMPLETED = table.Column<bool>(type: "tinyint(1)", nullable: true),
                     FK_BUY = table.Column<int>(type: "int", nullable: true),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -314,21 +362,23 @@ namespace TailorProTrack.infraestructure.Migrations
                         column: x => x.FK_BUY,
                         principalTable: "BUY_INVENTORY",
                         principalColumn: "ID");
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "SIZE",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SIZE = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    SIZE = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     FKCATEGORYSIZE = table.Column<int>(type: "int", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -339,21 +389,22 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "CATEGORYSIZE",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "NOTE_CREDIT",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_CLIENT = table.Column<int>(type: "int", nullable: false),
-                    AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -364,24 +415,25 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "CLIENT",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PRE_ORDER",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_CLIENT = table.Column<int>(type: "int", nullable: false),
-                    DATE_DELIVERY = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    COMPLETED = table.Column<bool>(type: "bit", nullable: true),
-                    FINISHED = table.Column<bool>(type: "bit", nullable: true),
-                    ITBIS = table.Column<bool>(type: "bit", nullable: true),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DATE_DELIVERY = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    COMPLETED = table.Column<bool>(type: "tinyint(1)", nullable: true),
+                    FINISHED = table.Column<bool>(type: "tinyint(1)", nullable: true),
+                    ITBIS = table.Column<bool>(type: "tinyint(1)", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -392,23 +444,24 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "CLIENT",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "INVENTORY_COLOR",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_COLOR_PRIMARY = table.Column<int>(type: "int", nullable: false),
                     FK_COLOR_SECONDARY = table.Column<int>(type: "int", nullable: true),
                     QUANTITY = table.Column<int>(type: "int", nullable: false),
                     FK_INVENTORY = table.Column<int>(type: "int", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -419,22 +472,23 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "INVENTORY",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "ACCOUNT_DEBIT",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_BANK_ACC = table.Column<int>(type: "int", nullable: false),
                     FK_PAYMENT = table.Column<int>(type: "int", nullable: true),
-                    AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -450,24 +504,27 @@ namespace TailorProTrack.infraestructure.Migrations
                         column: x => x.FK_PAYMENT,
                         principalTable: "PAYMENT",
                         principalColumn: "ID");
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PRODUCT",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NAME_PRODUCT = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DESCRIPTION_PRODUCT = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SALE_PRICE = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    NAME_PRODUCT = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DESCRIPTION_PRODUCT = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SALE_PRICE = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     FK_TYPE = table.Column<int>(type: "int", nullable: false),
-                    LAST_REPLENISHMENT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LAST_REPLENISHMENT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -478,22 +535,23 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "TYPE_PROD",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "ACCOUNT_CREDIT",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_BANK_ACC = table.Column<int>(type: "int", nullable: false),
                     FK_EXPENSE = table.Column<int>(type: "int", nullable: false),
-                    AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -510,23 +568,24 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "EXPENSES",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PAYMENT_EXPENSES",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_EXPENSE = table.Column<int>(type: "int", nullable: false),
                     FK_PAYMENT_TYPE = table.Column<int>(type: "int", nullable: false),
                     FK_BANK_ACCOUNT = table.Column<int>(type: "int", nullable: true),
-                    AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -548,28 +607,33 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "PAYMENT_TYPE",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "ORDERS",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_USER = table.Column<int>(type: "int", nullable: false),
                     FK_CLIENT = table.Column<int>(type: "int", nullable: false),
                     FK_PREORDER = table.Column<int>(type: "int", nullable: false),
-                    CHECKED = table.Column<bool>(type: "bit", nullable: false),
-                    AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OBSERVATION = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DESCRIPTION_JOB = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    STATUS_ORDER = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SEND_TO = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CHECKED = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    OBSERVATION = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DESCRIPTION_JOB = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    STATUS_ORDER = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SEND_TO = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -585,26 +649,29 @@ namespace TailorProTrack.infraestructure.Migrations
                         column: x => x.FK_PREORDER,
                         principalTable: "PRE_ORDER",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.NoAction);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "SALES",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_PREORDER = table.Column<int>(type: "int", nullable: false),
-                    COD_ISC = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ITBIS = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    B14 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    INVOICED = table.Column<bool>(type: "bit", nullable: true),
-                    TOTAL_AMOUNT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    COD_ISC = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ITBIS = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    B14 = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    INVOICED = table.Column<bool>(type: "tinyint(1)", nullable: true),
+                    TOTAL_AMOUNT = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -615,26 +682,27 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "PRE_ORDER",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "BUY_INVENTORY_DETAIL",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_BUY_INVENTORY = table.Column<int>(type: "int", nullable: false),
                     FK_PRODUCT = table.Column<int>(type: "int", nullable: false),
                     QUANTITY = table.Column<int>(type: "int", nullable: false),
-                    PRICE = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PRICE = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     FK_SIZE = table.Column<int>(type: "int", nullable: false),
                     COLOR_PRIMARY = table.Column<int>(type: "int", nullable: false),
                     COLOR_SECONDARY = table.Column<int>(type: "int", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -669,26 +737,27 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "SIZE",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PRE_ORDER_PRODUCTS",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_PREORDER = table.Column<int>(type: "int", nullable: false),
                     FK_PRODUCT = table.Column<int>(type: "int", nullable: false),
                     FK_SIZE = table.Column<int>(type: "int", nullable: false),
                     QUANTITY = table.Column<int>(type: "int", nullable: false),
                     COLOR_PRIMARY = table.Column<int>(type: "int", nullable: false),
                     COLOR_SECONDARY = table.Column<int>(type: "int", nullable: true),
-                    CUSTOM_PRICE = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CUSTOM_PRICE = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -722,21 +791,22 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "SIZE",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PRODUCTS_COLOR",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_PRODUCT = table.Column<int>(type: "int", nullable: false),
                     FK_COLOR = table.Column<int>(type: "int", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -753,21 +823,22 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "PRODUCT",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PRODUCTS_SIZE",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_SIZE = table.Column<int>(type: "int", nullable: false),
                     FK_PRODUCT = table.Column<int>(type: "int", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -784,22 +855,23 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "SIZE",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "ORDER_PRODUCTS",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FK_ORDER = table.Column<int>(type: "int", nullable: false),
                     FK_INVENTORYCOLOR = table.Column<int>(type: "int", nullable: false),
                     QUANTITY = table.Column<int>(type: "int", nullable: false),
-                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MODIFIED_AT = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MODIFIED_AT = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     USER_MOD = table.Column<int>(type: "int", nullable: true),
                     USER_CREATED = table.Column<int>(type: "int", nullable: false),
-                    REMOVED = table.Column<bool>(type: "bit", nullable: false)
+                    REMOVED = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -816,7 +888,8 @@ namespace TailorProTrack.infraestructure.Migrations
                         principalTable: "ORDERS",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ACCOUNT_CREDIT_FK_BANK_ACC",
