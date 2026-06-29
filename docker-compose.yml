@@ -6,35 +6,30 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__TailorProTrackContext: Server=sqlserver,1433;Database=TESTING_GARCIA;User ID=sa;Password=${SA_PASSWORD:-Your_strong_password123};Encrypt=false;TrustServerCertificate=true;
+      ConnectionStrings__TailorProTrackContext: Server=mysql;Port=3306;Database=${MYSQL_DATABASE:-TESTING_GARCIA};User=${MYSQL_USER:-tailor};Password=${MYSQL_PASSWORD:-Your_strong_password123};
     ports:
       - "8080:8080"
     depends_on:
-      db-init:
-        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
 
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  mysql:
+    image: mysql:9.7.1
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${SA_PASSWORD:-Your_strong_password123}
-      MSSQL_PID: Express
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-Your_strong_password123}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-TESTING_GARCIA}
+      MYSQL_USER: ${MYSQL_USER:-tailor}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-Your_strong_password123}
     ports:
-      - "1433:1433"
+      - "3306:3306"
     volumes:
-      - sqlserver-data:/var/opt/mssql
-
-  db-init:
-    image: mcr.microsoft.com/mssql-tools
-    depends_on:
-      - sqlserver
-    environment:
-      SA_PASSWORD: ${SA_PASSWORD:-Your_strong_password123}
-    volumes:
-      - ./CREATEDB.sql:/scripts/CREATEDB.sql:ro
-      - ./docker/init-db.sh:/scripts/init-db.sh:ro
-    entrypoint: ["/bin/bash", "/scripts/init-db.sh"]
-    restart: "no"
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
 volumes:
-  sqlserver-data:
+  mysql-data:

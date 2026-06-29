@@ -1,7 +1,4 @@
-﻿
-
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TailorProTrack.domain.Core;
+﻿using TailorProTrack.domain.Core;
 
 namespace TailorProTrack.domain.Entities
 {
