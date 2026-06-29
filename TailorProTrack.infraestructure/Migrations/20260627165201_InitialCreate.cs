@@ -649,7 +649,7 @@ namespace TailorProTrack.infraestructure.Migrations
                         column: x => x.FK_PREORDER,
                         principalTable: "PRE_ORDER",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 

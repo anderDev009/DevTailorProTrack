@@ -145,7 +145,8 @@ namespace TailorProTrack.infraestructure.Context
             modelBuilder.Entity<Order>()
                 .HasOne(x => x.PreOrder)
                 .WithMany(x => x.Order)
-                .HasForeignKey(x => x.FK_PREORDER);
+                .HasForeignKey(x => x.FK_PREORDER)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Order>()
                 .HasMany(x => x.OrderProducts)
