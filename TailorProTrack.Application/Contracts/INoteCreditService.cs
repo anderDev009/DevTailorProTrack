@@ -9,5 +9,6 @@ namespace TailorProTrack.Application.Contracts
 	public interface INoteCreditService : IBaseServiceGeneric<NoteCreditDtoAdd,NoteCreditDtoUpdate,NoteCreditDtoGet,NoteCredit>
 	{
 		ServiceResult SearchNoteCreditByClientId(int idClient);
+		ServiceResult GetDetail(int id);
 	}
 }

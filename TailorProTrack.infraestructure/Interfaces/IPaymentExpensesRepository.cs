@@ -7,5 +7,5 @@ public interface IPaymentExpensesRepository : IBaseRepository<PaymentExpenses>
 {
 	decimal GetCreditAmountTotal(int idAccount);
 	decimal GetCreditThisMonth(int idAccount);
-
+	void Void(int id);
 }

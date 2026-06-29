@@ -12,6 +12,7 @@ namespace TailorProTrack.Application.Dtos.Sale
         public decimal? AmountBase { get; set; }
         public string? CodIsc { get; set; } = null;
         public string? B14 { get; set; } = null;
+        public string? NCF { get; set; } = null;
         public int IdPreOrder { get; set; }
         public decimal? Itbis { get; set; } = null;
         public int FkOrder {  get; set; }

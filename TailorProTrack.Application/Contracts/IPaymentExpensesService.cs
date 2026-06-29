@@ -7,5 +7,6 @@ namespace TailorProTrack.Application.Contracts
     public interface IPaymentExpensesService : IBaseServiceGeneric<PaymentExpenseDtoAdd,PaymentExpenseDtoUpdate,PaymentExpenseDtoGet,PaymentExpenses
     >
     {
+        ServiceResult Void(int id);
     }
 }

@@ -31,6 +31,25 @@ namespace TailorProTrack.infraestructure.Repositories
 			return notes;
 		}
 
+		public NoteCredit GetByIdWithDetail(int id)
+		{
+			return context.Set<NoteCredit>()
+				.Include(x => x.Client)
+				.FirstOrDefault(x => x.ID == id);
+		}
+
+		public List<(NoteCreditPayment ncp, Payment payment, PreOrder preOrder)> GetPaymentDetailsByNoteCreditId(int noteCreditId)
+		{
+			return (from ncp in context.Set<NoteCreditPayment>()
+					join p in context.Set<Payment>() on ncp.FK_PAYMENT equals p.ID
+					join po in context.Set<PreOrder>() on p.FK_ORDER equals po.ID
+					where ncp.FK_CREDIT == noteCreditId
+					select new { ncp, p, po })
+				.AsEnumerable()
+				.Select(x => (x.ncp, x.p, x.po))
+				.ToList();
+		}
+
 		public void ExtractAmount(int idNoteCredit, decimal amount)
 		{
 			var note = GetEntity(idNoteCredit);
